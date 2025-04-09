@@ -2,7 +2,6 @@
 // sample.php
 // A simple PHP script
 
-// Define a variable
 $name = "Master Howie";
 
 ?>
@@ -13,7 +12,8 @@ $name = "Master Howie";
     <title>Sample PHP Page</title>
 </head>
 <body>
-    <h1>Welcome to PHP!</h1>
+    <h1>Updated Welcome to PHP!</h1>
+
 
     <p><?php echo "Hello, " . $name . "!"; ?></p>
 
