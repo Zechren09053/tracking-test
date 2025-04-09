@@ -1,0 +1,56 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    width: 80%;
+    max-width: 1200px;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.ferry-list {
+    margin-top: 20px;
+}
+
+.ferry {
+    background-color: #e8f4f8;
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.ferry h3 {
+    margin: 0;
+    color: #2c3e50;
+}
+
+.ferry p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.ferry .location {
+    font-weight: bold;
+}
+
+.last-updated {
+    font-size: 0.9em;
+    color: #7f8c8d;
+}
+
