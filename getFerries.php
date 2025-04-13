@@ -17,7 +17,7 @@ if ($conn->connect_error) {
 }
 
 // SQL query to fetch ferry data from the ferries table
-$sql = "SELECT id, name, latitude, longitude, last_updated FROM ferries";
+$sql = "SELECT id, name, operator, status, active_time, latitude, longitude, last_updated FROM ferries";
 $result = $conn->query($sql);
 
 // Initialize an empty array to hold the ferry data
@@ -27,6 +27,19 @@ $ferries = [];
 if ($result->num_rows > 0) {
     // Fetch each row and add it to the $ferries array
     while ($row = $result->fetch_assoc()) {
+        // Calculate active time in minutes if the ferry is active
+        if ($row['status'] == 'active') {
+            // Calculate the time difference between now and the last updated time
+            $currentTime = new DateTime();
+            $lastUpdatedTime = new DateTime($row['last_updated']);
+            $interval = $currentTime->diff($lastUpdatedTime);
+            $activeTimeInMinutes = ($interval->h * 60) + $interval->i;
+            $row['active_time'] = $activeTimeInMinutes; // Update active time
+        } else {
+            $row['active_time'] = 0; // Set active time to 0 if the ferry is inactive
+        }
+
+        // Add the ferry data to the ferries array
         $ferries[] = $row;
     }
 }

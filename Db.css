@@ -287,3 +287,24 @@ html, body {
 .map:hover {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
+
+/* Sidebar and Nav Link Styling */
+.sidebar a,
+.nav a,
+.settings-nav a {
+    color: white;
+    text-decoration: none;
+}
+
+.sidebar a:visited,
+.nav a:visited,
+.settings-nav a:visited {
+    color: white;
+}
+
+.sidebar a:hover,
+.nav a:hover,
+.settings-nav a:hover {
+    text-decoration: underline;
+    color: #00b0ff;
+}

@@ -26,14 +26,14 @@
                         <li class="active">Dashboard</li>
                         <li>Analytics</li>
                         <li>Tracking</li>
-                        <li>Ferry Management</li>
+                        <li><a href="ferrymngt.php">Ferry Management</a></li>
                         <li>Route and Schedules</li>
                         <li>Tickets / Reservations</li>
                     </ul>
 
                     <!-- Settings, Help, and Logout Section -->
                     <ul class="nav settings-nav">
-                        <li><a href="#">Settings (Language, Time Zone, etc.)</a></li>
+                        <li><a href="#">Settings</a></li>
                         <li><a href="#">Help</a></li>
                         <li><a href="#">Logout</a></li>
                     </ul>
@@ -121,7 +121,7 @@
                                     <span>View Location</span>
                                 </div>
                                 <div class="bottom">
-                                    Active Time: ${ferry.active_time} hrs<br>
+                                    Active Time: ${ferry.active_time} mins<br>
                                     Status: ${ferry.status}<br>
                                     Operator: ${ferry.operator}
                                 </div>

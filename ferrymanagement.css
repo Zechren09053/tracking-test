@@ -1,0 +1,93 @@
+/* External CSS for Ferry Management */
+
+/* Styling for ferry card container */
+.ferry-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Ensure vertical alignment */
+    padding: 15px;
+    margin: 15px 0;
+    background-color: #444; /* Darker background for ferry card */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.3s ease;
+}
+
+/* Hover effect for ferry card */
+.ferry-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Styling for ferry information section */
+.ferry-info {
+    flex: 1;
+    font-size: 14px;
+    color: #fff; /* Light text color */
+}
+
+/* Styling for ferry status container */
+.ferry-status {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adds space between status and switch */
+    color: #fff; /* Light text color */
+}
+
+/* Switch button styling */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+}
+
+/* Active state of the switch */
+input:checked + .slider {
+    background-color: #00b0ff; /* Blue background when active */
+}
+
+input:checked + .slider:before {
+    transform: translateX(14px); /* Slide the circle to the right */
+}
+
+/* Add responsiveness for smaller screens */
+@media (max-width: 768px) {
+    .ferry-card {
+        flex-direction: column; /* Stack elements vertically on small screens */
+        align-items: flex-start;
+    }
+
+    .ferry-status {
+        margin-top: 10px;
+    }
+}
