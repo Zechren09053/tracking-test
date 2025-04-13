@@ -79,19 +79,21 @@
                 </div>
 
                 <div class="tracking">
-                    <!-- Boat List (Dynamically populated via AJAX) -->
-                    <div class="boat-list">
-                        <h2>Ferry Tracking</h2>
-                        <div id="ferry-list" class="ferry-list">
-                            <!-- Ferry data will be dynamically loaded here -->
-                        </div>
-                    </div>
+    <div class="boat-list">
+        <div class="boat-list-header">
+            <h2>Ferry Tracking</h2>
+        </div>
+        <div id="ferry-list" class="boat-list-body">
+            <!-- Ferry data will be dynamically loaded here -->
+        </div>
+    </div>
 
-                    <!-- Map Section -->
-                    <div class="map">
-                        <div id="map" style="width: 100%; height: 400px;"></div>
-                    </div>
-                </div>
+    <!-- Map Section -->
+    <div class="map">
+        <div id="map" style="width: 100%; height: 100%;"></div>
+    </div>
+</div>
+
             </div>
         </div>
     </div>
