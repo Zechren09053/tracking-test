@@ -27,7 +27,6 @@ html, body {
     overflow: hidden;
 }
 
-
 /* Flex layout */
 .container {
     display: flex;
@@ -173,9 +172,14 @@ html, body {
     background-color: white;
     padding: 20px;
     border-radius: 16px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* Enhanced shadow */
     flex: 1;
     min-width: 180px;
+    transition: box-shadow 0.3s ease;
+}
+
+.stat-box:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* On hover effect */
 }
 
 .stat-box h2 {
@@ -205,10 +209,15 @@ html, body {
     background: white;
     border-radius: 16px;
     padding: 20px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* Enhanced shadow */
     min-width: 300px;
     max-height: 300px;
     overflow-y: auto;
+    transition: box-shadow 0.3s ease;
+}
+
+.boat-list:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* On hover effect */
 }
 
 .boat-card {
@@ -217,6 +226,12 @@ html, body {
     padding: 15px;
     border-radius: 12px;
     margin-bottom: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* Enhanced shadow */
+    transition: box-shadow 0.3s ease;
+}
+
+.boat-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* On hover effect */
 }
 
 .boat-card .top {
@@ -237,5 +252,10 @@ html, body {
     height: 300px;
     background-color: #eceff1;
     border-radius: 16px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* Enhanced shadow */
+    transition: box-shadow 0.3s ease;
+}
+
+.map:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* On hover effect */
 }
