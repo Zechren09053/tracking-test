@@ -47,6 +47,7 @@ html, body {
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
     position: relative;
     overflow-y: auto;
+    border-radius: 16px;
 }
 
 /* Logo */
@@ -218,7 +219,7 @@ html, body {
     padding: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     min-width: 300px;
-    max-height: 300px;
+    max-height: 350px;
     display: flex;
     flex-direction: column;
     overflow: hidden; /* Ensure no scrollbars are visible */
@@ -251,7 +252,7 @@ html, body {
 .map {
     flex: 2;
     min-width: 400px;
-    height: 300px;
+    height: 350px;
     background-color: #2a3d47; /* Dark blue map background */
     border-radius: 24px; /* Rounded corners for map */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);

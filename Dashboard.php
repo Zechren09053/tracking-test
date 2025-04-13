@@ -14,7 +14,7 @@
             <div class="sidebar">
                 <div>
                     <div class="logo">
-                        <img src="logo.png" alt="Logo" style="width: 30px; height: 30px;">
+                        <img src="PasigRiverFerryServiceLogo.png" alt="Logo" style="width: 30px; height: 30px;">
                         PRFS MANAGEMENT
                     </div>
 
