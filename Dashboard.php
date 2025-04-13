@@ -79,21 +79,20 @@
                 </div>
 
                 <div class="tracking">
-    <div class="boat-list">
-        <div class="boat-list-header">
-            <h2>Ferry Tracking</h2>
-        </div>
-        <div id="ferry-list" class="boat-list-body">
-            <!-- Ferry data will be dynamically loaded here -->
-        </div>
-    </div>
+                    <div class="boat-list">
+                        <div class="boat-list-header">
+                            <h2>Ferry Tracking</h2>
+                        </div>
+                        <div id="ferry-list" class="boat-list-body">
+                            <!-- Ferry data will be dynamically loaded here -->
+                        </div>
+                    </div>
 
-    <!-- Map Section -->
-    <div class="map">
-        <div id="map" style="width: 100%; height: 100%;"></div>
-    </div>
-</div>
-
+                    <!-- Map Section -->
+                    <div class="map">
+                        <div id="map" style="width: 100%; height: 100%;"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -159,7 +158,10 @@
 
         // Example function call (add real coordinates from the ferry data)
         // addFerryMarker(51.505, -0.09);
-    </script>
 
+        // Ensure the map container respects the border radius
+        document.getElementById('map').style.borderRadius = '24px';
+        document.getElementById('map').style.overflow = 'hidden';
+    </script>
 </body>
 </html>

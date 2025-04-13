@@ -9,19 +9,19 @@
 html, body {
     height: 100%;
     width: 100%;
-    background-color: #f5f6fa;
-    color: #333;
+    background-color: #1a1a1a; /* Dark background */
+    color: #f1f1f1; /* Light text color */
     overflow: hidden; /* Prevents unwanted body scroll */
 }
 
 /* Main container fits screen with slight side margins */
 .main-container {
-    height: 95vh; /* slightly shorter than full height */
-    max-width: 98vw; /* almost full screen width */
-    margin: 1vh auto; /* add small margin to top and bottom */
+    height: 95vh;
+    max-width: 98vw;
+    margin: 1vh auto;
     padding: 20px;
     display: flex;
-    background-color: #ffffff;
+    background-color: #2c2f38; /* Dark container */
     border-radius: 16px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
@@ -38,8 +38,8 @@ html, body {
 /* Sidebar */
 .sidebar {
     width: 250px;
-    background-color: #ffffff;
-    border-right: 1px solid #ddd;
+    background-color: #333; /* Dark sidebar */
+    border-right: 1px solid #444; /* Slightly lighter border */
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -54,6 +54,7 @@ html, body {
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 30px;
+    color: #00b0ff; /* Blue logo color */
     display: flex;
     align-items: center;
     gap: 10px;
@@ -64,8 +65,10 @@ html, body {
     width: 100%;
     padding: 8px 10px;
     border-radius: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid #444; /* Darker border */
     margin-bottom: 20px;
+    background-color: #222; /* Dark background */
+    color: #fff; /* White text */
 }
 
 /* Navigation */
@@ -83,8 +86,8 @@ html, body {
 
 .nav li:hover,
 .nav li.active {
-    background-color: #ffe8d1;
-    color: #ff7a00;
+    background-color: #00b0ff; /* Blue hover effect */
+    color: #fff;
 }
 
 /* Settings */
@@ -102,12 +105,12 @@ html, body {
 }
 
 .settings-nav li:hover {
-    background-color: #ffe8d1;
-    color: #ff7a00;
+    background-color: #00b0ff;
+    color: #fff;
 }
 
 .settings-nav a {
-    color: #333;
+    color: #f1f1f1; /* Light text */
     text-decoration: none;
 }
 
@@ -120,7 +123,7 @@ html, body {
     display: flex;
     align-items: center;
     gap: 10px;
-    background-color: #fef1e6;
+    background-color: #333; /* Dark profile background */
     padding: 10px;
     border-radius: 10px;
     position: absolute;
@@ -137,6 +140,7 @@ html, body {
 .profile div {
     font-size: 14px;
     font-weight: bold;
+    color: #00b0ff; /* Blue text */
 }
 
 /* Main panel */
@@ -158,6 +162,7 @@ html, body {
 .header h1 {
     font-size: 24px;
     font-weight: 600;
+    color: #00b0ff; /* Blue header */
 }
 
 /* Stats Section */
@@ -169,96 +174,101 @@ html, body {
 }
 
 .stat-box {
-    background-color: white;
+    background-color: #444; /* Dark box background */
     padding: 20px;
     border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* Enhanced shadow */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     flex: 1;
     min-width: 180px;
     transition: box-shadow 0.3s ease;
 }
 
 .stat-box:hover {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* On hover effect */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 .stat-box h2 {
     font-size: 16px;
     margin-bottom: 5px;
+    color: #00b0ff; /* Blue stat heading */
 }
 
 .stat-box p {
     font-size: 22px;
     font-weight: bold;
+    color: #fff; /* White text */
 }
 
 .stat-change {
     font-size: 12px;
-    color: green;
+    color: green; /* Green for positive changes */
 }
 
 /* Ferry Tracking Section */
 .tracking {
-    display: flex; /* Use flexbox to align the items horizontally */
+    display: flex;
     gap: 20px;
     flex-wrap: wrap;
 }
 
 .boat-list {
-    flex: 1; /* Make the boat list take up equal space */
-    background: white;
-    border-radius: 16px;
+    flex: 1;
+    background: #444; /* Dark background */
+    border-radius: 24px; /* Rounder corners */
     padding: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     min-width: 300px;
     max-height: 300px;
     display: flex;
     flex-direction: column;
+    overflow: hidden; /* Ensure no scrollbars are visible */
 }
 
 .boat-list-header {
-    background: #fff;
+    background: #333; /* Dark header */
     padding: 10px 0;
     font-size: 20px;
     font-weight: bold;
-    color: #333;
-    border-bottom: 2px solid #ddd;
+    color: #00b0ff; /* Blue text */
+    border-bottom: 2px solid #555; /* Darker border */
+    border-top-left-radius: 24px; /* Round top left corner */
+    border-top-right-radius: 24px; /* Round top right corner */
 }
 
 .boat-list-body {
-    flex: 1; /* Allow the body to grow and fill available space */
+    flex: 1;
     overflow-y: auto;
     padding-top: 10px;
+    scrollbar-width: thin; /* Hide scrollbar on Firefox */
+    scrollbar-color: transparent transparent; /* Hide scrollbar color */
 }
 
+.boat-list-body::-webkit-scrollbar {
+    display: none; /* Hide scrollbar on Webkit browsers */
+}
+
+/* Map */
 .map {
-    flex: 2; /* Make the map take up more space than the boat list */
+    flex: 2;
     min-width: 400px;
     height: 300px;
-    background-color: #eceff1;
-    border-radius: 16px;
+    background-color: #2a3d47; /* Dark blue map background */
+    border-radius: 24px; /* Rounded corners for map */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
-
-
-
-.boat-list:hover {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* On hover effect */
-}
-
 .boat-card {
-    background-color: #fff7f2;
-    border-left: 4px solid #ff7a00;
+    background-color: #222; /* Dark background */
+    border-left: 4px solid #00b0ff; /* Blue border */
     padding: 15px;
     border-radius: 12px;
     margin-bottom: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* Enhanced shadow */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     transition: box-shadow 0.3s ease;
 }
 
 .boat-card:hover {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* On hover effect */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 .boat-card .top {
@@ -268,13 +278,11 @@ html, body {
 
 .boat-card .bottom {
     font-size: 12px;
-    color: #555;
+    color: #aaa; /* Light text */
     margin-top: 8px;
 }
 
-/* Map */
-
-
+/* Map hover effect */
 .map:hover {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* On hover effect */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
