@@ -23,12 +23,12 @@
                     </div>
 
                     <ul class="nav">
-                        <li class="active">Dashboard</li>
-                        <li>Analytics</li>
-                        <li>Tracking</li>
-                        <li><a href="ferrymngt.php">Ferry Management</a></li>
-                        <li>Route and Schedules</li>
-                        <li>Tickets / Reservations</li>
+                        <li class="active" data-page="dashboard">Dashboard</li>
+                        <li data-page="analytics">Analytics</li>
+                        <li data-page="tracking">Tracking</li>
+                        <li data-page="ferrymngt">Ferry Management</li>
+                        <li data-page="routeschedules">Route and Schedules</li>
+                        <li data-page="tickets">Tickets / Reservations</li>
                     </ul>
 
                     <!-- Settings, Help, and Logout Section -->
@@ -114,6 +114,7 @@
                         $('#ferry-list').append('<p>No ferries are currently available.</p>');
                     }
                     data.forEach(function(ferry) {
+                        // Display the ferry details in the list
                         const ferryElement = `
                             <div class="boat-card">
                                 <div class="top">
@@ -128,6 +129,11 @@
                             </div>
                         `;
                         $('#ferry-list').append(ferryElement);
+
+                        // Add the ferry's location to the map
+                        if (ferry.latitude && ferry.longitude) {
+                            addFerryMarker(ferry.latitude, ferry.longitude, ferry.name);
+                        }
                     });
                 },
                 error: function() {
@@ -142,26 +148,52 @@
         // Initial fetch
         fetchFerryData();
 
-        // Leaflet Map Initialization (Example)
+        // Leaflet Map Initialization
         var map = L.map('map').setView([51.505, -0.09], 13); // Initial coordinates (can be updated dynamically)
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // This will add markers for the ferries on the map (to be expanded as per your needs)
-        function addFerryMarker(latitude, longitude) {
+        // Function to add ferry markers to the map
+        function addFerryMarker(latitude, longitude, ferryName) {
             L.marker([latitude, longitude]).addTo(map)
-                .bindPopup("Ferry Location")
+                .bindPopup(ferryName)  // Display ferry name in the popup
                 .openPopup();
         }
-
-        // Example function call (add real coordinates from the ferry data)
-        // addFerryMarker(51.505, -0.09);
 
         // Ensure the map container respects the border radius
         document.getElementById('map').style.borderRadius = '24px';
         document.getElementById('map').style.overflow = 'hidden';
+
+        // JavaScript to handle the click functionality for li elements
+        const navItems = document.querySelectorAll('.nav li');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove the 'active' class from all items
+                navItems.forEach(item => item.classList.remove('active'));
+
+                // Add the 'active' class to the clicked item
+                item.classList.add('active');
+
+                // Handle the page navigation based on the clicked list item's data-page attribute
+                const page = item.getAttribute('data-page');
+                if (page === 'dashboard') {
+                    window.location.href = 'dashboard.html';  // Update with actual path
+                } else if (page === 'analytics') {
+                    window.location.href = 'analytics.html';  // Update with actual path
+                } else if (page === 'tracking') {
+                    window.location.href = 'tracking.html';  // Update with actual path
+                } else if (page === 'ferrymngt') {
+                    window.location.href = 'ferrymngt.php';  // Update with actual path
+                } else if (page === 'routeschedules') {
+                    window.location.href = 'routeschedules.html';  // Update with actual path
+                } else if (page === 'tickets') {
+                    window.location.href = 'tickets.html';  // Update with actual path
+                }
+            });
+        });
     </script>
 </body>
 </html>

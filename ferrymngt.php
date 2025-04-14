@@ -53,14 +53,16 @@ $conn->close();
                         <input type="text" placeholder="Search">
                     </div>
 
+                    <!-- Sidebar Navigation with clickable li -->
                     <ul class="nav">
-                        <li><a href="Dashboard.php">Dashboard</a></li>
-                        <li>Analytics</li>
-                        <li>Tracking</li>
-                        <li class="active">Ferry Management</li>
-                        <li>Route and Schedules</li>
-                        <li>Tickets / Reservations</li>
+                        <li data-page="dashboard">Dashboard</li>
+                        <li data-page="analytics">Analytics</li>
+                        <li data-page="tracking">Tracking</li>
+                        <li class="active"  data-page="ferrymngt">Ferry Management</li>
+                        <li data-page="routeschedules">Route and Schedules</li>
+                        <li data-page="tickets">Tickets / Reservations</li>
                     </ul>
+                    
 
                     <!-- Settings, Help, and Logout Section -->
                     <ul class="nav settings-nav">
@@ -191,6 +193,35 @@ $conn->close();
                 }
             });
         }
+
+        // JavaScript to handle the click functionality for li elements
+        const navItems = document.querySelectorAll('.nav li');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove the 'active' class from all items
+                navItems.forEach(item => item.classList.remove('active'));
+
+                // Add the 'active' class to the clicked item
+                item.classList.add('active');
+
+                // Handle the page navigation based on the clicked list item's data-page attribute
+                const page = item.getAttribute('data-page');
+                if (page === 'dashboard') {
+                    window.location.href = 'dashboard.php';  // Update with actual path
+                } else if (page === 'analytics') {
+                    window.location.href = 'analytics.php';  // Update with actual path
+                } else if (page === 'tracking') {
+                    window.location.href = 'tracking.php';  // Update with actual path
+                } else if (page === 'ferrymngt') {
+                    window.location.href = 'ferrymngt.php';  // Update with actual path
+                } else if (page === 'routeschedules') {
+                    window.location.href = 'routeschedules.php';  // Update with actual path
+                } else if (page === 'tickets') {
+                    window.location.href = 'tickets.php';  // Update with actual path
+                }
+            });
+        });
     </script>
 </body>
 </html>

@@ -95,7 +95,7 @@ html, body {
 .settings-nav {
     list-style: none;
     padding: 0;
-    margin-top: 30px;
+    margin-top: 220px;
 }
 
 .settings-nav li {
@@ -306,5 +306,5 @@ html, body {
 .nav a:hover,
 .settings-nav a:hover {
     text-decoration: underline;
-    color: #00b0ff;
+    color: #fbfbfb;
 }
