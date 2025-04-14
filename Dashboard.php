@@ -102,6 +102,15 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
     <script>
+        // Initialize the map
+        var map = L.map('map').setView([51.505, -0.09], 13); // Initial coordinates (can be updated dynamically)
+        var markers = {};  // Store the ferry markers to avoid duplicates
+
+        // Tile Layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
         // Function to fetch ferry data from the backend (getFerries.php)
         function fetchFerryData() {
             $.ajax({
@@ -114,12 +123,12 @@
                         $('#ferry-list').append('<p>No ferries are currently available.</p>');
                     }
                     data.forEach(function(ferry) {
-                        // Display the ferry details in the list
+                        // Display the ferry details in the list, including latitude and longitude
                         const ferryElement = `
-                            <div class="boat-card">
+                            <div class="boat-card" data-lat="${ferry.latitude}" data-lng="${ferry.longitude}">
                                 <div class="top">
                                     <strong>${ferry.name}</strong>
-                                    <span>View Location</span>
+                                    <span>Longitude: ${ferry.longitude} | Latitude: ${ferry.latitude}</span>
                                 </div>
                                 <div class="bottom">
                                     Active Time: ${ferry.active_time} mins<br>
@@ -130,8 +139,8 @@
                         `;
                         $('#ferry-list').append(ferryElement);
 
-                        // Add the ferry's location to the map
-                        if (ferry.latitude && ferry.longitude) {
+                        // Add ferry marker to map only if not already added
+                        if (ferry.latitude && ferry.longitude && !markers[ferry.name]) {
                             addFerryMarker(ferry.latitude, ferry.longitude, ferry.name);
                         }
                     });
@@ -148,19 +157,29 @@
         // Initial fetch
         fetchFerryData();
 
-        // Leaflet Map Initialization
-        var map = L.map('map').setView([51.505, -0.09], 13); // Initial coordinates (can be updated dynamically)
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
         // Function to add ferry markers to the map
         function addFerryMarker(latitude, longitude, ferryName) {
-            L.marker([latitude, longitude]).addTo(map)
-                .bindPopup(ferryName)  // Display ferry name in the popup
+            // Add marker to map
+            const marker = L.marker([latitude, longitude]).addTo(map)
+                .bindPopup(ferryName)
                 .openPopup();
+            markers[ferryName] = marker; // Store the marker in the markers object
         }
+
+        // JavaScript to handle the click functionality for ferry cards
+        $(document).on('click', '.boat-card', function() {
+            const lat = $(this).data('lat');
+            const lng = $(this).data('lng');
+            const name = $(this).find('.top strong').text(); // Get ferry name from card
+
+            // Pan to the ferry's location and zoom in
+            map.setView([lat, lng], 15); // Zoom level 15 for better visibility
+
+            // Optionally add a marker at the ferry's location
+            if (!markers[name]) {
+                addFerryMarker(lat, lng, name); // Only add the marker if not already on the map
+            }
+        });
 
         // Ensure the map container respects the border radius
         document.getElementById('map').style.borderRadius = '24px';
