@@ -223,17 +223,20 @@ html, body {
     display: flex;
     flex-direction: column;
     overflow: hidden; /* Ensure no scrollbars are visible */
+    
 }
 
 .boat-list-header {
     background: #333; /* Dark header */
-    padding: 10px 0;
+    padding: 10px; 
     font-size: 20px;
     font-weight: bold;
     color: #00b0ff; /* Blue text */
     border-bottom: 2px solid #555; /* Darker border */
     border-top-left-radius: 24px; /* Round top left corner */
     border-top-right-radius: 24px; /* Round top right corner */
+    text-align: center; /* Center the text horizontally */
+    
 }
 
 .boat-list-body {

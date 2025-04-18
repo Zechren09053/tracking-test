@@ -80,9 +80,7 @@
 
                 <div class="tracking">
                     <div class="boat-list">
-                        <div class="boat-list-header">
-                            <h2>Ferry Tracking</h2>
-                        </div>
+                    <div class="boat-list-header">Ferry List</div>
                         <div id="ferry-list" class="boat-list-body">
                             <!-- Ferry data will be dynamically loaded here -->
                         </div>
@@ -173,7 +171,7 @@
         // Update position if marker already exists
         markers[ferry.name].setLatLng([ferry.latitude, ferry.longitude]);
     }
-}
+    }
 
                 });
             },
