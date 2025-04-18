@@ -231,7 +231,7 @@ html, body {
     padding: 10px; 
     font-size: 20px;
     font-weight: bold;
-    color: #00b0ff; /* Blue text */
+    color: #00b0ff; /* Blue heading */
     border-bottom: 2px solid #555; /* Darker border */
     border-top-left-radius: 24px; /* Round top left corner */
     border-top-right-radius: 24px; /* Round top right corner */
@@ -269,6 +269,7 @@ html, body {
     margin-bottom: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     transition: box-shadow 0.3s ease;
+    position: relative;
 }
 
 .boat-card:hover {
@@ -285,6 +286,14 @@ html, body {
     color: #aaa; /* Light text */
     margin-top: 8px;
 }
+.boat-card .coordinates {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    font-size: 10px;
+    color: #bbb;
+    font-style: italic;
+  }
 
 /* Map hover effect */
 .map:hover {

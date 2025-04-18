@@ -80,7 +80,7 @@
 
                 <div class="tracking">
                     <div class="boat-list">
-                    <div class="boat-list-header">Ferry List</div>
+                        <div class="boat-list-header">Ferry List</div>
                         <div id="ferry-list" class="boat-list-body">
                             <!-- Ferry data will be dynamically loaded here -->
                         </div>
@@ -150,14 +150,15 @@
                     // Display the ferry details in the list, including latitude and longitude
                     const ferryElement = `
                         <div class="boat-card" data-lat="${ferry.latitude}" data-lng="${ferry.longitude}">
-                            <div class="top">
-                                <strong>${ferry.name}</strong>
-                                <span>Longitude: ${ferry.longitude} | Latitude: ${ferry.latitude}</span>
+                            <div class="top"><strong>${ferry.name}</strong>
                             </div>
                             <div class="bottom">
                                 Active Time: ${ferry.active_time} mins<br>
                                 Status: ${ferry.status}<br>
                                 Operator: ${ferry.operator}
+                            </div>
+                            <div class="coordinates">
+                            <span>Longitude: ${ferry.longitude} | Latitude: ${ferry.latitude}</span>
                             </div>
                         </div>
                     `;
