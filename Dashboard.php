@@ -28,7 +28,7 @@
                         <li data-page="tracking">Tracking</li>
                         <li data-page="ferrymngt">Ferry Management</li>
                         <li data-page="routeschedules">Route and Schedules</li>
-                        <li data-page="tickets">Tickets / Reservations</li>
+                        <li data-page="tickets">User Section</li>
                     </ul>
 
                     <!-- Settings, Help, and Logout Section -->
@@ -102,29 +102,24 @@
 
 
     <script>
-    // Initialize the map
-    var map = L.map('map').setView([14.5896, 121.0360], 13); // Initial coordinates near Pasig River
-    var markers = {};  // Store the ferry markers to avoid duplicates
+    var map = L.map('map').setView([14.5896, 121.0360], 13);
+    var markers = {};
 
-    // Tile Layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Predefined route coordinates along the Pasig River (example coordinates, adjust to actual path)
     const pasigRiverRoute = [
-        [14.5896, 121.0360], // Example point 1 (near station in Pasig)
-        [14.5910, 121.0390], // Example point 2
-        [14.5930, 121.0420], // Example point 3
-        [14.5950, 121.0450], // Example point 4
-        [14.5970, 121.0480], // Example point 5
-        [14.5990, 121.0500], // Example point 6
-        [14.6010, 121.0530], // Example point 7
-        [14.6030, 121.0550], // Example point 8
-        // Add more coordinates as needed to reflect the Pasig River path
+        [14.5896, 121.0360],
+        [14.5910, 121.0390],
+        [14.5930, 121.0420],
+        [14.5950, 121.0450],
+        [14.5970, 121.0480],
+        [14.5990, 121.0500],
+        [14.6010, 121.0530],
+        [14.6030, 121.0550],
     ];
 
-    // Draw the predefined Pasig River ferry route line on the map
     const riverRoute = L.polyline(pasigRiverRoute, {
         color: 'blue',
         weight: 4,
@@ -132,48 +127,43 @@
         smoothFactor: 1
     }).addTo(map);
 
-    // Optional: fit the map view to the route
+    // Only fit once when map initializes
     map.fitBounds(riverRoute.getBounds());
 
-    // Function to fetch ferry data from the backend (getFerries.php)
     function fetchFerryData() {
         $.ajax({
-            url: 'getFerries.php', // The PHP file you created
+            url: 'getFerries.php',
             method: 'GET',
             dataType: 'json',
             success: function(data) {
-                $('#ferry-list').empty(); // Clear the list before adding new data
+                $('#ferry-list').empty();
                 if (data.length === 0) {
                     $('#ferry-list').append('<p>No ferries are currently available.</p>');
                 }
+
                 data.forEach(function(ferry) {
-                    // Display the ferry details in the list, including latitude and longitude
                     const ferryElement = `
                         <div class="boat-card" data-lat="${ferry.latitude}" data-lng="${ferry.longitude}">
-                            <div class="top"><strong>${ferry.name}</strong>
-                            </div>
+                            <div class="top"><strong>${ferry.name}</strong></div>
                             <div class="bottom">
                                 Active Time: ${ferry.active_time} mins<br>
                                 Status: ${ferry.status}<br>
                                 Operator: ${ferry.operator}
                             </div>
                             <div class="coordinates">
-                            <span>Longitude: ${ferry.longitude} | Latitude: ${ferry.latitude}</span>
+                                <span>Longitude: ${ferry.longitude} | Latitude: ${ferry.latitude}</span>
                             </div>
                         </div>
                     `;
                     $('#ferry-list').append(ferryElement);
 
-                    // Add ferry marker to map only if not already added
                     if (ferry.latitude && ferry.longitude) {
-    if (!markers[ferry.name]) {
-        addFerryMarker(ferry.latitude, ferry.longitude, ferry.name);
-    } else {
-        // Update position if marker already exists
-        markers[ferry.name].setLatLng([ferry.latitude, ferry.longitude]);
-    }
-    }
-
+                        if (!markers[ferry.name]) {
+                            addFerryMarker(ferry.latitude, ferry.longitude, ferry.name);
+                        } else {
+                            markers[ferry.name].setLatLng([ferry.latitude, ferry.longitude]);
+                        }
+                    }
                 });
             },
             error: function() {
@@ -182,69 +172,54 @@
         });
     }
 
-    // Call the function every 5 seconds to update the ferry data in real-time
     setInterval(fetchFerryData, 5000);
-
-    // Initial fetch
     fetchFerryData();
 
-    // Function to add ferry markers to the map
     function addFerryMarker(latitude, longitude, ferryName) {
-        // Add marker to map
         const marker = L.marker([latitude, longitude]).addTo(map)
-            .bindPopup(ferryName)
-            .openPopup();
-        markers[ferryName] = marker; // Store the marker in the markers object
+            .bindPopup(ferryName); // Removed .openPopup() to stop unwanted camera jumps
+        markers[ferryName] = marker;
     }
 
-    // JavaScript to handle the click functionality for ferry cards
     $(document).on('click', '.boat-card', function() {
         const lat = $(this).data('lat');
         const lng = $(this).data('lng');
-        const name = $(this).find('.top strong').text(); // Get ferry name from card
+        const name = $(this).find('.top strong').text();
 
-        // Pan to the ferry's location and zoom in
-        map.setView([lat, lng], 15); // Zoom level 15 for better visibility
+        map.setView([lat, lng], 15);
 
-        // Optionally add a marker at the ferry's location
         if (!markers[name]) {
-            addFerryMarker(lat, lng, name); // Only add the marker if not already on the map
+            addFerryMarker(lat, lng, name);
         }
     });
 
-    // Ensure the map container respects the border radius
     document.getElementById('map').style.borderRadius = '24px';
     document.getElementById('map').style.overflow = 'hidden';
 
-    // JavaScript to handle the click functionality for li elements
     const navItems = document.querySelectorAll('.nav li');
 
     navItems.forEach(item => {
         item.addEventListener('click', function() {
-            // Remove the 'active' class from all items
             navItems.forEach(item => item.classList.remove('active'));
-
-            // Add the 'active' class to the clicked item
             item.classList.add('active');
-
-            // Handle the page navigation based on the clicked list item's data-page attribute
             const page = item.getAttribute('data-page');
             if (page === 'dashboard') {
-                window.location.href = 'dashboard.html';  // Update with actual path
+                window.location.href = 'dashboard.html';
             } else if (page === 'analytics') {
-                window.location.href = 'analytics.html';  // Update with actual path
+                window.location.href = 'analytics.html';
             } else if (page === 'tracking') {
-                window.location.href = 'tracking.html';  // Update with actual path
+                window.location.href = 'tracking.html';
             } else if (page === 'ferrymngt') {
-                window.location.href = 'ferrymngt.php';  // Update with actual path
+                window.location.href = 'ferrymngt.php';
             } else if (page === 'routeschedules') {
-                window.location.href = 'routeschedules.html';  // Update with actual path
+                window.location.href = 'routeschedules.html';
             } else if (page === 'tickets') {
-                window.location.href = 'tickets.html';  // Update with actual path
+                window.location.href = 'tickets.html';
             }
         });
     });
 </script>
+
 
 </body>
 </html>
