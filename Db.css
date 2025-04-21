@@ -46,9 +46,10 @@ html, body {
     padding: 20px 10px;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
     position: relative;
-    overflow-y: auto;
+    overflow-y: hidden; /* Remove vertical scrollbar */
     border-radius: 16px;
 }
+
 
 /* Logo */
 .logo {
@@ -118,31 +119,69 @@ html, body {
 .settings-nav a:hover {
     text-decoration: underline;
 }
-
-/* Profile */
+/* Profile container */
 .profile {
     display: flex;
     align-items: center;
     gap: 10px;
-    background-color: #333; /* Dark profile background */
-    padding: 10px;
-    border-radius: 10px;
-    position: absolute;
-    bottom: 20px;
-    width: calc(100% - 20px);
+    margin-top: 20px;
+    max-width: 200px; /* Adjust max width */
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
 }
 
+/* Profile image */
 .profile img {
     width: 40px;
     height: 40px;
     border-radius: 50%;
 }
 
-.profile div {
-    font-size: 14px;
-    font-weight: bold;
-    color: #00b0ff; /* Blue text */
+/* Profile info container */
+.profile-info {
+    line-height: 1.2;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 140px; /* Adjust max width */
+    transition: max-width 0.3s ease; /* Smooth transition for max-width */
 }
+
+/* Profile name */
+.profile-name {
+    font-size: 14px;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Profile email */
+.profile-email {
+    font-size: 12px;
+    color: gray;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Hover effect to expand text */
+.profile:hover .profile-info {
+    max-width: none; /* Remove max-width restriction */
+}
+
+/* Hover effect on profile container */
+.profile:hover {
+    background-color: #333; /* Dark background when hovered */
+    cursor: pointer; /* Pointer cursor */
+}
+
+/* Hover effect on profile name and email */
+.profile:hover .profile-name,
+.profile:hover .profile-email {
+    color: #00b0ff; /* Change text color on hover */
+}
+
 
 /* Main panel */
 .main {

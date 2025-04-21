@@ -38,14 +38,16 @@
                         <li><a href="#">Logout</a></li>
                     </ul>
 
-                    <!-- Profile Section -->
                     <div class="profile">
-                        <img src="profile.png" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%;">
-                        <div>
-                            <strong>Username</strong><br>
-                            user@email.com
-                        </div>
-                    </div>
+    <img src="testprofile.png" alt="Profile">
+    <div class="profile-info">
+    <strong class="profile-name" title="Jong Pantry The Fourth Of His Name">Jong Pantry The Fourth Of His Name</strong>
+<span class="profile-email" title="Pasigriverboatlongemailthatkeepsgoing@email.com">Pasigriverboatlongemailthatkeepsgoing@email.com</span>
+
+    </div>
+</div>
+
+
                 </div>
             </div>
 
@@ -204,9 +206,9 @@
             item.classList.add('active');
             const page = item.getAttribute('data-page');
             if (page === 'dashboard') {
-                window.location.href = 'dashboard.html';
+                window.location.href = 'Dashboard.php';
             } else if (page === 'analytics') {
-                window.location.href = 'analytics.html';
+                window.location.href = 'analytics.php';
             } else if (page === 'tracking') {
                 window.location.href = 'tracking.html';
             } else if (page === 'ferrymngt') {
