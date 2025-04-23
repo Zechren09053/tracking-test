@@ -240,7 +240,7 @@ var pasigRiverRoute2 = [
     }).addTo(map);
 
     const riverRoute2 = L.polyline(pasigRiverRoute2, {
-    color: 'green',  // You can change the color if you like
+    color: 'blue',
     weight: 4,
     opacity: 0.7,
     smoothFactor: 1
