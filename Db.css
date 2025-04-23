@@ -361,31 +361,26 @@ html, body {
 }
 
 
+
 .status-indicator {
     position: absolute;
     top: 10px;
     right: 10px;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    box-shadow: 0 0 6px rgba(0,0,0,0.2);
-    z-index: 10;
-    border: 2px solid white;
+    font-weight: bold;
+    font-size: 0.9em;
+    padding: 4px 8px;
+    border-radius: 12px;
+    color: white;
 }
 
 .status-active {
-    background-color: #28a745; /* Green */
+    background-color: #28a745; /* green */
 }
 
 .status-inactive {
-    background-color: #dc3545; /* Red */
+    background-color: #dc3545; /* red */
 }
 
 .boat-card {
     position: relative;
-    background: #f9f9f9;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
