@@ -17,7 +17,7 @@ if ($conn->connect_error) {
 }
 
 // SQL query to fetch ferry data from the ferries table
-$sql = "SELECT id, name, operator, status, active_time, latitude, longitude, last_updated FROM ferries";
+$sql = "SELECT id, name, operator, status, active_time, latitude, longitude, last_updated, max_capacity, current_capacity FROM ferries";
 $result = $conn->query($sql);
 
 // Initialize an empty array to hold the ferry data

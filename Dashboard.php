@@ -211,8 +211,7 @@ var pasigRiverRoute2 = [
                 }
 
                 data.forEach(function(ferry) {
-                    const statusClass = ferry.status.toLowerCase() === 'active' ? 'status-active' : 'status-inactive';
-
+const statusClass = ferry.status.toLowerCase() === 'active' ? 'status-active' : 'status-inactive';
 const ferryElement = `
     <div class="boat-card" data-lat="${ferry.latitude}" data-lng="${ferry.longitude}">
         <div class="status-indicator ${statusClass}"></div>
@@ -220,7 +219,8 @@ const ferryElement = `
         <div class="bottom">
             Active Time: ${ferry.active_time} mins<br>
             Status: ${ferry.status}<br>
-            Operator: ${ferry.operator}
+            Operator: ${ferry.operator}<br>
+            Capacity: ${ferry.current_capacity} / ${ferry.max_capacity} passengers
         </div>
         <div class="coordinates">
             <span>Longitude: ${ferry.longitude} | Latitude: ${ferry.latitude}</span>
