@@ -5,23 +5,23 @@
     display: flex;
     justify-content: space-between;
     align-items: center; /* Ensure vertical alignment */
-    padding: 15px;
-    margin: 15px 0;
+    padding: 10px;  /* Reduced padding for smaller card size */
+    margin: 10px 0;  /* Reduced margin for smaller spacing between cards */
     background-color: #444; /* Darker background for ferry card */
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    border-radius: 8px;  /* Slightly smaller border radius */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);  /* Slightly smaller shadow */
     transition: box-shadow 0.3s ease;
 }
 
 /* Hover effect for ferry card */
 .ferry-card:hover {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);  /* Adjusted shadow for hover effect */
 }
 
 /* Styling for ferry information section */
 .ferry-info {
     flex: 1;
-    font-size: 14px;
+    font-size: 12px;  /* Smaller font size for more compact text */
     color: #fff; /* Light text color */
 }
 
@@ -29,7 +29,7 @@
 .ferry-status {
     display: flex;
     align-items: center;
-    gap: 10px; /* Adds space between status and switch */
+    gap: 8px;  /* Reduced space between status and switch */
     color: #fff; /* Light text color */
 }
 
@@ -37,8 +37,8 @@
 .switch {
     position: relative;
     display: inline-block;
-    width: 34px;
-    height: 20px;
+    width: 28px;  /* Smaller width for the switch */
+    height: 16px;  /* Smaller height for the switch */
 }
 
 .switch input {
@@ -56,17 +56,17 @@
     bottom: 0;
     background-color: #ccc;
     transition: 0.4s;
-    border-radius: 34px;
+    border-radius: 16px;  /* Slightly smaller border radius */
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 12px;
-    width: 12px;
+    height: 10px;  /* Smaller circle */
+    width: 10px;   /* Smaller circle */
     border-radius: 50%;
-    left: 4px;
-    bottom: 4px;
+    left: 3px;
+    bottom: 3px;
     background-color: white;
     transition: 0.4s;
 }
@@ -77,7 +77,7 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-    transform: translateX(14px); /* Slide the circle to the right */
+    transform: translateX(12px);  /* Adjusted to fit smaller size */
 }
 
 /* Add responsiveness for smaller screens */
@@ -88,6 +88,6 @@ input:checked + .slider:before {
     }
 
     .ferry-status {
-        margin-top: 10px;
+        margin-top: 8px;  /* Reduced top margin */
     }
 }

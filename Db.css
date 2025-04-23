@@ -384,3 +384,24 @@ html, body {
 .boat-card {
     position: relative;
 }
+.middle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 8px;
+    gap: 10px;
+}
+
+.left-info {
+    font-size: 12px;
+    color: #aaa;
+    flex: 1;
+}
+
+.capacity-info {
+    font-size: 12px;
+    color: #f1f1f1;
+    font-weight: bold;
+    text-align: right;
+    white-space: nowrap;
+}

@@ -90,7 +90,7 @@ $conn->close();
                         <li data-page="tracking">Tracking</li>
                         <li class="active"  data-page="ferrymngt">Ferry Management</li>
                         <li data-page="routeschedules">Route and Schedules</li>
-                        <li data-page="tickets">Tickets / Reservations</li>
+                        <li data-page="tickets">User Section</li>
                     </ul>
                     
 
@@ -158,11 +158,13 @@ $conn->close();
                         data.forEach(function(ferry) {
                             ferryListHtml += `
                                 <div class="ferry-card" id="ferry-row-${ferry.id}">
-                                    <div class="ferry-info">
-                                        <strong>${ferry.name}</strong><br>
-                                        <span>Operator: ${ferry.operator}</span><br>
-                                        <span>Active Time: <span id="active-time-${ferry.id}">${ferry.active_time}</span> mins</span>
-                                    </div>
+                                   <div class="ferry-info">
+    <strong>${ferry.name}</strong><br>
+    <span>Operator: ${ferry.operator}</span><br>
+    <span>Active Time: <span id="active-time-${ferry.id}">${ferry.active_time}</span> mins</span><br>
+    <span>Capacity: ${ferry.current_capacity} / ${ferry.max_capacity}</span>
+</div>
+
                                     <div class="ferry-status">
                                         <label class="switch">
                                             <input type="checkbox" data-ferry-id="${ferry.id}" class="status-switch" ${ferry.status == 'active' ? 'checked' : ''}>
@@ -230,30 +232,25 @@ $conn->close();
         const navItems = document.querySelectorAll('.nav li');
 
         navItems.forEach(item => {
-            item.addEventListener('click', function() {
-                // Remove the 'active' class from all items
-                navItems.forEach(item => item.classList.remove('active'));
-
-                // Add the 'active' class to the clicked item
-                item.classList.add('active');
-
-                // Handle the page navigation based on the clicked list item's data-page attribute
-                const page = item.getAttribute('data-page');
-                if (page === 'dashboard') {
-                    window.location.href = 'dashboard.php';  // Update with actual path
-                } else if (page === 'analytics') {
-                    window.location.href = 'analytics.php';  // Update with actual path
-                } else if (page === 'tracking') {
-                    window.location.href = 'tracking.php';  // Update with actual path
-                } else if (page === 'ferrymngt') {
-                    window.location.href = 'ferrymngt.php';  // Update with actual path
-                } else if (page === 'routeschedules') {
-                    window.location.href = 'routeschedules.php';  // Update with actual path
-                } else if (page === 'tickets') {
-                    window.location.href = 'tickets.php';  // Update with actual path
-                }
-            });
+        item.addEventListener('click', function() {
+            navItems.forEach(item => item.classList.remove('active'));
+            item.classList.add('active');
+            const page = item.getAttribute('data-page');
+            if (page === 'dashboard') {
+                window.location.href = 'Dashboard.php';
+            } else if (page === 'analytics') {
+                window.location.href = 'analytics.php';
+            } else if (page === 'tracking') {
+                window.location.href = 'template.php';
+            } else if (page === 'ferrymngt') {
+                window.location.href = 'ferrymngt.php';
+            } else if (page === 'routeschedules') {
+                window.location.href = 'template.php';
+            } else if (page === 'tickets') {
+                window.location.href = 'template.php';
+            }
         });
+    });
     </script>
 </body>
 </html>
