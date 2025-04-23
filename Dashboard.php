@@ -211,19 +211,24 @@ var pasigRiverRoute2 = [
                 }
 
                 data.forEach(function(ferry) {
-                    const ferryElement = `
-                        <div class="boat-card" data-lat="${ferry.latitude}" data-lng="${ferry.longitude}">
-                            <div class="top"><strong>${ferry.name}</strong></div>
-                            <div class="bottom">
-                                Active Time: ${ferry.active_time} mins<br>
-                                Status: ${ferry.status}<br>
-                                Operator: ${ferry.operator}
-                            </div>
-                            <div class="coordinates">
-                                <span>Longitude: ${ferry.longitude} | Latitude: ${ferry.latitude}</span>
-                            </div>
-                        </div>
-                    `;
+                    const statusClass = ferry.status.toLowerCase() === 'active' ? 'status-active' : 'status-inactive';
+
+const ferryElement = `
+    <div class="boat-card" data-lat="${ferry.latitude}" data-lng="${ferry.longitude}">
+        <div class="status-indicator ${statusClass}"></div>
+        <div class="top"><strong>${ferry.name}</strong></div>
+        <div class="bottom">
+            Active Time: ${ferry.active_time} mins<br>
+            Status: ${ferry.status}<br>
+            Operator: ${ferry.operator}
+        </div>
+        <div class="coordinates">
+            <span>Longitude: ${ferry.longitude} | Latitude: ${ferry.latitude}</span>
+        </div>
+    </div>
+`;
+
+
                     $('#ferry-list').append(ferryElement);
 
                     if (ferry.latitude && ferry.longitude) {
