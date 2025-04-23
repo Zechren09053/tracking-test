@@ -1,16 +1,45 @@
 <?php
-// Database connection settings
+session_start();
+
+// Database connection details
 $servername = "localhost";
-$username = "PRFS";
-$password = "1111";
+$db_username = "PRFS";
+$db_password = "1111";
 $dbname = "prfs";
 
-// Create a new MySQLi connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Create a connection
+$conn = new mysqli($servername, $db_username, $db_password, $dbname);
 
-// Check for connection errors
+// Check connection
 if ($conn->connect_error) {
-    die("Database connection failed: " . $conn->connect_error);
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch user details from the database
+$username = $_SESSION['username'] ?? null;
+if ($username) {
+    $sql = "SELECT first_name, last_name, email, profile_pic FROM staff_users WHERE username = ?";
+    $stmt = $conn->prepare($sql);   
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        $name = $user['first_name'] . ' ' . $user['last_name'];
+        $email = $user['email'];
+        $profile_pic = $user['profile_pic'] ?? 'uploads/default.png';
+    } else {
+        $name = 'Unknown User';
+        $email = 'unknown@email.com';
+        $profile_pic = 'uploads/default.png';
+    }
+
+    $stmt->close();
+} else {
+    $name = 'Guest';
+    $email = 'guest@email.com';
+    $profile_pic = 'uploads/default.png';
 }
 
 // Fetch ferry data
@@ -18,15 +47,16 @@ $sql = "SELECT * FROM ferries";
 $result = $conn->query($sql);
 $ferries = [];
 
-if ($result->num_rows > 0) {
+if ($result && $result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $ferries[] = $row;
     }
 }
 
-// Close the connection after fetching data
+// Close the connection
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -73,12 +103,14 @@ $conn->close();
 
                     <!-- Profile Section -->
                     <div class="profile">
-                        <img src="profile.png" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%;">
-                        <div>
-                            <strong>Username</strong><br>
-                            user@email.com
-                        </div>
-                    </div>
+                    <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" />
+    <div class="profile-info">
+    <strong class="profile-name" title="<?= htmlspecialchars($name) ?>"><?= htmlspecialchars($name) ?></strong>
+<span class="profile-email" title="<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></span>
+
+    </div>
+</div>
+                   
                 </div>
             </div>
 

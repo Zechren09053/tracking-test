@@ -1,3 +1,42 @@
+<?php
+session_start();
+// Database connection details
+$servername = "localhost";
+$db_username = "PRFS";
+$db_password = "1111";
+$dbname = "prfs";
+
+// Create a connection
+$conn = new mysqli($servername, $db_username, $db_password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch user details from the database
+$username = $_SESSION['username'];
+$sql = "SELECT first_name, last_name, email, profile_pic FROM staff_users WHERE username = ?";
+$stmt = $conn->prepare($sql);   
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $user = $result->fetch_assoc();
+    $name = $user['first_name'] . ' ' . $user['last_name'];
+    $email = $user['email'];
+    $profile_pic = $user['profile_pic'] ?? 'uploads/default.png'; // Fallback to default if not set
+} else {
+    $name = 'Unknown User';
+    $email = 'unknown@email.com';
+    $profile_pic = 'uploads/default.png'; // Default profile picture
+}
+
+$stmt->close();
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,14 +74,14 @@
                     <ul class="nav settings-nav">
                         <li><a href="#">Settings</a></li>
                         <li><a href="#">Help</a></li>
-                        <li><a href="#">Logout</a></li>
+                        <li><a href="login.php">Logout</a></li>
                     </ul>
 
                     <div class="profile">
-    <img src="testprofile.png" alt="Profile">
+                    <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" />
     <div class="profile-info">
-    <strong class="profile-name" title="Jong Pantry The Fourth Of His Name">Jong Pantry The Fourth Of His Name</strong>
-<span class="profile-email" title="Pasigriverboatlongemailthatkeepsgoing@email.com">Pasigriverboatlongemailthatkeepsgoing@email.com</span>
+    <strong class="profile-name" title="<?= htmlspecialchars($name) ?>"><?= htmlspecialchars($name) ?></strong>
+<span class="profile-email" title="<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></span>
 
     </div>
 </div>
@@ -111,16 +150,37 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    const pasigRiverRoute = [
-        [14.5896, 121.0360],
-        [14.5910, 121.0390],
-        [14.5930, 121.0420],
-        [14.5950, 121.0450],
-        [14.5970, 121.0480],
-        [14.5990, 121.0500],
-        [14.6010, 121.0530],
-        [14.6030, 121.0550],
-    ];
+    var pasigRiverRoute = [
+    [14.5550, 121.0731],
+    [14.5559, 121.0711],
+    [14.5565, 121.0687],
+    [14.5567, 121.0680],
+    [14.5581, 121.0669],
+    
+    [14.5597, 121.0664],
+    [14.5610, 121.0650],
+    [14.5614, 121.0631],
+    [14.5622, 121.0614],
+    [14.5644, 121.0592],
+    [14.5653, 121.0558],
+    [14.5661, 121.0536],
+    [14.5678, 121.0511],
+    [14.5683, 121.0492],
+    [14.5683, 121.0470]
+
+];
+var pasigRiverRoute2 = [
+    [14.5581, 121.0669],
+    [14.5581, 121.0681],
+    [14.5586, 121.0703],
+    [14.5597, 121.0721],
+    [14.5620, 121.0732],
+    [14.5667, 121.0736],
+    [14.5700, 121.0739],
+    [14.5714, 121.0743],
+    [14.5754, 121.0775],
+    [14.5778, 121.0803]
+];
 
     const riverRoute = L.polyline(pasigRiverRoute, {
         color: 'blue',
@@ -129,8 +189,15 @@
         smoothFactor: 1
     }).addTo(map);
 
+    const riverRoute2 = L.polyline(pasigRiverRoute2, {
+    color: 'green',  // You can change the color if you like
+    weight: 4,
+    opacity: 0.7,
+    smoothFactor: 1
+}).addTo(map);
+
     // Only fit once when map initializes
-    map.fitBounds(riverRoute.getBounds());
+    map.fitBounds([riverRoute.getBounds(), riverRoute2.getBounds()]);
 
     function fetchFerryData() {
         $.ajax({
@@ -220,6 +287,7 @@
             }
         });
     });
+    
 </script>
 
 
