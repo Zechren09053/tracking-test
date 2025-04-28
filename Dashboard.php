@@ -191,58 +191,63 @@ const pasigRiverRoute2 = [
     map.fitBounds([riverRoute.getBounds(), riverRoute2.getBounds()]);
 
     function fetchFerryData() {
-        $.ajax({
-            url: 'getFerries.php',
-            method: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                $('#ferry-list').empty();
-                if (data.length === 0) {
-                    $('#ferry-list').append('<p>No ferries are currently available.</p>');
-                }
+    const ferryList = $('#ferry-list');
+    const scrollPos = ferryList.scrollTop(); // Save scroll position
 
-                data.forEach(function(ferry) {
-const statusClass = ferry.status.toLowerCase() === 'active' ? 'status-active' : 'status-inactive';
-const ferryElement = `
-    <div class="boat-card" data-lat="${ferry.latitude}" data-lng="${ferry.longitude}">
-        <div class="status-indicator ${statusClass}"></div>
-        <div class="top"><strong>${ferry.name}</strong></div>
-        
-        <div class="middle-row">
-            <div class="left-info">
-                Active Time: ${ferry.active_time} mins<br>
-                Status: ${ferry.status}<br>
-                Operator: ${ferry.operator}
-            </div>
-            <div class="capacity-info">
-                Capacity: ${ferry.current_capacity} / ${ferry.max_capacity}
-            </div>
-        </div>
+    $.ajax({
+        url: 'getFerries.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            ferryList.empty();
 
-        <div class="coordinates">
-            Longitude: ${ferry.longitude} | Latitude: ${ferry.latitude}
-        </div>
-    </div>
-`;
-
-
-
-                    $('#ferry-list').append(ferryElement);
-
-                    if (ferry.latitude && ferry.longitude) {
-                        if (!markers[ferry.name]) {
-                            addFerryMarker(ferry.latitude, ferry.longitude, ferry.name);
-                        } else {
-                            markers[ferry.name].setLatLng([ferry.latitude, ferry.longitude]);
-                        }
-                    }
-                });
-            },
-            error: function() {
-                $('#ferry-list').html('<p>Sorry, there was an error loading the ferry data.</p>');
+            if (data.length === 0) {
+                ferryList.append('<p>No ferries are currently available.</p>');
             }
-        });
-    }
+
+            data.forEach(function(ferry) {
+                const statusClass = ferry.status.toLowerCase() === 'active' ? 'status-active' : 'status-inactive';
+                const ferryElement = `
+                    <div class="boat-card" data-lat="${ferry.latitude}" data-lng="${ferry.longitude}">
+                        <div class="status-indicator ${statusClass}"></div>
+                        <div class="top"><strong>${ferry.name}</strong></div>
+                        
+                        <div class="middle-row">
+                            <div class="left-info">
+                                Active Time: ${ferry.active_time} mins<br>
+                                Status: ${ferry.status}<br>
+                                Operator: ${ferry.operator}
+                            </div>
+                            <div class="capacity-info">
+                                Capacity: ${ferry.current_capacity} / ${ferry.max_capacity}
+                            </div>
+                        </div>
+
+                        <div class="coordinates">
+                            Longitude: ${ferry.longitude} | Latitude: ${ferry.latitude}
+                        </div>
+                    </div>
+                `;
+
+                ferryList.append(ferryElement);
+
+                if (ferry.latitude && ferry.longitude) {
+                    if (!markers[ferry.name]) {
+                        addFerryMarker(ferry.latitude, ferry.longitude, ferry.name);
+                    } else {
+                        markers[ferry.name].setLatLng([ferry.latitude, ferry.longitude]);
+                    }
+                }
+            });
+
+            ferryList.scrollTop(scrollPos); // Restore scroll position
+        },
+        error: function() {
+            ferryList.html('<p>Sorry, there was an error loading the ferry data.</p>');
+        }
+    });
+}
+
 
     setInterval(fetchFerryData, 5000);
     fetchFerryData();
