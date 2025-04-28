@@ -44,22 +44,17 @@ if (isset($_GET['fetch']) && $_GET['fetch'] == '1') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PRFS Ferry Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     body, html { margin: 0; padding: 0; height: 100%; }
-    #map { width: 75%; height: 100vh; float: left; }
+    #map { width: 100%; height: 100vh; }
     #info { position: fixed; top: 10px; left: 10px; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 8px; font-family: sans-serif; }
-    #ferry-list { position: fixed; top: 10px; right: 10px; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 8px; width: 200px; height: calc(100vh - 20px); overflow-y: auto; font-family: sans-serif; }
-    #ferry-list h3 { text-align: center; }
-    #ferry-list ul { list-style: none; padding: 0; }
-    #ferry-list li { padding: 5px; margin-bottom: 10px; background: #f4f4f4; border-radius: 4px; }
   </style>
 </head>
 <body>
@@ -69,13 +64,6 @@ if (isset($_GET['fetch']) && $_GET['fetch'] == '1') {
   <b>Your Location</b><br>
   Latitude: <span id="lat">---</span><br>
   Longitude: <span id="lng">---</span>
-</div>
-
-<div id="ferry-list">
-  <h3>Active Ferries</h3>
-  <ul id="ferry-list-ul">
-    <!-- Ferry list items will go here -->
-  </ul>
 </div>
 
 <script>
@@ -88,10 +76,11 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // Adjust the icon size to match your image's aspect ratio
 const ferryIcon = L.icon({
   iconUrl: 'pin.png',
-  iconSize: [30, 30],
-  iconAnchor: [15, 30],
+  iconSize: [30, 30],  // Adjust size to prevent stretching
+  iconAnchor: [15, 30], // This anchors the marker's point to the bottom
   popupAnchor: [0, -30]
 });
+
 
 // Your ferry code
 const ferryCode = prompt("Enter your Ferry Code:", "PRFS001") || "PRFS001";
@@ -104,7 +93,6 @@ let otherMarkers = {};
 
 const latEl = document.getElementById('lat');
 const lngEl = document.getElementById('lng');
-const ferryListUl = document.getElementById('ferry-list-ul');
 
 let lastLat = null, lastLng = null;
 
@@ -117,9 +105,6 @@ function updateLocation(lat, lng) {
   }).fail(() => {
     console.error("Failed to update location.");
   });
-
-  // Move map to the new location
-  map.setView([lat, lng], 14); // Adjust zoom level as needed
 }
 
 // Create or move a marker for other ferries
@@ -128,11 +113,6 @@ function updateFerryMarker(code, lat, lng) {
     const marker = L.marker([lat, lng], {icon: ferryIcon}).addTo(map);
     marker.bindPopup(`Ferry: ${code}`);
     otherMarkers[code] = marker;
-    
-    // Add ferry to the list
-    const listItem = document.createElement('li');
-    listItem.textContent = `Ferry ${code}`;
-    ferryListUl.appendChild(listItem);
   } else {
     otherMarkers[code].setLatLng([lat, lng]);
   }
@@ -144,13 +124,6 @@ function cleanupMarkers(activeCodes) {
     if (!activeCodes.includes(code)) {
       map.removeLayer(otherMarkers[code]);
       delete otherMarkers[code];
-      // Remove ferry from the list
-      const listItems = ferryListUl.getElementsByTagName('li');
-      for (let item of listItems) {
-        if (item.textContent === `Ferry ${code}`) {
-          ferryListUl.removeChild(item);
-        }
-      }
     }
   }
 }
@@ -164,7 +137,11 @@ if (navigator.geolocation) {
       latEl.textContent = lat.toFixed(6);
       lngEl.textContent = lng.toFixed(6);
 
-      myMarker.setLatLng([lat, lng]).bindPopup(`You (${ferryCode})`).openPopup();
+      myMarker.setLatLng([lat, lng]).bindPopup(`You (${ferryCode})<br>Lat: ${lat.toFixed(6)}<br>Lng: ${lng.toFixed(6)}`).openPopup();
+
+
+      // Automatically center the map on the user's location
+      map.setView([lat, lng], map.getZoom(), { animate: true });
 
       if (lastLat !== lat || lastLng !== lng) {
         lastLat = lat;
