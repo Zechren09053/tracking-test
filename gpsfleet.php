@@ -17,6 +17,7 @@
       color: #333;
       border: 1px solid #aaa;
       white-space: pre;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -53,10 +54,7 @@ const pasigRiverRoute2 = [
 ];
 
 const allRoutes = [pasigRiverRoute, pasigRiverRoute2];
-
-// Store the route polylines globally so we can change colors later
 const routePolylines = [];
-
 const blinkColors = ['red', 'green', 'orange'];
 let currentBlinkIndex = 0;
 
@@ -120,17 +118,23 @@ for (let i = 0; i < 12; i++) {
 
   const marker = L.marker(route[pos], { icon, title: label }).addTo(map);
 
-  const tooltip = marker.bindTooltip(`${label}\nLat: --\nLng: --\nSpeed: -- km/h`, {
+  const tooltip = marker.bindTooltip(`${label}`, {
     permanent: true,
     direction: "right",
     className: "ferry-label"
   }).getTooltip();
 
+  marker._tooltipExpanded = false;
+
+  marker.on('click', () => {
+    marker._tooltipExpanded = !marker._tooltipExpanded;
+  });
+
   const trail = L.polyline([], { color: '#00ff00', weight: 3, opacity: 0.7 }).addTo(map);
 
   ferries.push({
     marker, pos, path: route, label, tooltip, t: 0,
-    baseSpeed: 20 + Math.random() * 20,
+    baseSpeed: 40 + Math.random() * 40,
     speed: 0,
     prev: route[pos],
     next: route[(pos + 1) % route.length],
@@ -177,7 +181,12 @@ function animateFerries(deltaTime) {
     }
 
     ferry.marker.setLatLng([lat, lng]);
-    ferry.tooltip.setContent(`${ferry.label}\nLat: ${lat.toFixed(4)}\nLng: ${lng.toFixed(4)}\nSpeed: ${ferry.speed.toFixed(1)} km/h`);
+
+    const content = ferry.marker._tooltipExpanded
+      ? `${ferry.label}\nLat: ${lat.toFixed(4)}\nLng: ${lng.toFixed(4)}\nSpeed: ${ferry.speed.toFixed(1)} km/h`
+      : ferry.label;
+
+    ferry.tooltip.setContent(content);
 
     ferry.trail.addLatLng([lat, lng]);
     const latlngs = ferry.trail.getLatLngs();
