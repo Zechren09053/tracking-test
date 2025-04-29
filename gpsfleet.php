@@ -55,7 +55,7 @@ const pasigRiverRoute2 = [
 
 const allRoutes = [pasigRiverRoute, pasigRiverRoute2];
 const routePolylines = [];
-const blinkColors = ['red', 'green', 'orange'];
+const blinkColors = ['green', 'orange'];
 let currentBlinkIndex = 0;
 
 allRoutes.forEach(route => {
