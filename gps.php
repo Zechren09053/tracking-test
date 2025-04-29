@@ -22,10 +22,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['latitude'], $_POST['l
     $longitude = floatval($_POST['longitude']);
     $code = $conn->real_escape_string($_POST['code']);
 
+    // Check if ferry location already exists
     $check = $conn->query("SELECT id FROM ferry_locations WHERE code='$code'");
+    
+    // Update if ferry exists, otherwise insert new record
     if ($check && $check->num_rows > 0) {
+        // Update existing ferry location
         $conn->query("UPDATE ferry_locations SET latitude='$latitude', longitude='$longitude', last_updated=NOW() WHERE code='$code'");
     } else {
+        // Insert new ferry location if it doesn't exist
         $conn->query("INSERT INTO ferry_locations (code, latitude, longitude) VALUES ('$code', '$latitude', '$longitude')");
     }
     exit;
@@ -33,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['latitude'], $_POST['l
 
 // Fetch active ferries
 if (isset($_GET['fetch']) && $_GET['fetch'] == '1') {
+    // Get ferries that were updated within the last 10 seconds
     $result = $conn->query("SELECT code, latitude, longitude FROM ferry_locations WHERE last_updated > (NOW() - INTERVAL 10 SECOND)");
     $locations = [];
     while ($row = $result->fetch_assoc()) {

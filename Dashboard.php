@@ -298,7 +298,7 @@ const pasigRiverRoute2 = [
             } else if (page === 'analytics') {
                 window.location.href = 'analytics.php';
             } else if (page === 'tracking') {
-                window.location.href = 'template.php';
+                window.location.href = 'gpsfleet.php';
             } else if (page === 'ferrymngt') {
                 window.location.href = 'ferrymngt.php';
             } else if (page === 'routeschedules') {

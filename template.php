@@ -109,7 +109,7 @@ $conn->close();
                 } else if (page === 'analytics') {
                     window.location.href = 'analytics.php';
                 } else if (page === 'tracking') {
-                    window.location.href = 'tracking.html';
+                    window.location.href = 'gpsfleet.php.html';
                 } else if (page === 'ferrymngt') {
                     window.location.href = 'ferrymngt.php';
                 } else if (page === 'routeschedules') {
