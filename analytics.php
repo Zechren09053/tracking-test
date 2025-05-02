@@ -243,6 +243,31 @@ $conn->close();
                 }
             }
         });
+
+        function fetchStatsData() {
+    $.ajax({
+        url: 'getStats.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            const statBoxes = document.querySelectorAll('.stat-box');
+
+            if (statBoxes.length >= 4) {
+                statBoxes[0].querySelector('p').textContent = data.total_passengers;
+                statBoxes[1].querySelector('p').textContent = data.active_passes;
+                statBoxes[2].querySelector('p').textContent = data.active_ferries;
+                statBoxes[3].querySelector('p').textContent = data.occupancy_percentage + '%';
+            }
+        },
+        error: function() {
+            console.error('Failed to fetch stats');
+        }
+    });
+}
+
+setInterval(fetchStatsData, 1000); // every 5 seconds
+fetchStatsData(); // also run immediately
+
     </script>
 </body>
 </html>
