@@ -1,41 +1,64 @@
 <?php
 session_start();
-// Database connection details
+
 $servername = "localhost";
 $db_username = "PRFS";
 $db_password = "1111";
 $dbname = "prfs";
 
-// Create a connection
 $conn = new mysqli($servername, $db_username, $db_password, $dbname);
-
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch user details from the database
-$username = $_SESSION['username'];
-$sql = "SELECT first_name, last_name, email, profile_pic FROM staff_users WHERE username = ?";
-$stmt = $conn->prepare($sql);   
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
+$username = $_SESSION['username'] ?? null;
+if ($username) {
+    $sql = "SELECT first_name, last_name, email, profile_pic FROM staff_users WHERE username = ?";
+    $stmt = $conn->prepare($sql);   
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
-    $name = $user['first_name'] . ' ' . $user['last_name'];
-    $email = $user['email'];
-    $profile_pic = $user['profile_pic'] ?? 'uploads/default.png'; // Fallback to default if not set
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        $name = $user['first_name'] . ' ' . $user['last_name'];
+        $email = $user['email'];
+        $profile_pic = $user['profile_pic'] ?? 'uploads/default.png';
+    } else {
+        $name = 'Unknown User';
+        $email = 'unknown@email.com';
+        $profile_pic = 'uploads/default.png';
+    }
+
+    $stmt->close();
 } else {
-    $name = 'Unknown User';
-    $email = 'unknown@email.com';
-    $profile_pic = 'uploads/default.png'; // Default profile picture
+    $name = 'Guest';
+    $email = 'guest@email.com';
+    $profile_pic = 'uploads/default.png';
 }
 
-$stmt->close();
+// Live stats
+$passenger_sql = "SELECT SUM(current_capacity) AS total_passengers FROM ferries";
+$passenger_result = $conn->query($passenger_sql);
+$total_passengers = $passenger_result->fetch_assoc()['total_passengers'] ?? 0;
+
+$passes_sql = "SELECT COUNT(*) AS active_passes FROM passenger_id_pass WHERE is_active = 1 AND expires_at > NOW()";
+$passes_result = $conn->query($passes_sql);
+$active_passes = $passes_result->fetch_assoc()['active_passes'] ?? 0;
+
+$ferry_sql = "SELECT COUNT(*) AS active_ferries FROM ferries WHERE status = 'active'";
+$ferry_result = $conn->query($ferry_sql);
+$active_ferries = $ferry_result->fetch_assoc()['active_ferries'] ?? 0;
+
+$occupancy_sql = "SELECT AVG(current_capacity / max_capacity) AS avg_occupancy FROM ferries WHERE max_capacity > 0";
+$occupancy_result = $conn->query($occupancy_sql);
+$avg_occupancy = $occupancy_result->fetch_assoc()['avg_occupancy'] ?? 0;
+$occupancy_percentage = round($avg_occupancy * 100, 1);
+
 $conn->close();
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -95,29 +118,32 @@ $conn->close();
                 <div class="header">
                     <h1>Dashboard</h1>
                 </div>
+<div class="stats">
+<div class="stat-box">
+    <h2>Total Passengers</h2>
+    <p><?= $total_passengers ?></p>
+    <div class="stat-change">↑ based on records</div>
+</div>
 
-                <div class="stats">
-                    <div class="stat-box">
-                        <h2>Total Passengers</h2>
-                        <p>10,342</p>
-                        <div class="stat-change">↑ 12% From last month</div>
-                    </div>
-                    <div class="stat-box">
-                        <h2>Tickets Sold</h2>
-                        <p>8,912</p>
-                        <div class="stat-change">↑ 9% From last month</div>
-                    </div>
-                    <div class="stat-box">
-                        <h2>Total Expenses</h2>
-                        <p>$3,219</p>
-                        <div class="stat-change">↓ 4% From last month</div>
-                    </div>
-                    <div class="stat-box">
-                        <h2>Total Income</h2>
-                        <p>$12,450</p>
-                        <div class="stat-change">↑ 15% From last month</div>
-                    </div>
-                </div>
+<div class="stat-box">
+    <h2>Active Passes</h2>
+    <p><?= $active_passes ?></p>
+    <div class="stat-change">Currently Valid</div>
+</div>
+
+<div class="stat-box">
+    <h2>Active Ferries</h2>
+    <p><?= $active_ferries ?></p>
+    <div class="stat-change">In Operation Now</div>
+</div>
+
+<div class="stat-box">
+    <h2>Average Occupancy</h2>
+    <p><?= $occupancy_percentage ?>%</p>
+    <div class="stat-change">Capacity Utilization</div>
+</div>
+</div>
+
 
                 <div class="tracking">
                     <div class="boat-list">

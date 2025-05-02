@@ -1,21 +1,16 @@
 <?php
 session_start();
 
-// Database connection details
 $servername = "localhost";
 $db_username = "PRFS";
 $db_password = "1111";
 $dbname = "prfs";
 
-// Create a connection
 $conn = new mysqli($servername, $db_username, $db_password, $dbname);
-
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch user details from the database
 $username = $_SESSION['username'] ?? null;
 if ($username) {
     $sql = "SELECT first_name, last_name, email, profile_pic FROM staff_users WHERE username = ?";
@@ -42,18 +37,24 @@ if ($username) {
     $profile_pic = 'uploads/default.png';
 }
 
-// Fetch ferry data
-$sql = "SELECT * FROM ferries";
-$result = $conn->query($sql);
-$ferries = [];
+// Live stats
+$passenger_sql = "SELECT SUM(current_capacity) AS total_passengers FROM ferries";
+$passenger_result = $conn->query($passenger_sql);
+$total_passengers = $passenger_result->fetch_assoc()['total_passengers'] ?? 0;
 
-if ($result && $result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $ferries[] = $row;
-    }
-}
+$passes_sql = "SELECT COUNT(*) AS active_passes FROM passenger_id_pass WHERE is_active = 1 AND expires_at > NOW()";
+$passes_result = $conn->query($passes_sql);
+$active_passes = $passes_result->fetch_assoc()['active_passes'] ?? 0;
 
-// Close the connection
+$ferry_sql = "SELECT COUNT(*) AS active_ferries FROM ferries WHERE status = 'active'";
+$ferry_result = $conn->query($ferry_sql);
+$active_ferries = $ferry_result->fetch_assoc()['active_ferries'] ?? 0;
+
+$occupancy_sql = "SELECT AVG(current_capacity / max_capacity) AS avg_occupancy FROM ferries WHERE max_capacity > 0";
+$occupancy_result = $conn->query($occupancy_sql);
+$avg_occupancy = $occupancy_result->fetch_assoc()['avg_occupancy'] ?? 0;
+$occupancy_percentage = round($avg_occupancy * 100, 1);
+
 $conn->close();
 ?>
 
@@ -63,10 +64,41 @@ $conn->close();
     <meta charset="UTF-8">
     <title>Ferry Admin - Analytics</title>
     <link rel="stylesheet" href="Db.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+
+
+.main {
+    height: 100%;
+    max-height: 100vh; /* Make sure the main section fits within the viewport */
+    overflow: hidden; /* Hide any overflow */
+    padding-bottom: 0; /* Avoid any accidental padding causing overflow */
+    box-sizing: border-box; /* Include padding in the overall size calculation */
+}
+        .chart-card {
+            background: #444;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 500px; /* Set max width for the chart cards */
+        }
+
+        .chart-card h3 {
+            margin-bottom: 15px;
+        }
+
+        canvas {
+    width: 100% !important;
+    height: 200px !important;
+    box-sizing: border-box; /* Prevent canvas from causing overflow */
+    }
+
+      
+    </style>
 </head>
 <body>
-    <!-- Main container with rounded edges -->
     <div class="main-container">
         <div class="container">
             <!-- Sidebar -->
@@ -90,7 +122,6 @@ $conn->close();
                         <li data-page="tickets">User Section</li>
                     </ul>
 
-                    <!-- Settings, Help, and Logout Section -->
                     <ul class="nav settings-nav">
                         <li><a href="#">Settings</a></li>
                         <li><a href="#">Help</a></li>
@@ -98,14 +129,12 @@ $conn->close();
                     </ul>
 
                     <div class="profile">
-                    <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" />
-    <div class="profile-info">
-    <strong class="profile-name" title="<?= htmlspecialchars($name) ?>"><?= htmlspecialchars($name) ?></strong>
-<span class="profile-email" title="<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></span>
-
-    </div>
-</div>
-                   
+                        <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" />
+                        <div class="profile-info">
+                            <strong class="profile-name" title="<?= htmlspecialchars($name) ?>"><?= htmlspecialchars($name) ?></strong>
+                            <span class="profile-email" title="<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -118,69 +147,101 @@ $conn->close();
                 <div class="stats">
                     <div class="stat-box">
                         <h2>Total Passengers</h2>
-                        <p>10,342</p>
-                        <div class="stat-change">↑ 12% From last month</div>
+                        <p><?= $total_passengers ?></p>
+                        <div class="stat-change">↑ based on records</div>
                     </div>
                     <div class="stat-box">
-                        <h2>Tickets Sold</h2>
-                        <p>8,912</p>
-                        <div class="stat-change">↑ 9% From last month</div>
+                        <h2>Active Passes</h2>
+                        <p><?= $active_passes ?></p>
+                        <div class="stat-change">Currently Valid</div>
                     </div>
                     <div class="stat-box">
-                        <h2>Total Expenses</h2>
-                        <p>$3,219</p>
-                        <div class="stat-change">↓ 4% From last month</div>
+                        <h2>Active Ferries</h2>
+                        <p><?= $active_ferries ?></p>
+                        <div class="stat-change">In Operation Now</div>
                     </div>
                     <div class="stat-box">
-                        <h2>Total Income</h2>
-                        <p>$12,450</p>
-                        <div class="stat-change">↑ 15% From last month</div>
+                        <h2>Average Occupancy</h2>
+                        <p><?= $occupancy_percentage ?>%</p>
+                        <div class="stat-change">Capacity Utilization</div>
                     </div>
                 </div>
 
                 <div class="charts">
-                    <!-- Add any charts or graphs you want to display analytics -->
-                    <div class="chart">
+                    <div class="chart-card">
                         <h3>Passenger Growth Over Time</h3>
-                        <!-- You can replace this with an actual chart library like Chart.js or something else -->
-                        <div class="chart-placeholder">Chart Placeholder</div>
+                        <canvas id="passengerChart"></canvas>
                     </div>
-                    <div class="chart">
+
+                    <div class="chart-card">
                         <h3>Tickets Sold Over Time</h3>
-                        <!-- Replace with chart -->
-                        <div class="chart-placeholder">Chart Placeholder</div>
+                        <canvas id="ticketChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Add your script tags for your custom JavaScript -->
+    <!-- JS Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     <script>
-        // Sidebar Navigation
         const navItems = document.querySelectorAll('.nav li');
-
         navItems.forEach(item => {
-            item.addEventListener('click', function() {
+            item.addEventListener('click', function () {
                 navItems.forEach(item => item.classList.remove('active'));
                 item.classList.add('active');
                 const page = item.getAttribute('data-page');
-                if (page === 'dashboard') {
-                    window.location.href = 'Dashboard.php';
-                } else if (page === 'analytics') {
-                    window.location.href = 'analytics.php';
-                } else if (page === 'tracking') {
-                    window.location.href = 'gpsfleet.php';
-                } else if (page === 'ferrymngt') {
-                    window.location.href = 'ferrymngt.php';
-                } else if (page === 'routeschedules') {
-                    window.location.href = 'routeschedules.html';
-                } else if (page === 'tickets') {
-                    window.location.href = 'tickets.html';
-                }
+                if (page === 'dashboard') window.location.href = 'Dashboard.php';
+                else if (page === 'analytics') window.location.href = 'analytics.php';
+                else if (page === 'tracking') window.location.href = 'gpsfleet.php';
+                else if (page === 'ferrymngt') window.location.href = 'ferrymngt.php';
+                else if (page === 'routeschedules') window.location.href = 'routeschedules.html';
+                else if (page === 'tickets') window.location.href = 'tickets.html';
             });
+        });
+
+        // Chart.js passenger growth sample
+        const passengerCtx = document.getElementById('passengerChart').getContext('2d');
+        new Chart(passengerCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                datasets: [{
+                    label: 'Passengers',
+                    data: [500, 700, 1200, 900, <?= $total_passengers ?>],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: '#36a2eb',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Chart.js ticket sales sample
+        const ticketCtx = document.getElementById('ticketChart').getContext('2d');
+        new Chart(ticketCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                datasets: [{
+                    label: 'Tickets Sold',
+                    data: [800, 950, 1100, 1000, 1210],
+                    backgroundColor: '#4bc0c0'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
         });
     </script>
 </body>
