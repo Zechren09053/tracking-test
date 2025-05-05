@@ -67,7 +67,7 @@ $conn->close();
 <body>
 <div class="main-container">
     <div class="container">
-        <!-- Sidebar -->
+    <div class="sidebar-wrapper">
         <div class="sidebar">
             <div>
                 <div class="logo">
@@ -99,7 +99,7 @@ $conn->close();
                 </div>
             </div>
         </div>
-
+    </div>
         <!-- Main Content: Map -->
         <div style="flex: 1; padding: 20px;">
             <div id="map"></div>
@@ -119,7 +119,7 @@ $conn->close();
             else if (page === 'analytics') window.location.href = 'analytics.php';
             else if (page === 'tracking') window.location.href = 'tracking.php';
             else if (page === 'ferrymngt') window.location.href = 'ferrymngt.php';
-            else if (page === 'routeschedules') window.location.href = 'template.php';
+            else if (page === 'routeschedules') window.location.href = 'routeschedules.php';
             else if (page === 'Usersection') window.location.href = 'template.php';
         });
     });

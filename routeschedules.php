@@ -61,11 +61,11 @@ $conn->close();
                     </div>
 
                     <ul class="nav">
-                        <li class="active" data-page="dashboard">Dashboard</li>
+                        <li data-page="dashboard">Dashboard</li>
                         <li data-page="analytics">Analytics</li>
                         <li data-page="tracking">Tracking</li>
                         <li data-page="ferrymngt">Ferry Management</li>
-                        <li data-page="routeschedules">Route and Schedules</li>
+                        <li class="active" data-page="routeschedules">Route and Schedules</li>
                         <li data-page="Usersection">User Section</li>
                     </ul>
 
@@ -87,8 +87,79 @@ $conn->close();
             </div>
         </div>
            
+            <div class="content-area">
+    <h2>Ferry Route and Schedules</h2>
 
-                <!-- Placeholder for future content or additional sections -->
+    <!-- First Table -->
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Route Name</th>
+                    <th>Origin</th>
+                    <th>Destination</th>
+                    <th>Stops</th>
+                    <th>Estimated Time</th>
+                    <th>Schedule</th>
+                    <th>Status</th>
+                    <th>Capacity</th>
+                    <th>Vessel</th>
+                    <th>Operator</th>
+                    <th>Departure</th>
+                    <th>Arrival</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                for ($i = 0; $i < 8; $i++) {
+                    echo "<tr>";
+                    for ($j = 0; $j < 13; $j++) {
+                        echo "<td>Row " . ($i + 1) . ", Col " . ($j + 1) . "</td>";
+                    }
+                    echo "</tr>";
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Second Table -->
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Route Name</th>
+                    <th>Origin</th>
+                    <th>Destination</th>
+                    <th>Stops</th>
+                    <th>Estimated Time</th>
+                    <th>Schedule</th>
+                    <th>Status</th>
+                    <th>Capacity</th>
+                    <th>Vessel</th>
+                    <th>Operator</th>
+                    <th>Departure</th>
+                    <th>Arrival</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                for ($i = 0; $i < 8; $i++) {
+                    echo "<tr>";
+                    for ($j = 0; $j < 13; $j++) {
+                        echo "<td>Row " . ($i + 1) . ", Col " . ($j + 1) . "</td>";
+                    }
+                    echo "</tr>";
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
         
             </div>
         </div>

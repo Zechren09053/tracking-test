@@ -101,7 +101,7 @@ $conn->close();
 <body>
     <div class="main-container">
         <div class="container">
-            <!-- Sidebar -->
+        <div class="sidebar-wrapper">
             <div class="sidebar">
                 <div>
                     <div class="logo">
@@ -137,7 +137,7 @@ $conn->close();
                     </div>
                 </div>
             </div>
-
+        </div>
             <!-- Main Analytics Page -->
             <div class="main">
                 <div class="header">
@@ -195,7 +195,7 @@ $conn->close();
                 else if (page === 'analytics') window.location.href = 'analytics.php';
                 else if (page === 'tracking') window.location.href = 'Tracking.php';
                 else if (page === 'ferrymngt') window.location.href = 'ferrymngt.php';
-                else if (page === 'routeschedules') window.location.href = 'template.php';
+                else if (page === 'routeschedules') window.location.href = 'routeschedules.php';
                 else if (page === 'User Section') window.location.href = 'template.php';
             });
         });

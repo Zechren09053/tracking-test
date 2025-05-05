@@ -71,7 +71,7 @@ $conn->close();
     <!-- Main container with rounded edges -->
     <div class="main-container">
         <div class="container">
-            <!-- Sidebar -->
+        <div class="sidebar-wrapper">
             <div class="sidebar">
                 <div>
                     <div class="logo">
@@ -113,7 +113,7 @@ $conn->close();
                    
                 </div>
             </div>
-
+        </div>
             <!-- Main Dashboard -->
             <div class="main">
                 <div class="header">
@@ -245,7 +245,7 @@ $conn->close();
             } else if (page === 'ferrymngt') {
                 window.location.href = 'ferrymngt.php';
             } else if (page === 'routeschedules') {
-                window.location.href = 'template.php';
+                window.location.href = 'routeschedules.php';
             } else if (page === 'Usersection') {
                 window.location.href = 'template.php';
             }

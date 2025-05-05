@@ -72,7 +72,7 @@ $conn->close();
     <!-- Main container with rounded edges -->
     <div class="main-container">
         <div class="container">
-            <!-- Sidebar -->
+        <div class="sidebar-wrapper">
             <div class="sidebar">
                 <div>
                     <div class="logo">
@@ -107,6 +107,7 @@ $conn->close();
 <span class="profile-email" title="<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></span>
 
     </div>
+</div>
 </div>
 
 
@@ -328,7 +329,7 @@ const pasigRiverRoute2 = [
             } else if (page === 'ferrymngt') {
                 window.location.href = 'ferrymngt.php';
             } else if (page === 'routeschedules') {
-                window.location.href = 'template.php';
+                window.location.href = 'routeschedules.php';
             } else if (page === 'Users') {
                 window.location.href = 'template.php';
             }
