@@ -119,7 +119,7 @@ $conn->close();
                         <li data-page="tracking">Tracking</li>
                         <li data-page="ferrymngt">Ferry Management</li>
                         <li data-page="routeschedules">Route and Schedules</li>
-                        <li data-page="tickets">User Section</li>
+                        <li data-page="User Sections">User Section</li>
                     </ul>
 
                     <ul class="nav settings-nav">
@@ -193,10 +193,10 @@ $conn->close();
                 const page = item.getAttribute('data-page');
                 if (page === 'dashboard') window.location.href = 'Dashboard.php';
                 else if (page === 'analytics') window.location.href = 'analytics.php';
-                else if (page === 'tracking') window.location.href = 'gpsfleet.php';
+                else if (page === 'tracking') window.location.href = 'Tracking.php';
                 else if (page === 'ferrymngt') window.location.href = 'ferrymngt.php';
-                else if (page === 'routeschedules') window.location.href = 'routeschedules.html';
-                else if (page === 'tickets') window.location.href = 'tickets.html';
+                else if (page === 'routeschedules') window.location.href = 'template.php';
+                else if (page === 'User Section') window.location.href = 'template.php';
             });
         });
 

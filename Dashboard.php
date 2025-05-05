@@ -90,7 +90,7 @@ $conn->close();
                         <li data-page="tracking">Tracking</li>
                         <li data-page="ferrymngt">Ferry Management</li>
                         <li data-page="routeschedules">Route and Schedules</li>
-                        <li data-page="tickets">User Section</li>
+                        <li data-page="User Section">User Section</li>
                     </ul>
 
                     <!-- Settings, Help, and Logout Section -->
@@ -324,12 +324,12 @@ const pasigRiverRoute2 = [
             } else if (page === 'analytics') {
                 window.location.href = 'analytics.php';
             } else if (page === 'tracking') {
-                window.location.href = 'gpsfleet.php';
+                window.location.href = 'tracking.php';
             } else if (page === 'ferrymngt') {
                 window.location.href = 'ferrymngt.php';
             } else if (page === 'routeschedules') {
                 window.location.href = 'template.php';
-            } else if (page === 'tickets') {
+            } else if (page === 'Users') {
                 window.location.href = 'template.php';
             }
         });

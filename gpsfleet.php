@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Pasig River Ferry Tracker - Party Mode</title>
+  <title>Pasig River Ferry Tracker - Reverse Route</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -53,26 +53,52 @@ const pasigRiverRoute2 = [
   [14.5978,121.0825],[14.6025,121.0825]
 ];
 
+const ferryStations = [
+  { name: "Pinagbuhatan", coords: [14.5972, 121.0825] },
+  { name: "Kalawaan", coords: [14.5914, 121.0825] },
+  { name: "San Joaquin", coords: [14.5581, 121.0669] },
+  { name: "Maybunga", coords: [14.5760, 121.0785] },
+  { name: "Guadalupe", coords: [14.5672, 121.0347] },
+  { name: "Hulo", coords: [14.5744, 121.0256] },
+  { name: "Valenzuela", coords: [14.5835, 121.0190] },
+  { name: "Lambingan", coords: [14.5869, 121.0190] },
+  { name: "Santa Ana", coords: [14.5900, 121.0142] },
+  { name: "PUP", coords: [14.5968, 121.0035] },
+  { name: "Lawton", coords: [14.5935, 120.9838] },
+  { name: "Escolta", coords: [14.5965, 120.9790] },
+  { name: "Plaza Mexico", coords: [14.5957, 120.9745] }
+];
+
+ferryStations.forEach(station => {
+  const marker = L.circleMarker(station.coords, {
+    radius: 6,
+    fillColor: "#0066ff",
+    color: "#003366",
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.9
+  }).addTo(map);
+  marker.bindTooltip(station.name, {
+    permanent: true,
+    direction: 'top',
+    className: 'ferry-label'
+  });
+});
+
 const allRoutes = [pasigRiverRoute, pasigRiverRoute2];
-const routePolylines = [];
 const blinkColors = ['green', 'blue'];
 let currentBlinkIndex = 0;
 
-allRoutes.forEach(route => {
-  const poly = L.polyline(route, {
-    color: blinkColors[currentBlinkIndex],
-    weight: 4,
-    opacity: 0.8,
-    dashArray: '5'
-  }).addTo(map);
-  routePolylines.push(poly);
-});
+const routePolylines = allRoutes.map(route => L.polyline(route, {
+  color: blinkColors[0],
+  weight: 4,
+  opacity: 0.8,
+  dashArray: '5'
+}).addTo(map));
 
 setInterval(() => {
   currentBlinkIndex = (currentBlinkIndex + 1) % blinkColors.length;
-  routePolylines.forEach(poly => poly.setStyle({
-    color: blinkColors[currentBlinkIndex]
-  }));
+  routePolylines.forEach(poly => poly.setStyle({ color: blinkColors[currentBlinkIndex] }));
 }, 700);
 
 function getDistanceKm(lat1, lon1, lat2, lon2) {
@@ -80,21 +106,11 @@ function getDistanceKm(lat1, lon1, lat2, lon2) {
   const dLat = (lat2 - lat1) * Math.PI/180;
   const dLon = (lon2 - lon1) * Math.PI/180;
   const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 function lerp(a, b, t) {
   return a + (b - a) * t;
-}
-
-function nearStop(lat, lng) {
-  for (const route of allRoutes) {
-    for (const stop of route) {
-      if (getDistanceKm(lat, lng, stop[0], stop[1]) < 0.15) return true;
-    }
-  }
-  return false;
 }
 
 function speedColor(speed) {
@@ -125,7 +141,6 @@ for (let i = 0; i < 12; i++) {
   }).getTooltip();
 
   marker._tooltipExpanded = false;
-
   marker.on('click', () => {
     marker._tooltipExpanded = !marker._tooltipExpanded;
   });
@@ -138,47 +153,62 @@ for (let i = 0; i < 12; i++) {
     speed: 0,
     prev: route[pos],
     next: route[(pos + 1) % route.length],
-    trail,
-    docking: false,
-    waitTimer: 0,
-    loopsRemaining: 3
+    trail, isBoarding: false, boardingTimer: 0, movingForward: true
   });
 }
 
 function animateFerries(deltaTime) {
   ferries.forEach(ferry => {
-    if (ferry.loopsRemaining <= 0) return;
-
-    if (ferry.docking) {
-      ferry.waitTimer -= deltaTime;
-      if (ferry.waitTimer <= 0) {
-        ferry.docking = false;
+    if (ferry.isBoarding) {
+      ferry.speed = 0;
+      if (ferry.boardingTimer < 5) {
+        ferry.boardingTimer += deltaTime;
+      } else {
+        ferry.isBoarding = false;
+        ferry.speed = Math.min(ferry.speed + 5, ferry.baseSpeed);
+        ferry.boardingTimer = 0;
       }
-      return;
+    } else {
+      if (ferry.speed < ferry.baseSpeed) {
+        ferry.speed = Math.min(ferry.speed + 5 * deltaTime, ferry.baseSpeed);
+      }
     }
 
-    const lat = lerp(ferry.prev[0], ferry.next[0], ferry.t);
-    const lng = lerp(ferry.prev[1], ferry.next[1], ferry.t);
-
-    if (nearStop(lat, lng) && ferry.t > 0.95) {
-      ferry.docking = true;
-      ferry.waitTimer = 2 + Math.random() * 2;
-      return;
-    }
-
-    ferry.speed = nearStop(lat, lng) ? Math.max(ferry.baseSpeed * 0.4, 5) : ferry.baseSpeed;
     ferry.t += (ferry.speed * deltaTime) / (getDistanceKm(...ferry.prev, ...ferry.next) * 3600);
 
     if (ferry.t >= 1) {
       ferry.t = 0;
-      ferry.pos++;
-      if (ferry.pos >= ferry.path.length - 1) {
-        ferry.pos = 0;
-        ferry.loopsRemaining--;
+
+      if (ferry.movingForward) {
+        ferry.pos = (ferry.pos + 1) % ferry.path.length;
+      } else {
+        ferry.pos = (ferry.pos - 1 + ferry.path.length) % ferry.path.length;
       }
+
       ferry.prev = ferry.path[ferry.pos];
       ferry.next = ferry.path[(ferry.pos + 1) % ferry.path.length];
+
+      ferryStations.forEach(station => {
+        const distance = getDistanceKm(ferry.prev[0], ferry.prev[1], station.coords[0], station.coords[1]);
+        if (distance < 0.115 && !ferry.isBoarding) {
+          if (distance < 0.102) {
+            ferry.speed = 0;
+            ferry.isBoarding = true;
+            ferry.boardingTimer = 0;
+          } else {
+            const slowFactor = (0.015 - distance) / 0.013;
+            ferry.speed = ferry.baseSpeed * (0.3 + 0.7 * slowFactor);
+          }
+        }
+      });
+
+      if (ferry.pos === 0 || ferry.pos === ferry.path.length - 1) {
+        ferry.movingForward = !ferry.movingForward;
+      }
     }
+
+    const lat = lerp(ferry.prev[0], ferry.next[0], ferry.t);
+    const lng = lerp(ferry.prev[1], ferry.next[1], ferry.t);
 
     ferry.marker.setLatLng([lat, lng]);
 
@@ -190,7 +220,7 @@ function animateFerries(deltaTime) {
 
     ferry.trail.addLatLng([lat, lng]);
     const latlngs = ferry.trail.getLatLngs();
-    if (latlngs.length > 50) latlngs.shift();
+    if (latlngs.length > 100) latlngs.shift();
     ferry.trail.setLatLngs(latlngs);
     ferry.trail.setStyle({ color: speedColor(ferry.speed) });
   });
