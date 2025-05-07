@@ -118,6 +118,7 @@ $conn->close();
             <div class="main">
                 <div class="header">
                     <h1>Dashboard</h1>
+                    <div id="clock" style="margin-bottom: 20px; font-size: 16px; color: #00b0ff;"></div>
                 </div>
 <div class="stats">
 <div class="stat-box">
@@ -360,7 +361,15 @@ const pasigRiverRoute2 = [
 
 setInterval(fetchStatsData, 1000); // every 5 seconds
 fetchStatsData(); // also run immediately
+function updateClock() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    const dateString = now.toLocaleDateString();
+    document.getElementById("clock").textContent = `${dateString} | ${timeString}`;
+  }
 
+  setInterval(updateClock, 1000);
+  updateClock(); // run once on load
 </script>
 
 

@@ -62,7 +62,7 @@ $conn->close();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ferry Admin Dashboard</title>
+    <title>Ferry MNGMT</title>
     <link rel="stylesheet" href="Db.css">
     <link rel="stylesheet" href="ferrymanagement.css"> <!-- External CSS for styling -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -118,6 +118,7 @@ $conn->close();
             <div class="main">
                 <div class="header">
                     <h1>Ferry Management</h1>
+                    <div id="clock" style="margin-bottom: 20px; font-size: 16px; color: #00b0ff;"></div>
                 </div>
 
                 <div class="ferry-management" id="ferry-list">
@@ -251,6 +252,15 @@ $conn->close();
             }
         });
     });
+    function updateClock() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    const dateString = now.toLocaleDateString();
+    document.getElementById("clock").textContent = `${dateString} | ${timeString}`;
+  }
+
+  setInterval(updateClock, 1000);
+  updateClock(); // run once on load
     </script>
 </body>
 </html>
