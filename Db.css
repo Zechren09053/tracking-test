@@ -78,7 +78,7 @@ html,body{height:100%;width:100%;background-color:#1a1a1a;color:#f1f1f1;overflow
 .content-area::-webkit-scrollbar-thumb{background-color:transparent}
 .content-area::-webkit-scrollbar-track{background-color:transparent}
 .right-container{width:30%;padding:20px;background-color:#494848;border-radius: 16px;margin-top: 90px;}
-.cardlog { background-color: #292929; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-bottom: 20px; padding: 20px; max-height: 500px; overflow-y: scroll; position: relative; }
+.cardlog { background-color: #292929; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-bottom: 20px; padding: 20px; max-height: 400px; overflow-y: scroll; position: relative; }
 .cardlog h3 { font-size: 22px; font-weight: bold; color: #00b0ff; margin-bottom: 20px; }
 .cardlog input[type="date"] { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #444; border-radius: 6px; background-color: #222; color: #fff; box-sizing: border-box; margin-bottom: 15px; transition: border-color 0.3s ease; }
 .cardlog input[type="date"]:focus { border-color: #00b0ff; }
