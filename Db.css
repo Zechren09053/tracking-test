@@ -99,3 +99,41 @@ html,body{height:100%;width:100%;background-color:#1a1a1a;color:#f1f1f1;overflow
 .card button{padding:6px 12px;background:#00b0ff;color:#fff;font-size:14px;border:none;border-radius:5px;cursor:pointer;transition:background-color 0.3s ease;align-self:flex-start}
 .card button:hover{background:#0088cc}
 .card button:active{background:#005b7f}
+
+
+.ferry-card{background-color:#292929;border-radius:12px;box-shadow:0 2px 4px rgba(0,0,0,0.1);padding:20px;margin:10px;max-width:300px;transition:box-shadow 0.3s ease-in-out;display:flex;flex-direction:column;justify-content:space-between;position:relative}
+.ferry-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;position:relative}
+.ferry-status{position:absolute;top:10px;right:10px}
+.ferry-card-body{font-size:14px;line-height:1.5}
+.ferry-card:hover{box-shadow:0 4px 8px rgba(0,0,0,0.2)}
+.switch{position:relative;display:inline-block;width:34px;height:20px}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#3f3f3f;transition:.4s;border-radius:34px}
+.slider:before{position:absolute;content:"";height:12px;width:12px;border-radius:50%;left:4px;bottom:4px;background-color:white;transition:.4s}
+input:checked+.slider{background-color:#4CAF50}
+input:checked+.slider:before{transform:translateX(14px)}
+#registration-form{background-color:#292929;padding:20px;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.1);max-width:400px;margin:0 auto;display:none;color:#f1f1f1}
+#registration-form h3{color:#00b0ff;font-size:24px;margin-bottom:20px;text-align:center}
+#registration-form input[type="text"],#registration-form input[type="number"],#registration-form select{width:100%;padding:10px;margin:10px 0;border:1px solid #444;border-radius:4px;font-size:16px;color:#f1f1f1;background-color:#222;box-sizing:border-box}
+#registration-form input[type="text"]:focus,#registration-form input[type="number"]:focus,#registration-form select:focus{border-color:#00b0ff;outline:none}
+#registration-form .btn{background-color:#00b0ff;color:white;padding:12px 20px;border:none;border-radius:4px;font-size:16px;cursor:pointer;width:48%;margin:10px 1%}
+#registration-form .btn:hover{background-color:#0088cc}
+#registration-form .btn#close-registration-form{background-color:#f44336}
+#registration-form .btn#close-registration-form:hover{background-color:#d32f2f}
+@media (max-width:600px){#registration-form{width:90%}}
+#registration-form label{display:block;margin-bottom:6px;font-size:16px;color:#f1f1f1}
+#registration-form.show{display:block}
+.register-new-ferry{text-align:center;margin-top:30px}
+.register-new-ferry .btn{background-color:#00b0ff;color:white;padding:12px 20px;border:none;border-radius:4px;font-size:16px;cursor:pointer;width:auto;margin:10px 0;display:inline-block}
+.register-new-ferry .btn:hover{background-color:#0088cc}
+@media (max-width:600px){.register-new-ferry .btn{width:100%}}
+#ferry-list2{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:20px}
+.ferry-card{width:250px;height:auto;padding:20px;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.1);display:flex;flex-direction:column;justify-content:space-between}
+.ferry-info{font-size:14px;margin-bottom:10px}
+.ferry-status{margin-top:auto}
+.modal{display:none;position:absolute;z-index:10;left:50%;top:10%;transform:translateX(-50%);width:50%;max-width:600px;background-color:rgba(0,0,0,0.4);padding:20px;box-sizing:border-box}
+.modal-content{background-color:rgb(25, 25, 25);padding:20px;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.2)}
+.btn{padding:12px 20px;border:none;border-radius:4px;cursor:pointer;background-color:#00b0ff;color:white;font-size:16px;margin-top:10px}
+.btn:hover{background-color:#0088cc}
+input[type="text"],input[type="number"]{width:100%;padding:10px;margin:8px 0;border-radius:4px;border:1px solid #ccc}
+input[type="text"]:focus,input[type="number"]:focus{outline:none;border-color:#00b0ff}
