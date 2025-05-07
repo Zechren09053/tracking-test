@@ -52,6 +52,28 @@ $conn->close();
     <meta charset="UTF-8">
     <title>Ferry Admin Dashboard</title>
     <link rel="stylesheet" href="Db.css">
+    <style>
+        .edit-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        .edit-input {
+            flex: 1;
+            padding: 2px 4px;
+            font-size: 14px;
+            width: 90px;
+            min-width: 70px;
+        }
+        .save-btn {
+            margin-left: 4px;
+            cursor: pointer;
+            padding: 2px 6px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+    </style>
 </head>
 <body>
 <div class="main-container">
@@ -96,7 +118,7 @@ $conn->close();
             <!-- Upstream Table -->
             <div class="table-container">
                 <h2 style="margin-bottom: 20px;">Upstream</h2>
-                <table class="data-table">
+                <table class="data-table" id="upstream-table">
                     <thead>
                         <tr>
                             <th>Escolta</th>
@@ -116,7 +138,7 @@ $conn->close();
                         <?php for ($i = 1; $i <= 8; $i++): ?>
                             <tr>
                                 <?php for ($j = 1; $j <= 11; $j++): ?>
-                                    <td><?= isset($upstream[$i][$j]) ? htmlspecialchars($upstream[$i][$j]) : '' ?></td>
+                                    <td class="editable" data-row="<?= $i ?>" data-col="<?= $j ?>"><?= isset($upstream[$i][$j]) ? htmlspecialchars($upstream[$i][$j]) : '' ?></td>
                                 <?php endfor; ?>
                             </tr>
                         <?php endfor; ?>
@@ -127,7 +149,7 @@ $conn->close();
             <!-- Downstream Table -->
             <div class="table-container">
                 <h2 style="margin-bottom: 20px;">Downstream</h2>
-                <table class="data-table">
+                <table class="data-table" id="downstream-table">
                     <thead>
                         <tr>
                             <th>Escolta</th>
@@ -147,7 +169,7 @@ $conn->close();
                         <?php for ($i = 1; $i <= 8; $i++): ?>
                             <tr>
                                 <?php for ($j = 1; $j <= 11; $j++): ?>
-                                    <td><?= isset($downstream[$i][$j]) ? htmlspecialchars($downstream[$i][$j]) : '' ?></td>
+                                    <td class="editable" data-row="<?= $i ?>" data-col="<?= $j ?>"><?= isset($downstream[$i][$j]) ? htmlspecialchars($downstream[$i][$j]) : '' ?></td>
                                 <?php endfor; ?>
                             </tr>
                         <?php endfor; ?>
@@ -160,25 +182,78 @@ $conn->close();
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+   $('.editable').on('dblclick', function () {
+    var td = $(this);
+    if (td.find('input').length > 0) return;
+
+    var originalContent = td.text().trim();
+    var row = td.data('row');
+    var col = td.data('col');
+    var route = td.closest('table').attr('id') === 'upstream-table' ? 'upstream' : 'downstream';
+
+    // Add seconds if missing
+    if (!originalContent.includes(':')) {
+        originalContent += ':00'; // Ensure the format is HH:mm:ss
+    }
+
+    var input = $('<input type="time" class="edit-input"/>').val(originalContent.substring(0, 5)); // Grab just HH:mm
+    var saveBtn = $('<button class="save-btn">Save</button>');
+
+    var wrapper = $('<div class="edit-wrapper"></div>').append(input).append(saveBtn);
+    td.empty().append(wrapper);
+
+    input.focus();
+
+    function saveEdit() {
+        var updatedContent = input.val().trim() + ":00"; // Add seconds part
+        if (updatedContent !== originalContent) {
+            $.post('update_schedule.php', {
+                row: row,
+                col: col,
+                schedule_time: updatedContent,
+                route: route
+            }, function (response) {
+                if (response === 'success') {
+                    td.text(updatedContent);
+                } else {
+                    td.text(originalContent);
+                }
+            });
+        } else {
+            td.text(originalContent);
+        }
+    }
+
+    saveBtn.on('click', saveEdit);
+
+    input.on('keydown', function (e) {
+        if (e.key === 'Enter') saveEdit();
+        if (e.key === 'Escape') td.text(originalContent);
+    });
+
+    input.on('blur', function () {
+        setTimeout(function () {
+            if (!td.find(':focus').length) td.text(originalContent);
+        }, 100);
+    });
+});
+
+
     const navItems = document.querySelectorAll('.nav li');
     navItems.forEach(item => {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function () {
             navItems.forEach(item => item.classList.remove('active'));
             item.classList.add('active');
             const page = item.getAttribute('data-page');
-            if (page === 'dashboard') {
-                window.location.href = 'Dashboard.php';
-            } else if (page === 'analytics') {
-                window.location.href = 'analytics.php';
-            } else if (page === 'tracking') {
-                window.location.href = 'Tracking.php';
-            } else if (page === 'ferrymngt') {
-                window.location.href = 'ferrymngt.php';
-            } else if (page === 'routeschedules') {
-                window.location.href = 'routeschedules.php';
-            } else if (page === 'Usersection') {
-                window.location.href = 'template.php';
-            }
+            const pages = {
+                dashboard: 'Dashboard.php',
+                analytics: 'analytics.php',
+                tracking: 'Tracking.php',
+                ferrymngt: 'ferrymngt.php',
+                routeschedules: 'routeschedules.php',
+                Usersection: 'template.php'
+            };
+            if (pages[page]) window.location.href = pages[page];
         });
     });
 </script>
