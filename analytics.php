@@ -109,10 +109,6 @@ $conn->close();
                         PRFS MANAGEMENT
                     </div>
 
-                    <div class="search-bar">
-                        <input type="text" placeholder="Search">
-                    </div>
-
                     <ul class="nav">
                         <li data-page="dashboard">Dashboard</li>
                         <li class="active" data-page="analytics">Analytics</li>

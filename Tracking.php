@@ -74,9 +74,7 @@ $conn->close();
                     <img src="PasigRiverFerryServiceLogo.png" alt="Logo" style="width: 30px; height: 30px;">
                     PRFS MANAGEMENT
                 </div>
-                <div class="search-bar">
-                    <input type="text" placeholder="Search">
-                </div>
+               
                 <ul class="nav">
                     <li data-page="dashboard">Dashboard</li>
                     <li data-page="analytics">Analytics</li>

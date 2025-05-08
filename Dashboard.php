@@ -80,10 +80,7 @@ $conn->close();
                         PRFS MANAGEMENT
                     </div>
 
-                    <div class="search-bar">
-                        <input type="text" placeholder="Search">
-                    </div>
-
+                   
                     <ul class="nav">
                         <li class="active" data-page="dashboard">Dashboard</li>
                         <li data-page="analytics">Analytics</li>

@@ -78,9 +78,6 @@ $conn->close();
                         PRFS MANAGEMENT
                     </div>
 
-                    <div class="search-bar">
-                        <input type="text" placeholder="Search">
-                    </div>
 
                     <!-- Sidebar Navigation with clickable li -->
                     <ul class="nav">
