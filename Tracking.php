@@ -1,41 +1,39 @@
 <?php 
 session_start();
-// Database connection details
-$servername = "localhost";
-$db_username = "PRFS";
-$db_password = "1111";
-$dbname = "prfs";
 
-// Create a connection
-$conn = new mysqli($servername, $db_username, $db_password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require 'db_connect.php'; // Centralized database connection
 
 // Fetch user details
-$username = $_SESSION['username'];
-$sql = "SELECT first_name, last_name, email, profile_pic FROM staff_users WHERE username = ?";
-$stmt = $conn->prepare($sql);   
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
+$username = $_SESSION['username'] ?? null;
 
-if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
-    $name = $user['first_name'] . ' ' . $user['last_name'];
-    $email = $user['email'];
-    $profile_pic = $user['profile_pic'] ?? 'uploads/default.png';
+if ($username) {
+    $sql = "SELECT first_name, last_name, email, profile_pic FROM staff_users WHERE username = ?";
+    $stmt = $conn->prepare($sql);   
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        $name = $user['first_name'] . ' ' . $user['last_name'];
+        $email = $user['email'];
+        $profile_pic = $user['profile_pic'] ?? 'uploads/default.png';
+    } else {
+        $name = 'Unknown User';
+        $email = 'unknown@email.com';
+        $profile_pic = 'uploads/default.png';
+    }
+
+    $stmt->close();
 } else {
-    $name = 'Unknown User';
-    $email = 'unknown@email.com';
+    $name = 'Guest';
+    $email = 'guest@email.com';
     $profile_pic = 'uploads/default.png';
 }
 
-$stmt->close();
 $conn->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -103,7 +101,7 @@ $conn->close();
     <div class="sidebar-bottom">
         <ul class="nav settings-nav">
             <li><a href="#">Settings</a></li>
-            <li><a href="#">Help</a></li>
+            <li><a href="#">Mail</a></li>
             <li><a href="login.php">Logout</a></li>
         </ul>
 
@@ -121,7 +119,11 @@ $conn->close();
         
         <!-- Main Content: Map and Button -->
         <div style="flex: 1; padding: 20px;">
-        <h2>Ferry Tracking View</h2>
+        <div class="header">
+        <h1>Ferry Tracking View</h1>
+        <div id="clock" style="margin-bottom: 20px; font-size: 16px; color: #00b0ff;"></div>
+        </div>
+        
             <button id="simulateBtn">Start Simulation</button>
             <div id="map">
                 <iframe id="ferryMap" src="vgps.php" style="width: 100%; height: 70vh; border: none; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.15);"></iframe>
@@ -156,6 +158,15 @@ $conn->close();
         iframe.src = simActive ? "gpsfleet.php" : "vgps.php";
         document.getElementById("simulateBtn").textContent = simActive ? "Stop Simulation" : "Start Simulation";
     });
+    function updateClock() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    const dateString = now.toLocaleDateString();
+    document.getElementById("clock").textContent = `${dateString} | ${timeString}`;
+  }
+
+  setInterval(updateClock, 1000);
+  updateClock(); // run once on load
 </script>
 </body>
 </html>

@@ -1,32 +1,32 @@
 <?php
 session_start();
-$servername = "localhost";
-$db_username = "PRFS";
-$db_password = "1111";
-$dbname = "prfs";
 
-// Create DB connection
-$conn = new mysqli($servername, $db_username, $db_password, $dbname);
-if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
+require 'db_connect.php'; // Centralized DB connection
 
 // Get user data
-$username = $_SESSION['username'];
-$sql = "SELECT first_name, last_name, email, profile_pic FROM staff_users WHERE username = ?";
-$stmt = $conn->prepare($sql);   
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
-if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
-    $name = $user['first_name'] . ' ' . $user['last_name'];
-    $email = $user['email'];
-    $profile_pic = $user['profile_pic'] ?? 'uploads/default.png';
+$username = $_SESSION['username'] ?? null;
+if ($username) {
+    $sql = "SELECT first_name, last_name, email, profile_pic FROM staff_users WHERE username = ?";
+    $stmt = $conn->prepare($sql);   
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        $name = $user['first_name'] . ' ' . $user['last_name'];
+        $email = $user['email'];
+        $profile_pic = $user['profile_pic'] ?? 'uploads/default.png';
+    } else {
+        $name = 'Unknown User';
+        $email = 'unknown@email.com';
+        $profile_pic = 'uploads/default.png';
+    }
+    $stmt->close();
 } else {
-    $name = 'Unknown User';
-    $email = 'unknown@email.com';
+    $name = 'Guest';
+    $email = 'guest@email.com';
     $profile_pic = 'uploads/default.png';
 }
-$stmt->close();
 
 // Fetch upstream schedules
 $upstream = [];
@@ -43,6 +43,7 @@ $result = $conn->query($downstream_sql);
 while ($row = $result->fetch_assoc()) {
     $downstream[$row['row_id']][$row['col_id']] = $row['schedule_time'];
 }
+
 // Fetch announcements
 $announcements = [];
 $announcements_sql = "SELECT * FROM announcements ORDER BY created_at DESC";
@@ -53,6 +54,7 @@ while ($row = $result->fetch_assoc()) {
 
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -88,7 +90,7 @@ $conn->close();
     <div class="sidebar-bottom">
         <ul class="nav settings-nav">
             <li><a href="#">Settings</a></li>
-            <li><a href="#">Help</a></li>
+            <li><a href="#">Mail</a></li>
             <li><a href="login.php">Logout</a></li>
         </ul>
 
@@ -106,8 +108,11 @@ $conn->close();
 
         <!-- Content Area (tables) -->
         <div class="content-area">
-            <h2>Ferry Route and Schedules</h2>
+        <div class="header">
+            <h1>Ferry Route and Schedules</h1>
             <div id="clock" style="margin-bottom: 20px; font-size: 16px; color: #00b0ff;"></div>
+        </div>
+
             <!-- Upstream Table -->
             <div class="table-container">
                 <h2 style="margin-bottom: 20px;">Upstream</h2>
@@ -128,7 +133,7 @@ $conn->close();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php for ($i = 1; $i <= 8; $i++): ?>
+                        <?php for ($i = 1; $i <= 7; $i++): ?>
                             <tr>
                                 <?php for ($j = 1; $j <= 11; $j++): ?>
                                     <td class="editable" data-row="<?= $i ?>" data-col="<?= $j ?>"><?= isset($upstream[$i][$j]) ? htmlspecialchars($upstream[$i][$j]) : '' ?></td>
@@ -159,7 +164,7 @@ $conn->close();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php for ($i = 1; $i <= 8; $i++): ?>
+                        <?php for ($i = 1; $i <= 7; $i++): ?>
                             <tr>
                                 <?php for ($j = 1; $j <= 11; $j++): ?>
                                     <td class="editable" data-row="<?= $i ?>" data-col="<?= $j ?>"><?= isset($downstream[$i][$j]) ? htmlspecialchars($downstream[$i][$j]) : '' ?></td>

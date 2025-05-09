@@ -71,7 +71,7 @@ $conn->close();
     <div class="sidebar-bottom">
         <ul class="nav settings-nav">
             <li><a href="#">Settings</a></li>
-            <li><a href="#">Help</a></li>
+            <li><a href="#">Mail</a></li>
             <li><a href="login.php">Logout</a></li>
         </ul>
 

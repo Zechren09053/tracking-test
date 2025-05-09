@@ -1,15 +1,7 @@
 <?php
 session_start();
 
-$servername = "localhost";
-$db_username = "PRFS";
-$db_password = "1111";
-$dbname = "prfs";
-
-$conn = new mysqli($servername, $db_username, $db_password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require 'db_connect.php'; // Include the DB connection file
 
 $username = $_SESSION['username'] ?? null;
 if ($username) {
@@ -57,6 +49,7 @@ $occupancy_percentage = round($avg_occupancy * 100, 1);
 
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -124,7 +117,7 @@ $conn->close();
     <div class="sidebar-bottom">
         <ul class="nav settings-nav">
             <li><a href="#">Settings</a></li>
-            <li><a href="#">Help</a></li>
+            <li><a href="#">Mail</a></li>
             <li><a href="login.php">Logout</a></li>
         </ul>
 

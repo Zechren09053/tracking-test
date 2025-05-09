@@ -1,19 +1,7 @@
 <?php
 session_start();
 
-// Database connection details
-$servername = "localhost";
-$db_username = "PRFS";
-$db_password = "1111";
-$dbname = "prfs";
-
-// Create a connection
-$conn = new mysqli($servername, $db_username, $db_password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require 'db_connect.php'; // Include your DB connection here
 
 // Fetch user details from the database
 $username = $_SESSION['username'] ?? null;
@@ -58,6 +46,7 @@ $conn->close();
 ?>
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -93,7 +82,7 @@ $conn->close();
     <div class="sidebar-bottom">
         <ul class="nav settings-nav">
             <li><a href="#">Settings</a></li>
-            <li><a href="#">Help</a></li>
+            <li><a href="#">Mail</a></li>
             <li><a href="login.php">Logout</a></li>
         </ul>
 

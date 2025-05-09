@@ -1,15 +1,7 @@
 <?php
 session_start();
 
-$servername = "localhost";
-$db_username = "PRFS";
-$db_password = "1111";
-$dbname = "prfs";
-
-$conn = new mysqli($servername, $db_username, $db_password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require 'db_connect.php'; // Centralized DB connection
 
 $error = "";
 
@@ -25,8 +17,8 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     if ($result->num_rows === 1) {
         $row = $result->fetch_assoc();
 
-        // ⚠️ DEV ONLY: comparing raw passwords instead of hashed
-        if ($pass === $row['password']) {
+        // ✅ Secure password verification
+        if (password_verify($pass, $row['password'])) {
             $_SESSION['staff_id'] = $row['staff_id'];
             $_SESSION['username'] = $row['username'];
             $_SESSION['role'] = $row['role'];
@@ -38,7 +30,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
                     header("Location: Dashboard.php");
                     break;
                 case 'employee':
-                    header("Location: employee_panel.php");
+                    header("Location: Dashboard.php");
                     break;
                 default:
                     header("Location: Dashboard.php");
@@ -53,8 +45,10 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 
     $stmt->close();
 }
+
 $conn->close();
 ?>
+
 
 
 <!DOCTYPE html>
