@@ -2,12 +2,12 @@
 html,body{height:100%;width:100%;background-color:#1a1a1a;color:#f1f1f1;overflow:hidden;padding:10px}
 .main-container{height:95vh;max-width:98vw;margin:1vh auto;padding:20px;display:flex;background-color:#2c2f38;border-radius:16px;box-shadow:0 4px 10px rgba(0,0,0,0.1);overflow:hidden}
 .container{display:flex;flex:1;height:100%;overflow:hidden}
-.sidebar{width:250px;height:100%;background-color:#333;border-right:1px solid #444;display:flex;flex-direction:column;justify-content:flex-start;padding:20px 10px;box-shadow:2px 0 10px rgba(0,0,0,0.03);position:relative;overflow-y:hidden;border-radius:16px}
+.sidebar{width:250px;height:100%;background-color:#333;border-right:1px solid #444;display:flex;flex-direction:column;justify-content:flex-start;padding:20px 10px;box-shadow:2px 0 10px rgba(0,0,0,0.03);position:relative;overflow-y:hidden;border-radius:16px;}
 .logo{font-size:18px;font-weight:bold;margin-bottom:30px;color:#00b0ff;display:flex;align-items:center;gap:10px}
 .search-bar input{width:100%;padding:8px 10px;border-radius:8px;border:1px solid #444;margin-bottom:20px;background-color:#222;color:#fff}
 .nav,.settings-nav{list-style:none;padding:0}
 .nav li,.settings-nav li{padding:12px 15px;border-radius:10px;cursor:pointer;transition:0.3s}
-.nav li:hover,.nav li.active,.settings-nav li:hover{background-color:#00b0ff;color:#fff}
+.nav li:hover,.nav li.active,.settings-nav li:hover{background-color:#00aeffd3;color:#fff}
 .settings-nav{margin-top:120%}
 .settings-nav a{color:#f1f1f1;text-decoration:none}
 .settings-nav a:hover{text-decoration:underline}
@@ -33,7 +33,7 @@ html,body{height:100%;width:100%;background-color:#1a1a1a;color:#f1f1f1;overflow
 .boat-list-header{background:#333;padding:10px;font-size:20px;font-weight:bold;color:#00b0ff;border-bottom:2px solid #555;border-top-left-radius:24px;border-top-right-radius:24px;text-align:center}
 .boat-list-body{flex:1;overflow-y:auto;padding-top:10px;scrollbar-width:thin;scrollbar-color:transparent transparent}
 .boat-list-body::-webkit-scrollbar{display:none}
-.map{flex:2;min-width:400px;height:350px;background-color:#2a3d47;border-radius:24px;box-shadow:0 4px 12px rgba(0,0,0,0.06)}
+.map{ flex:2;min-width:400px;height:350px;background-color:#2a3d47;border-radius:24px;box-shadow:0 4px 12px rgba(0,0,0,0.06)}
 .map:hover{box-shadow:0 6px 20px rgba(0,0,0,0.08)}
 .boat-card{background-color:#222;border-left:4px solid #00b0ff;padding:15px;border-radius:12px;margin-bottom:15px;box-shadow:0 4px 12px rgba(0,0,0,0.06);transition:box-shadow 0.3s ease;position:relative}
 .boat-card:hover{box-shadow:0 6px 20px rgba(0,0,0,0.08)}
@@ -47,7 +47,7 @@ html,body{height:100%;width:100%;background-color:#1a1a1a;color:#f1f1f1;overflow
 .left-info{font-size:12px;color:#aaa;flex:1}
 .capacity-info{font-size:12px;color:#f1f1f1;font-weight:bold;text-align:right;white-space:nowrap}
 .main-layout{display:flex;min-height:100vh;overflow:hidden;padding-bottom:10px}
-.sidebar{width:200px;min-width:200px;background-color:#222;color:#fff;position:sticky;top:0;overflow-y:auto;border-top-right-radius:16px;border-bottom-right-radius:16px;box-shadow:4px 0 12px rgba(0,0,0,0.2)}
+.sidebar { width: 250px; height: 100%; background-color: #333; border-right: 1px solid #444; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 10px; box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03); position: relative; overflow-y: hidden; border-radius: 16px; }
 .content-area{flex:1;padding:20px;overflow:auto;min-width:0}
 .table-container{background-color:#444444;padding:20px;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,0.06);margin-top:10px;overflow-x:auto}
 .data-table{width:100%;border-collapse:collapse;min-width:1000px}
@@ -74,21 +74,21 @@ html,body{height:100%;width:100%;background-color:#1a1a1a;color:#f1f1f1;overflow
 .right-container h3{font-size:20px;margin-bottom:20px}
 .right-container p{font-size:16px}
 .content-area{flex:1;padding:20px;overflow:auto;scrollbar-width:thin;scrollbar-color:transparent transparent}
-.content-area::-webkit-scrollbar{width:8px}
+.content-area ::-webkit-scrollbar{width:8px}
 .content-area::-webkit-scrollbar-thumb{background-color:transparent}
 .content-area::-webkit-scrollbar-track{background-color:transparent}
-.right-container{width:30%;padding:20px;background-color:#494848;border-radius: 16px;margin-top: 90px;}
-.cardlog { background-color: #292929; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-bottom: 20px; padding: 20px; max-height: 400px; overflow-y: scroll; position: relative; }
-.cardlog h3 { font-size: 22px; font-weight: bold; color: #00b0ff; margin-bottom: 20px; }
-.cardlog input[type="date"] { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #444; border-radius: 6px; background-color: #222; color: #fff; box-sizing: border-box; margin-bottom: 15px; transition: border-color 0.3s ease; }
-.cardlog input[type="date"]:focus { border-color: #00b0ff; }
-.cardlog ul { padding-left: 20px; list-style-type: disc; max-height: 300px; overflow-y: scroll; padding-right: 15px;-ms-overflow-style: none;scrollbar-width: none;}
-.cardlog ul::-webkit-scrollbar {display: none;}
-.cardlog ul li { margin-bottom: 15px; color: #f1f1f1; }
-.cardlog ul li strong { color: #00b0ff; }
-.cardlog ul li small { display: block; color: #bbb; font-size: 12px; }
-.cardlog::-webkit-scrollbar { display: none; } /* Hides the scrollbar for webkit browsers */
-.cardlog { -ms-overflow-style: none; scrollbar-width: none; } /* Hides scrollbar for IE/Edge and Firefox */
+.right-container{width:30%;padding:20px;background-color:#494848;border-radius:16px;margin-top:90px}
+.cardlog{background-color:#292929;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.1);margin-bottom:20px;padding:20px;max-height:400px;overflow-y:scroll;position:relative}
+.cardlog h3{font-size:22px;font-weight:bold;color:#00b0ff;margin-bottom:20px}
+.cardlog input[type="date"]{width:100%;padding:12px;font-size:16px;border:1px solid #444;border-radius:6px;background-color:#222;color:#fff;box-sizing:border-box;margin-bottom:15px;transition:border-color 0.3s ease}
+.cardlog input[type="date"]:focus{border-color:#00b0ff}
+.cardlog ul{padding-left:20px;list-style-type:disc;max-height:300px;overflow-y:scroll;padding-right:15px;-ms-overflow-style:none;scrollbar-width:none}
+.cardlog ul::-webkit-scrollbar{display:none}
+.cardlog ul li{margin-bottom:15px;color:#f1f1f1}
+.cardlog ul li strong{color:#00b0ff}
+.cardlog ul li small{display:block;color:#bbb;font-size:12px}
+.cardlog::-webkit-scrollbar{display:none}
+.cardlog{-ms-overflow-style:none;scrollbar-width:none}
 .card{background:#292929;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.1);margin-bottom:15px;padding:20px}
 .card h3{margin:0 0 15px 0;font-size:18px;font-weight:700;color:#00b0ff}
 .card form{display:flex;flex-direction:column;gap:10px}
@@ -99,8 +99,6 @@ html,body{height:100%;width:100%;background-color:#1a1a1a;color:#f1f1f1;overflow
 .card button{padding:6px 12px;background:#00b0ff;color:#fff;font-size:14px;border:none;border-radius:5px;cursor:pointer;transition:background-color 0.3s ease;align-self:flex-start}
 .card button:hover{background:#0088cc}
 .card button:active{background:#005b7f}
-
-
 .ferry-card{background-color:#292929;border-radius:12px;box-shadow:0 2px 4px rgba(0,0,0,0.1);padding:20px;margin:10px;max-width:300px;transition:box-shadow 0.3s ease-in-out;display:flex;flex-direction:column;justify-content:space-between;position:relative}
 .ferry-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;position:relative}
 .ferry-status{position:absolute;top:10px;right:10px}
@@ -114,10 +112,10 @@ input:checked+.slider{background-color:#4CAF50}
 input:checked+.slider:before{transform:translateX(14px)}
 #registration-form{background-color:#292929;padding:20px;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.1);max-width:400px;margin:0 auto;display:none;color:#f1f1f1}
 #registration-form h3{color:#00b0ff;font-size:24px;margin-bottom:20px;text-align:center}
-#registration-form input[type="text"],#registration-form input[type="number"],#registration-form select{width:100%;padding:10px;margin:10px 0;border:1px solid #444;border-radius:4px;font-size:16px;color:#f1f1f1;background-color:#222;box-sizing:border-box}
+#registration-form input[type=" text"],#registration-form input[type="number"],#registration-form select{width:100%;padding:10px;margin:10px 0;border:1px solid #444;border-radius:4px;font-size:16px;color:#f1f1f1;background-color:#222;box-sizing:border-box}
 #registration-form input[type="text"]:focus,#registration-form input[type="number"]:focus,#registration-form select:focus{border-color:#00b0ff;outline:none}
-#registration-form .btn{background-color:#00b0ff;color:white;padding:12px 20px;border:none;border-radius:4px;font-size:16px;cursor:pointer;width:48%;margin:10px 1%}
-#registration-form .btn:hover{background-color:#0088cc}
+#registration-form .btn{background-color:#00aeffd3;color:white;padding:12px 20px;border:none;border-radius:4px;font-size:16px;cursor:pointer;width:48%;margin:10px 1%}
+#registration-form .btn:hover{background-color:#00aeffd3}
 #registration-form .btn#close-registration-form{background-color:#f44336}
 #registration-form .btn#close-registration-form:hover{background-color:#d32f2f}
 @media (max-width:600px){#registration-form{width:90%}}
@@ -132,89 +130,21 @@ input:checked+.slider:before{transform:translateX(14px)}
 .ferry-info{font-size:14px;margin-bottom:10px}
 .ferry-status{margin-top:auto}
 .modal{display:none;position:absolute;z-index:10;left:50%;top:10%;transform:translateX(-50%);width:50%;max-width:600px;background-color:rgba(0,0,0,0.4);padding:20px;box-sizing:border-box}
-.modal-content{background-color:rgb(25, 25, 25);padding:20px;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.2)}
+.modal-content{background-color:rgb(25,25,25);padding:20px;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.2)}
 .btn{padding:12px 20px;border:none;border-radius:4px;cursor:pointer;background-color:#00b0ff;color:white;font-size:16px;margin-top:10px}
 .btn:hover{background-color:#0088cc}
 input[type="text"],input[type="number"]{width:100%;padding:10px;margin:8px 0;border-radius:4px;border:1px solid #ccc}
 input[type="text"]:focus,input[type="number"]:focus{outline:none;border-color:#00b0ff}
-.ferry-management-listbox-container {
-    padding: 1rem;
-    color: #e0e0e0;
-}
-
-.list-box {
-    
-    height: 400px;
-    overflow-y: auto;
-    border: 1px solid #333;
-    border-radius: 10px;
-    padding: 1rem;
-    background-color: #1a1a1a;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.ferry-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #2c2f38;
-    padding: 0.8rem;
-    margin-bottom: 0.5rem;
-    border-radius: 8px;
-    border: 1px solid #292929;
-    transition: background 0.3s ease;
-}
-
-.ferry-card:hover {
-    background-color: #35354a;
-}
-
-.ferry-info {
-    font-size: 0.95rem;
-    color: #f0f0f0;
-}
-
-.ferry-status .switch {
-    position: relative;
-    display: inline-block;
-    width: 40px;
-    height: 20px;
-}
-
-.ferry-status .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.ferry-status .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #666;
-    transition: 0.4s;
-    border-radius: 20px;
-}
-
-.ferry-status .slider:before {
-    position: absolute;
-    content: "";
-    height: 14px;
-    width: 14px;
-    left: 3px;
-    bottom: 3px;
-    background-color: #fff;
-    transition: 0.4s;
-    border-radius: 50%;
-}
-
-.ferry-status input:checked + .slider {
-    background-color: #4CAF50;
-}
-
-.ferry-status input:checked + .slider:before {
-    transform: translateX(20px);
-}
+.ferry-management-listbox-container{padding:1rem;color:#e0e0e0}
+.list-box{height:400px;overflow-y:auto;border:1px solid #333;border-radius:10px;padding:1rem;background-color:#1a1a1a;box-shadow:0 2px 8px rgba(0,0,0,0.4)}
+.ferry-card{display:flex;justify-content:space-between;align-items:center;background:#2c2f38;padding:0.8rem;margin-bottom:0.5rem;border-radius:8px;border:1px solid #292929;transition:background 0.3s ease}
+.ferry-card:hover{background-color:#35354a}
+.ferry-info{font-size:0.95rem;color:#f0f0f0}
+.ferry-status .switch{position:relative;display:inline-block;width:40px;height:20px}
+.ferry-status .switch input{opacity:0;width:0;height:0}
+.ferry-status .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#666;transition:0.4s;border-radius:20px}
+.ferry-status .slider:before{position:absolute;content:"";height:14px;width:14px;left:3px;bottom:3px;background-color:#fff;transition:0.4s;border-radius:50%}
+.ferry-status input:checked+.slider{background-color:#4CAF50}
+.ferry-status input:checked+.slider:before{transform:translateX(20px)}
+.map-box{padding:10px;background-color:#444 ;border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,0.15);overflow:hidden;height:100%}
+#map{width:100%;height:100%;border-radius:12px}

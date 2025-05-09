@@ -66,36 +66,42 @@ $conn->close();
 <div class="main-container">
     <div class="container">
         <div class="sidebar-wrapper">
-            <div class="sidebar">
-                <!-- Sidebar content remains unchanged -->
-                <div>
-                    <div class="logo">
-                        <img src="PasigRiverFerryServiceLogo.png" alt="Logo" style="width: 30px; height: 30px;">
-                        PRFS MANAGEMENT
-                    </div>
-                   
-                    <ul class="nav">
-                        <li data-page="dashboard">Dashboard</li>
-                        <li data-page="analytics">Analytics</li>
-                        <li data-page="tracking">Tracking</li>
-                        <li data-page="ferrymngt">Ferry Management</li>
-                        <li class="active" data-page="routeschedules">Route and Schedules</li>
-                        <li data-page="Usersection">User Section</li>
-                    </ul>
-                    <ul class="nav settings-nav">
-                        <li><a href="#">Settings</a></li>
-                        <li><a href="#">Help</a></li>
-                        <li><a href="login.php">Logout</a></li>
-                    </ul>
-                    <div class="profile">
-                        <img src="<?= htmlspecialchars($profile_pic) ?>" alt="Profile Picture" />
-                        <div class="profile-info">
-                            <strong class="profile-name" title="<?= htmlspecialchars($name) ?>"><?= htmlspecialchars($name) ?></strong>
-                            <span class="profile-email" title="<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></span>
-                        </div>
-                    </div>
-                </div>
+        <div class="sidebar">
+    <!-- Top content: logo and main nav -->
+    <div class="sidebar-top">
+        <div class="logo">
+            <img src="PasigRiverFerryServiceLogo.png" alt="Logo" style="width: 30px; height: 30px;">
+            PRFS MANAGEMENT
+        </div>
+
+        <ul class="nav main-nav">
+            <li  data-page="dashboard">Dashboard</li>
+            <li data-page="analytics">Analytics</li>
+            <li data-page="tracking">Tracking</li>
+            <li data-page="ferrymngt">Ferry Management</li>
+            <li class="active" data-page="routeschedules">Route and Schedules</li>
+            <li data-page="Usersection">User Section</li>
+        </ul>
+    </div>
+
+    <!-- Bottom content: settings + profile -->
+    <div class="sidebar-bottom">
+        <ul class="nav settings-nav">
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Help</a></li>
+            <li><a href="login.php">Logout</a></li>
+        </ul>
+
+        <div class="profile">
+            <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" />
+            <div class="profile-info">
+                <strong class="profile-name" title="<?= htmlspecialchars($name) ?>"><?= htmlspecialchars($name) ?></strong>
+                <span class="profile-email" title="<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></span>
             </div>
+        </div>
+    </div>
+</div>
+
         </div>
 
         <!-- Content Area (tables) -->
