@@ -1,0 +1,208 @@
+CREATE TABLE ferries (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    operator VARCHAR(100),
+    status VARCHAR(50) NOT NULL DEFAULT 'inactive',
+    status_changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    active_time FLOAT,
+    latitude DECIMAL(9, 6),
+    longitude DECIMAL(9, 6),
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    max_capacity INT NOT NULL DEFAULT 30,  -- Max capacity of the ferry
+    current_capacity INT NOT NULL DEFAULT 0,  -- Current passengers on the ferry
+    speed FLOAT DEFAULT 0  -- Current speed of the ferry
+);
+
+ALTER TABLE ferries ADD route_index INT DEFAULT 0;
+
+CREATE TABLE staff_users (
+    staff_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('super_admin', 'admin', 'employee') NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    middle_name VARCHAR(50),
+    last_name VARCHAR(50) NOT NULL,
+    position VARCHAR(100),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    profile_pic VARCHAR(255) DEFAULT 'default.png'
+);
+
+CREATE TABLE passenger_id_pass (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    passenger_id INT NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    birth_date DATE NOT NULL,
+    profile_image VARCHAR(255) DEFAULT NULL,  -- Path to profile image
+    email VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(20) NOT NULL,
+    qr_code_data VARCHAR(255) NOT NULL UNIQUE,
+    issued_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    last_used DATETIME NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE ferry_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ferry_id INT NOT NULL,
+    trip_date DATETIME DEFAULT CURRENT_TIMESTAMP,  -- When the log happened
+    passenger_count INT NOT NULL,                  -- Number of passengers at this time
+    speed FLOAT DEFAULT 0,                         -- Optional: Speed of ferry during the trip
+    latitude DECIMAL(9, 6),                        -- Optional: GPS location
+    longitude DECIMAL(9, 6),                       -- Optional: GPS location
+    FOREIGN KEY (ferry_id) REFERENCES ferries(id) ON DELETE CASCADE
+);
+SELECT 
+    MONTH(trip_date) AS month, 
+    YEAR(trip_date) AS year, 
+    SUM(passenger_count) AS total_passengers 
+FROM ferry_logs 
+GROUP BY YEAR(trip_date), MONTH(trip_date) 
+ORDER BY year, month;
+
+CREATE TABLE tickets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    ticket_type VARCHAR(255) NOT NULL,
+    purchase_date DATETIME DEFAULT CURRENT_TIMESTAMP,  -- Timestamp for when the ticket was purchased
+    amount DECIMAL(10, 2) NOT NULL,  -- Price of the ticket
+    FOREIGN KEY (user_id) REFERENCES staff_users(id) ON DELETE CASCADE
+);
+
+
+SELECT 
+    MONTH(purchase_date) AS month, 
+    YEAR(purchase_date) AS year, 
+    COUNT(*) AS total_tickets 
+FROM tickets 
+GROUP BY YEAR(purchase_date), MONTH(purchase_date) 
+ORDER BY year, month;
+
+CREATE TABLE upstream_schedules (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    route_name VARCHAR(255) NOT NULL DEFAULT 'Escolta → Kalawaan',
+    row_id INT NOT NULL,
+    col_id INT NOT NULL,
+    station_name VARCHAR(255) NOT NULL,
+    schedule_time TIME NOT NULL,
+    UNIQUE(route_name, row_id, col_id) -- Ensures each combination is unique
+);
+CREATE TABLE downstream_schedules (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    route_name VARCHAR(255) NOT NULL DEFAULT 'Pinagbuhatan → Escolta',
+    row_id INT NOT NULL,
+    col_id INT NOT NULL,
+    station_name VARCHAR(255) NOT NULL,
+    schedule_time TIME NOT NULL,
+    UNIQUE(route_name, row_id, col_id) -- Ensures each combination is unique
+);
+
+-- Inserting upstream schedules (Escolta → Kalawaan) with unique row_id and col_id combinations
+INSERT INTO upstream_schedules (route_name, row_id, col_id, station_name, schedule_time) VALUES
+('Escolta → Kalawaan', 1, 1, 'Escolta', '08:15:00'),
+('Escolta → Kalawaan', 1, 2, 'Lawton', '08:20:00'),
+('Escolta → Kalawaan', 1, 3, 'Quinta', '08:22:00'),
+('Escolta → Kalawaan', 1, 4, 'PUP', '08:35:00'),
+('Escolta → Kalawaan', 1, 5, 'Sta. Ana', '08:39:00'),
+('Escolta → Kalawaan', 1, 6, 'Lambingan', '09:00:00'),
+('Escolta → Kalawaan', 1, 7, 'Valenzuela', '09:10:00'),
+('Escolta → Kalawaan', 1, 8, 'Hulo', '09:15:00'),
+('Escolta → Kalawaan', 1, 9, 'Guadalupe', '09:20:00'),
+('Escolta → Kalawaan', 1, 10, 'San Joaquin', '09:35:00'),
+('Escolta → Kalawaan', 1, 11, 'Kalawaan', '09:30:00'),
+
+('Escolta → Kalawaan', 2, 1, 'Escolta', '09:00:00'),
+('Escolta → Kalawaan', 2, 2, 'Lawton', '09:05:00'),
+('Escolta → Kalawaan', 2, 3, 'Quinta', '09:07:00'),
+('Escolta → Kalawaan', 2, 4, 'PUP', '09:26:00'),
+('Escolta → Kalawaan', 2, 5, 'Sta. Ana', '09:39:00'),
+('Escolta → Kalawaan', 2, 6, 'Lambingan', '09:42:00'),
+('Escolta → Kalawaan', 2, 7, 'Valenzuela', '09:50:00'),
+('Escolta → Kalawaan', 2, 8, 'Hulo', '09:56:00'),
+('Escolta → Kalawaan', 2, 9, 'Guadalupe', '10:00:00'),
+('Escolta → Kalawaan', 2, 10, 'San Joaquin', '10:15:00'),
+('Escolta → Kalawaan', 2, 11, 'Kalawaan', '10:20:00');
+
+-- Continue inserting the rest of the schedules...
+
+
+
+
+
+
+
+
+to do list
+
+user int
+
+sched and route
+
+fix tracking live
+
+make user id card
+
+rbac
+
+station stops
+Loading:
+Unloading:
+
+proximity announcement
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ Main Pasig River Ferry Stations (11):
+Pinagbuhatan – Pasig City (easternmost terminus)
+
+San Joaquin – Pasig City
+
+Maybunga (branch/extension — see below)
+
+Bambang – Pasig City
+
+Kalawaan – Pasig City
+
+Guadalupe – Makati City
+
+Hulo – Mandaluyong City
+
+Lambingan – Sta. Ana, Manila
+
+Sta. Ana – Manila
+
+PUP – Polytechnic University of the Philippines, Manila
+
+Lawton – Near Intramuros and Manila Post Office
+
+Escolta – Binondo, Manila
+
+Plaza Mexico (Intramuros) – Near the mouth of the river

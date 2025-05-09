@@ -44,12 +44,13 @@ $conn->close();
     <link rel="stylesheet" href="Db.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         #map {
-    height: 10vh;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            height: 70vh;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
         } 
         .ferry-label {
             background-color: #fff;
@@ -62,50 +63,66 @@ $conn->close();
             white-space: pre;
             cursor: pointer;
         }
+        #simulateBtn {
+            padding: 8px 16px;
+            background-color: seagreen;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: 15px 0;
+            cursor: pointer;
+        }
+        #simulateBtn:hover {
+            background-color: darkgreen;
+        }
     </style>
 </head>
 <body>
 <div class="main-container">
     <div class="container">
-    <div class="sidebar-wrapper">
-        <div class="sidebar">
-            <div>
-                <div class="logo">
-                    <img src="PasigRiverFerryServiceLogo.png" alt="Logo" style="width: 30px; height: 30px;">
-                    PRFS MANAGEMENT
-                </div>
-               
-                <ul class="nav">
-                    <li data-page="dashboard">Dashboard</li>
-                    <li data-page="analytics">Analytics</li>
-                    <li class="active" data-page="tracking">Tracking</li>
-                    <li data-page="ferrymngt">Ferry Management</li>
-                    <li data-page="routeschedules">Route and Schedules</li>
-                    <li data-page="Usersection">User Section</li>
-                </ul>
-                <ul class="nav settings-nav">
-                    <li><a href="#">Settings</a></li>
-                    <li><a href="#">Help</a></li>
-                    <li><a href="login.php">Logout</a></li>
-                </ul>
-                <div class="profile">
-                    <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" />
-                    <div class="profile-info">
-                        <strong class="profile-name" title="<?= htmlspecialchars($name) ?>"><?= htmlspecialchars($name) ?></strong>
-                        <span class="profile-email" title="<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></span>
+        <div class="sidebar-wrapper">
+            <div class="sidebar">
+                <div>
+                    <div class="logo">
+                        <img src="PasigRiverFerryServiceLogo.png" alt="Logo" style="width: 30px; height: 30px;">
+                        PRFS MANAGEMENT
+                    </div>
+                    <ul class="nav">
+                        <li data-page="dashboard">Dashboard</li>
+                        <li data-page="analytics">Analytics</li>
+                        <li class="active" data-page="tracking">Tracking</li>
+                        <li data-page="ferrymngt">Ferry Management</li>
+                        <li data-page="routeschedules">Route and Schedules</li>
+                        <li data-page="Usersection">User Section</li>
+                    </ul>
+                    <ul class="nav settings-nav">
+                        <li><a href="#">Settings</a></li>
+                        <li><a href="#">Help</a></li>
+                        <li><a href="login.php">Logout</a></li>
+                    </ul>
+                    <div class="profile">
+                        <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" />
+                        <div class="profile-info">
+                            <strong class="profile-name" title="<?= htmlspecialchars($name) ?>"><?= htmlspecialchars($name) ?></strong>
+                            <span class="profile-email" title="<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-        <!-- Main Content: Map -->
+        
+        <!-- Main Content: Map and Button -->
         <div style="flex: 1; padding: 20px;">
-            <div id="map"></div>
+        <h2>Ferry Tracking View</h2>
+            <button id="simulateBtn">Start Simulation</button>
+            <div id="map">
+            <iframe src="vgps.php" style="width: 100%; height: 70vh; border: none; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.15);"></iframe>
+            </div>
         </div>
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Navigation Script -->
 <script>
     const navItems = document.querySelectorAll('.nav li');
     navItems.forEach(item => {
@@ -123,10 +140,6 @@ $conn->close();
     });
 </script>
 
-<!-- Tracking Script -->
-<script>
-<?php include 'gpsfleet.php'; ?>
-</script>
 
 </body>
 </html>

@@ -197,49 +197,42 @@ $conn->close();
             });
         });
 
-        // Chart.js passenger growth sample
-        const passengerCtx = document.getElementById('passengerChart').getContext('2d');
-        new Chart(passengerCtx, {
+        fetch('getChartData.php')
+    .then(res => res.json())
+    .then(data => {
+        const months = data.passengers.map(p => p.month);
+        const passengerCounts = data.passengers.map(p => p.passengers);
+        const ticketCounts = data.tickets.map(t => t.tickets);
+
+        new Chart(document.getElementById('passengerChart'), {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                labels: months,
                 datasets: [{
                     label: 'Passengers',
-                    data: [500, 700, 1200, 900, <?= $total_passengers ?>],
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    data: passengerCounts,
                     borderColor: '#36a2eb',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderWidth: 2,
                     fill: true,
                     tension: 0.3
                 }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: { beginAtZero: true }
-                }
             }
         });
 
-        // Chart.js ticket sales sample
-        const ticketCtx = document.getElementById('ticketChart').getContext('2d');
-        new Chart(ticketCtx, {
+        new Chart(document.getElementById('ticketChart'), {
             type: 'bar',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                labels: months,
                 datasets: [{
                     label: 'Tickets Sold',
-                    data: [800, 950, 1100, 1000, 1210],
+                    data: ticketCounts,
                     backgroundColor: '#4bc0c0'
                 }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: { beginAtZero: true }
-                }
             }
         });
+    })
+    .catch(err => console.error('Chart fetch error:', err));
 
         function fetchStatsData() {
     $.ajax({

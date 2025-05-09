@@ -196,7 +196,37 @@ const pasigRiverRoute2 = [
   [14.5803,121.0819],[14.5833,121.0828],[14.5833,121.0828],[14.5872,121.0833],[14.5928,121.0822],
   [14.5978,121.0825],[14.6025,121.0825]
 ];
+const ferryStations = [
+  { name: "Pinagbuhatan", coords: [14.5972, 121.0825] },
+  { name: "Kalawaan", coords: [14.5914, 121.0825] },
+  { name: "San Joaquin", coords: [14.5581, 121.0669] },
+  { name: "Maybunga", coords: [14.5760, 121.0785] },
+  { name: "Guadalupe", coords: [14.5672, 121.0347] },
+  { name: "Hulo", coords: [14.5744, 121.0256] },
+  { name: "Valenzuela", coords: [14.5835, 121.0190] },
+  { name: "Lambingan", coords: [14.5869, 121.0190] },
+  { name: "Santa Ana", coords: [14.5900, 121.0142] },
+  { name: "PUP", coords: [14.5968, 121.0035] },
+  { name: "Lawton", coords: [14.5935, 120.9838] },
+  { name: "Escolta", coords: [14.5965, 120.9790] },
+  { name: "Plaza Mexico", coords: [14.5957, 120.9745] }
+];
 
+ferryStations.forEach(station => {
+  const marker = L.circleMarker(station.coords, {
+    radius: 6,
+    fillColor: "#0066ff",
+    color: "#003366",
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.9
+  }).addTo(map);
+  marker.bindTooltip(station.name, {
+    permanent: true,
+    direction: 'top',
+    className: 'ferry-label'
+  });
+});
 
     const riverRoute = L.polyline(pasigRiverRoute, {
         color: 'blue',

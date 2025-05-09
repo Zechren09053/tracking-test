@@ -114,34 +114,33 @@ $conn->close();
             <div class="main">
                 <div class="header">
                     <h1>Ferry Management</h1>
-                    <div id="clock" style="margin-bottom: 20px; font-size: 16px; color: #00b0ff;"></div>
+                    <div id="clock" style="margin-bottom: 10px; font-size: 16px; color: #00b0ff;"></div>
                 </div>
                 <div class="register-new-ferry" style="text-align: left; margin-top: 30px;">
-    <button id="open-registration-form" class="btn" style="background-color: #00b0ff; color: white; padding: 12px 20px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; width: auto; margin: 10px 0;">
+    <button id="open-registration-form" class="btn" style="background-color:#00b0ff; color: white; padding: 12px 20px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; width: auto; margin: 10px 0;">
         Register New Ferry
     </button>
 </div>
 
-                <div class="ferry-management" id="ferry-list2">
-                    <!-- Ferry cards will be dynamically populated here -->
-                    <?php foreach ($ferries as $ferry): ?>
-                        <div class="ferry-card" id="ferry-row-<?= $ferry['id'] ?>">
-                            <div class="ferry-info">
-                                <strong><?= htmlspecialchars($ferry['name']) ?></strong><br>
-                                <span>Operator: <?= htmlspecialchars($ferry['operator']) ?></span><br>
-                                <span>Active Time: <span id="active-time-<?= $ferry['id'] ?>"><?= $ferry['active_time'] ?></span> mins</span>
-                            </div>
-
-                            <!-- Toggle Switch for Active/Inactive -->
-                            <div class="ferry-status">
-                                <label class="switch">
-                                    <input type="checkbox" data-ferry-id="<?= $ferry['id'] ?>" class="status-switch" <?= $ferry['status'] == 'active' ? 'checked' : '' ?>>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
+<div class="list-box">
+        <div class="ferry-management" id="ferry-list2">
+            <?php foreach ($ferries as $ferry): ?>
+                <div class="ferry-card" id="ferry-row-<?= $ferry['id'] ?>">
+                    <div class="ferry-info">
+                        <strong><?= htmlspecialchars($ferry['name']) ?></strong><br>
+                        <span>Operator: <?= htmlspecialchars($ferry['operator']) ?></span><br>
+                        <span>Active Time: <span id="active-time-<?= $ferry['id'] ?>"><?= $ferry['active_time'] ?></span> mins</span>
+                    </div>
+                    <div class="ferry-status">
+                        <label class="switch">
+                            <input type="checkbox" data-ferry-id="<?= $ferry['id'] ?>" class="status-switch" <?= $ferry['status'] == 'active' ? 'checked' : '' ?>>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
                 </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
                 <!-- Button to open ferry registration form -->
 
 <!-- New Ferry Registration Form -->
@@ -206,7 +205,7 @@ $conn->close();
                     } else {
                         ferryListHtml = '<p>No ferries available.</p>';
                     }
-                    $('#ferry-list').html(ferryListHtml);
+                    $('#ferry-list2').html(ferryListHtml);
                 },
                 error: function() {
                     alert('Error fetching ferry data');
