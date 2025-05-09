@@ -116,7 +116,7 @@ $conn->close();
         <h2>Ferry Tracking View</h2>
             <button id="simulateBtn">Start Simulation</button>
             <div id="map">
-            <iframe src="vgps.php" style="width: 100%; height: 70vh; border: none; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.15);"></iframe>
+                <iframe id="ferryMap" src="vgps.php" style="width: 100%; height: 70vh; border: none; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.15);"></iframe>
             </div>
         </div>
     </div>
@@ -138,8 +138,16 @@ $conn->close();
             else if (page === 'Usersection') window.location.href = 'template.php';
         });
     });
+
+    // Toggle simulation iframe
+    let simActive = false;
+    document.getElementById("simulateBtn").addEventListener("click", () => {
+        const iframe = document.getElementById("ferryMap");
+        simActive = !simActive;
+
+        iframe.src = simActive ? "gpsfleet.php" : "vgps.php";
+        document.getElementById("simulateBtn").textContent = simActive ? "Stop Simulation" : "Start Simulation";
+    });
 </script>
-
-
 </body>
 </html>

@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    #map { height: 85vh; }
+    #map { width: 100%; height: 100vh; }
     .ferry-label {
       background-color: #fff;
       border-radius: 4px;
