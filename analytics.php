@@ -125,7 +125,64 @@ $conn->close();
             margin-bottom: 10px;
             margin-top: 20px;
         }
+        .info-box {
+        background-color: #2a2f3a;
+        padding: 20px;
+        border-radius: 10px;
+        color: #f1f1f1;
+        margin-bottom: 10px;
+        text-align: center;
+        display: flex;
+        flex-direction: row;  /* Arrange elements in a row */
+        justify-content: space-between;  /* Distribute space evenly between elements */
+        align-items: center;  /* Vertically center the elements */
+        gap: 15px;  /* Add space between elements */
+    }
 
+    .info-box h3 {
+        margin-bottom: 0;
+        font-size: 22px;
+    }
+
+    .report-selector {
+        display: flex;
+        flex-direction: column;  /* Stack label and dropdown vertically */
+        gap: 5px;
+    }
+
+    .report-selector label {
+        font-size: 16px;
+    }
+
+    .report-selector select {
+        padding: 8px;
+        font-size: 16px;
+        background-color: #444;
+        color: #fff;
+        border: 1px solid #555;
+        border-radius: 5px;
+        width: 200px;  /* Adjust width for a neat look */
+    }
+
+    .export-buttons {
+        display: flex;
+        gap: 10px;  /* Space between buttons */
+    }
+
+    .export-btn {
+        background-color: #00b0ff;
+        color: #fff;
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .export-btn:hover {
+        background-color: #008ac1;
+    }
     </style>
 </head>
 <body>
@@ -210,10 +267,27 @@ $conn->close();
                 <div class="auditlog">
                     <!-- Existing info box with Printout button -->
                     <div class="info-box">
-                        <h3>Extra Info</h3>
-                        <p>Printout button is here</p>
-                        <button onclick="window.print()">Print</button>
-                    </div>
+    <h3>Export Report</h3>
+
+    <!-- Dropdown for selecting report type -->
+    <div class="report-selector">
+        <label for="reportType">Report Type:</label>
+        <select id="reportType" name="reportType">
+            <option value="boatLogs">Boat Logs</option>
+            <option value="boatMaintenance">Boat Maintenance</option>
+            <option value="ticketLogs">Ticket Logs</option>
+            <option value="repairLogs">Repair Logs</option>
+        </select>
+    </div>
+
+    <!-- Export buttons -->
+    <div class="export-buttons">
+        <button class="export-btn" onclick="exportPDF()">Export as PDF</button>
+        <button class="export-btn" onclick="exportExcel()">Export as Excel</button>
+        <button class="export-btn" onclick="exportCSV()">Export as CSV</button>
+        <button class="export-btn" onclick="exportPrint()">Print</button>
+    </div>
+</div>
                     
                     <!-- New Audit Box -->
                     <div class="audit-box">
@@ -246,6 +320,10 @@ $conn->close();
 
     <!-- JS Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+
+
     <script>
         const navItems = document.querySelectorAll('.nav li');
         navItems.forEach(item => {
@@ -328,7 +406,64 @@ function updateClock() {
     const dateString = now.toLocaleDateString();
     document.getElementById("clock").textContent = `${dateString} | ${timeString}`;
   }
+  function exportPDF() {
+    const reportType = document.getElementById('reportType').value;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    doc.text(`Exporting ${reportType} as PDF`, 20, 20);
+    // Add more content to the PDF as needed, such as table data, etc.
+    
+    doc.save(`${reportType}_Report.pdf`);
+}
 
+
+    function exportExcel() {
+    const reportType = document.getElementById('reportType').value;
+
+    // Example data structure (you would replace this with actual data)
+    const data = [
+        ["ID", "Name", "Date", "Status"],
+        [1, "Boat 1", "2025-05-10", "Active"],
+        [2, "Boat 2", "2025-05-11", "Inactive"]
+    ];
+
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, `${reportType} Report`);
+    
+    XLSX.writeFile(wb, `${reportType}_Report.xlsx`);
+}
+
+    function exportCSV() {
+    const reportType = document.getElementById('reportType').value;
+
+    // Example data structure (you would replace this with actual data)
+    const data = [
+        ["ID", "Name", "Date", "Status"],
+        [1, "Boat 1", "2025-05-10", "Active"],
+        [2, "Boat 2", "2025-05-11", "Inactive"]
+    ];
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+
+    data.forEach((rowArray) => {
+        const row = rowArray.join(",");
+        csvContent += row + "\r\n"; // Add each row to the CSV string
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${reportType}_Report.csv`);
+    link.click();
+}
+
+    function exportPrint() {
+        const reportType = document.getElementById('reportType').value;
+        alert(`Printing ${reportType}`);
+        window.print();
+    }
   setInterval(updateClock, 1000);
   updateClock(); // run once on load
     </script>
