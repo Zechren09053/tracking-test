@@ -81,115 +81,21 @@ $conn->close();
     <title>Pasig Ferry Admin - Login</title>
     <link rel="stylesheet" href="Db.css">
     <style>
-        body {
-            background-color: #1f1f1f;
-            color: white;
-            font-family: Arial, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
+      body { background-color: #1f1f1f; color: white; font-family: Arial, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+.login-container { background-color: #2c2c2c; padding: 40px; border-radius: 16px; width: 100%; max-width: 400px; transition: all 0.5s ease; position: relative; overflow: hidden; }
+.login-container { box-shadow: 0 0 20px rgba(0, 188, 212, 0.7); border: 2px solid #00bcd4; }
+.login-container.lockout { box-shadow: 0 0 20px rgba(255, 0, 0, 0.7); border: 2px solid #ff0000; opacity: 0.8; pointer-events: none; }
+.login-container.unlocked { box-shadow: 0 0 30px rgba(0, 255, 0, 0.9); border: 2px solid #00ff00; animation: pulse 1.5s infinite; }
+.lockout-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(255, 0, 0, 0.2) 0%, rgba(255, 0, 0, 0.15) 50%, rgba(255, 0, 0, 0.1) 100%); pointer-events: none; z-index: 10; transition: transform 1s linear; transform-origin: top; }
+.login-container h2 { text-align: center; margin-bottom: 20px; color: #00bcd4; }
+.login-container input[type="text"], .login-container input[type="password"] { width: 100%; padding: 12px; margin-bottom: 16px; border: none; border-radius: 8px; background-color: #3a3a3a; color: white; }
+.login-container input[type="submit"] { width: 100%; padding: 12px; background-color: #00bcd4; border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; }
+.login-container input[type="submit"]:hover { background-color: #00acc1; }
+.error { color: red; text-align: center; margin-top: 10px; }
+@media (max-width: 500px) { .login-container { padding: 25px; } }
+@keyframes pulse { 0% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.7); } 50% { box-shadow: 0 0 40px rgba(0, 255, 0, 1); } 100% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.7); } }
 
-        .login-container {
-            background-color: #2c2c2c;
-            padding: 40px;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 400px;
-            transition: all 0.5s ease;
-            position: relative;
-            overflow: hidden; /* Keep the draining effect inside the container */
-        }
 
-        /* Default blue glow */
-        .login-container {
-            box-shadow: 0 0 20px rgba(0, 188, 212, 0.7);
-            border: 2px solid #00bcd4;
-        }
-
-        /* Red glow for lockout */
-        .login-container.lockout {
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
-            border: 2px solid #ff0000;
-            opacity: 0.8;
-            pointer-events: none;
-        }
-
-        /* Green glow when lockout ends */
-        .login-container.unlocked {
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.9);
-            border: 2px solid #00ff00;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.7); }
-            50% { box-shadow: 0 0 40px rgba(0, 255, 0, 1); }
-            100% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.7); }
-        }
-
-        /* Draining overlay effect from top to bottom */
-        .lockout-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, 
-                rgba(255, 0, 0, 0.2) 0%, 
-                rgba(255, 0, 0, 0.15) 50%, 
-                rgba(255, 0, 0, 0.1) 100%);
-            pointer-events: none;
-            z-index: 10;
-            transition: transform 1s linear;
-            transform-origin: top;
-        }
-
-        .login-container h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #00bcd4;
-        }
-
-        .login-container input[type="text"],
-        .login-container input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 16px;
-            border: none;
-            border-radius: 8px;
-            background-color: #3a3a3a;
-            color: white;
-        }
-
-        .login-container input[type="submit"] {
-            width: 100%;
-            padding: 12px;
-            background-color: #00bcd4;
-            border: none;
-            border-radius: 8px;
-            color: #fff;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .login-container input[type="submit"]:hover {
-            background-color: #00acc1;
-        }
-
-        .error {
-            color: red;
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        @media (max-width: 500px) {
-            .login-container {
-                padding: 25px;
-            }
-        }
     </style>
 </head>
 <body>

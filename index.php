@@ -1,36 +1,26 @@
 <?php
-// sample.php
-// A simple PHP script
+session_start();
+require 'db_connect.php'; // Centralized DB connection
 
-$name = "Master Howie";
+// Developer mode - show errors (REMOVE IN PRODUCTION)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-?>
+// CSRF protection
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Sample PHP Page</title>
-</head>
-<body>
-    <h1>Updated Welcome to PHP!</h1>
+// Display the CSRF token for debugging
+echo "CSRF Token: " . $_SESSION['csrf_token']; // Debugging the CSRF token
 
+// Security headers
+header("X-Frame-Options: DENY");
+header("X-Content-Type-Options: nosniff");
+header("Referrer-Policy: no-referrer");
+header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';");
 
-    <p><?php echo "Hello, " . $name . "!"; ?></p>
-
-    <p>Today is <?php echo date("l, F jS Y"); ?>.</p>
-
-    <form method="post">
-        <label for="favColor">What's your favorite color?</label>
-        <input type="text" name="favColor" id="favColor" required>
-        <button type="submit">Submit</button>
-    </form>
-
-    <?php
-    // Check if form is submitted
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $color = htmlspecialchars($_POST["favColor"]);
-        echo "<p>Your favorite color is <strong>$color</strong>! Nice choice.</p>";
-    }
     ?>
 </body>
 </html>

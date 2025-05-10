@@ -59,79 +59,112 @@ $conn->close();
     <link rel="stylesheet" href="Db.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        .main {
+            height: 100%;
+            max-height: 100vh;
+            overflow: hidden;
+            padding-bottom: 0;
+            box-sizing: border-box;
+        }
+        .charts {
+            width: 35%;
+            float: left;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-right: 10px;
+            box-sizing: border-box;
+        }
 
+        .auditlog {
+            width: 65%;
+            float: right;
+            background: #444;
+            border-radius: 12px;
+            padding: 20px;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
+            overflow-y: auto;
+            max-height: calc(100vh - 40px);
+        }
 
-.main {
-    height: 100%;
-    max-height: 100vh; /* Make sure the main section fits within the viewport */
-    overflow: hidden; /* Hide any overflow */
-    padding-bottom: 0; /* Avoid any accidental padding causing overflow */
-    box-sizing: border-box; /* Include padding in the overall size calculation */
-}
         .chart-card {
             background: #444;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             padding: 20px;
-            margin: 20px 0;
             width: 100%;
-            max-width: 500px; /* Set max width for the chart cards */
+            max-width: 500px;
+            color: #fff;
         }
 
         .chart-card h3 {
             margin-bottom: 15px;
+            font-size: 18px;
         }
 
-        canvas {
-    width: 100% !important;
-    height: 200px !important;
-    box-sizing: border-box; /* Prevent canvas from causing overflow */
-    }
+        .chart-card canvas {
+            width: 100% !important;
+            height: 200px !important;
+        }
 
-      
+        .info-box {
+            background-color: #2a2f3a;
+            padding: 20px;
+            border-radius: 10px;
+            color: #f1f1f1;
+            margin-bottom: 10px;
+        }
+
+        .audit-box {
+            background-color: #2a2f3a;
+            padding: 20px;
+            border-radius: 10px;
+            color: #f1f1f1;
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+
     </style>
 </head>
 <body>
     <div class="main-container">
         <div class="container">
-        <div class="sidebar-wrapper">
-        <div class="sidebar">
-    <!-- Top content: logo and main nav -->
-    <div class="sidebar-top">
-        <div class="logo">
-            <img src="PasigRiverFerryServiceLogo.png" alt="Logo" style="width: 30px; height: 30px;">
-            PRFS MANAGEMENT
-        </div>
-
-        <ul class="nav main-nav">
-            <li  data-page="dashboard">Dashboard</li>
-            <li class="active"data-page="analytics">Analytics</li>
-            <li data-page="tracking">Tracking</li>
-            <li data-page="ferrymngt">Ferry Management</li>
-            <li data-page="routeschedules">Route and Schedules</li>
-            <li data-page="Usersection">User Section</li>
-        </ul>
-    </div>
-
-    <!-- Bottom content: settings + profile -->
-    <div class="sidebar-bottom">
-        <ul class="nav settings-nav">
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Mail</a></li>
-            <li><a href="login.php">Logout</a></li>
-        </ul>
-
-        <div class="profile">
-            <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" />
-            <div class="profile-info">
-                <strong class="profile-name" title="<?= htmlspecialchars($name) ?>"><?= htmlspecialchars($name) ?></strong>
-                <span class="profile-email" title="<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></span>
+            <div class="sidebar-wrapper">
+                <div class="sidebar">
+                    <!-- Sidebar content -->
+                    <div class="sidebar-top">
+                        <div class="logo">
+                            <img src="PasigRiverFerryServiceLogo.png" alt="Logo" style="width: 30px; height: 30px;">
+                            PRFS MANAGEMENT
+                        </div>
+                        <ul class="nav main-nav">
+                            <li data-page="dashboard">Dashboard</li>
+                            <li class="active" data-page="analytics">Analytics</li>
+                            <li data-page="tracking">Tracking</li>
+                            <li data-page="ferrymngt">Ferry Management</li>
+                            <li data-page="routeschedules">Route and Schedules</li>
+                            <li data-page="Usersection">User Section</li>
+                        </ul>
+                    </div>
+                    <div class="sidebar-bottom">
+                        <ul class="nav settings-nav">
+                            <li><a href="#">Settings</a></li>
+                            <li><a href="#">Mail</a></li>
+                            <li><a href="login.php">Logout</a></li>
+                        </ul>
+                        <div class="profile">
+                            <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" />
+                            <div class="profile-info">
+                                <strong class="profile-name" title="<?= htmlspecialchars($name) ?>"><?= htmlspecialchars($name) ?></strong>
+                                <span class="profile-email" title="<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
 
-        </div>
             <!-- Main Analytics Page -->
             <div class="main">
                 <div class="header">
@@ -173,6 +206,40 @@ $conn->close();
                         <canvas id="ticketChart"></canvas>
                     </div>
                 </div>
+
+                <div class="auditlog">
+                    <!-- Existing info box with Printout button -->
+                    <div class="info-box">
+                        <h3>Extra Info</h3>
+                        <p>Printout button is here</p>
+                        <button onclick="window.print()">Print</button>
+                    </div>
+                    
+                    <!-- New Audit Box -->
+                    <div class="audit-box">
+                        <h3>Audit Log</h3>
+                        <p>Audit table is to be displayed here</p>
+                        <!-- Audit Table (for illustration, you can populate this with dynamic data) -->
+                        <table border="1" style="width: 100%; margin-top: 20px;">
+                            <tr>
+                                <th>ID</th>
+                                <th>Action</th>
+                                <th>Timestamp</th>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Login</td>
+                                <td>2025-05-10 12:34:56</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Updated Ferry Status</td>
+                                <td>2025-05-10 12:40:22</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
