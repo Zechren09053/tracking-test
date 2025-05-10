@@ -30,7 +30,7 @@ if ($_SESSION['login_attempts'] >= 3) {
     $elapsed = time() - $_SESSION['last_attempt'];
     $lockout_seconds_remaining = max(0, 10 - $elapsed);
     if ($lockout_seconds_remaining > 0) {
-        $error = "Too many failed login attempts. Please wait.";
+        $error = "Too many failed login attempts. Please try again in <span id='countdown'>{$lockout_seconds_remaining}</span> seconds.";
     } else {
         $_SESSION['login_attempts'] = 0;
     }
@@ -96,55 +96,15 @@ $conn->close();
             background-color: #2c2c2c;
             padding: 40px;
             border-radius: 16px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
             width: 100%;
             max-width: 400px;
-            transition: all 0.5s ease;
-            position: relative;
-            overflow: hidden; /* Keep the draining effect inside the container */
+            transition: opacity 0.5s ease;
         }
 
-        /* Default blue glow */
-        .login-container {
-            box-shadow: 0 0 20px rgba(0, 188, 212, 0.7);
-            border: 2px solid #00bcd4;
-        }
-
-        /* Red glow for lockout */
-        .login-container.lockout {
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
-            border: 2px solid #ff0000;
-            opacity: 0.8;
+        .login-container.dimmed {
+            opacity: 0.5;
             pointer-events: none;
-        }
-
-        /* Green glow when lockout ends */
-        .login-container.unlocked {
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.9);
-            border: 2px solid #00ff00;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.7); }
-            50% { box-shadow: 0 0 40px rgba(0, 255, 0, 1); }
-            100% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.7); }
-        }
-
-        /* Draining overlay effect from top to bottom */
-        .lockout-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, 
-                rgba(255, 0, 0, 0.2) 0%, 
-                rgba(255, 0, 0, 0.15) 50%, 
-                rgba(255, 0, 0, 0.1) 100%);
-            pointer-events: none;
-            z-index: 10;
-            transition: transform 1s linear;
-            transform-origin: top;
         }
 
         .login-container h2 {
@@ -193,10 +153,7 @@ $conn->close();
     </style>
 </head>
 <body>
-    <form class="login-container<?= $lockout_seconds_remaining ? ' lockout' : '' ?>" method="POST" action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" id="loginForm">
-        <?php if ($lockout_seconds_remaining): ?>
-            <div class="lockout-overlay" id="lockoutOverlay"></div>
-        <?php endif; ?>
+    <form class="login-container<?= $lockout_seconds_remaining ? ' dimmed' : '' ?>" method="POST" action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" id="loginForm">
         <h2>Ferry Admin Login</h2>
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
         <input type="text" name="username" placeholder="Username" required autofocus <?= $lockout_seconds_remaining ? 'disabled' : '' ?>>
@@ -209,40 +166,17 @@ $conn->close();
 
     <?php if ($lockout_seconds_remaining): ?>
     <script>
-        const totalLockout = <?= $lockout_seconds_remaining ?>;
-        let countdown = totalLockout;
-        const formEl = document.getElementById('loginForm');
-        const overlayEl = document.getElementById('lockoutOverlay');
-        
-        // Set initial scale for the overlay
-        overlayEl.style.transform = `scaleY(1)`;
+        let countdown = <?= $lockout_seconds_remaining ?>;
+        const countdownEl = document.getElementById('countdown');
 
         const interval = setInterval(() => {
             countdown--;
-            
-            // Update draining effect - gradually drain from top to bottom
-            const remainingPercent = countdown / totalLockout;
-            overlayEl.style.transform = `scaleY(${remainingPercent})`;
-            
             if (countdown <= 0) {
                 clearInterval(interval);
-                
-                // Remove red overlay
-                if (overlayEl) overlayEl.remove();
-                
-                // Add green glow effect
-                formEl.classList.remove('lockout');
-                formEl.classList.add('unlocked');
-                
-                // Enable form fields
-                document.querySelector('input[name="username"]').disabled = false;
-                document.querySelector('input[name="password"]').disabled = false;
-                document.querySelector('input[type="submit"]').disabled = false;
-                
-                // Reload after a short delay to show the green effect
-                setTimeout(() => {
-                    location.reload();
-                }, 1500);
+                // Reload the page to clear the lockout state
+                location.reload();
+            } else {
+                countdownEl.textContent = countdown;
             }
         }, 1000);
     </script>

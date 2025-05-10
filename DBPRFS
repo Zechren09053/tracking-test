@@ -102,35 +102,21 @@ CREATE TABLE downstream_schedules (
     UNIQUE(route_name, row_id, col_id) -- Ensures each combination is unique
 );
 
--- Inserting upstream schedules (Escolta → Kalawaan) with unique row_id and col_id combinations
-INSERT INTO upstream_schedules (route_name, row_id, col_id, station_name, schedule_time) VALUES
-('Escolta → Kalawaan', 1, 1, 'Escolta', '08:15:00'),
-('Escolta → Kalawaan', 1, 2, 'Lawton', '08:20:00'),
-('Escolta → Kalawaan', 1, 3, 'Quinta', '08:22:00'),
-('Escolta → Kalawaan', 1, 4, 'PUP', '08:35:00'),
-('Escolta → Kalawaan', 1, 5, 'Sta. Ana', '08:39:00'),
-('Escolta → Kalawaan', 1, 6, 'Lambingan', '09:00:00'),
-('Escolta → Kalawaan', 1, 7, 'Valenzuela', '09:10:00'),
-('Escolta → Kalawaan', 1, 8, 'Hulo', '09:15:00'),
-('Escolta → Kalawaan', 1, 9, 'Guadalupe', '09:20:00'),
-('Escolta → Kalawaan', 1, 10, 'San Joaquin', '09:35:00'),
-('Escolta → Kalawaan', 1, 11, 'Kalawaan', '09:30:00'),
 
-('Escolta → Kalawaan', 2, 1, 'Escolta', '09:00:00'),
-('Escolta → Kalawaan', 2, 2, 'Lawton', '09:05:00'),
-('Escolta → Kalawaan', 2, 3, 'Quinta', '09:07:00'),
-('Escolta → Kalawaan', 2, 4, 'PUP', '09:26:00'),
-('Escolta → Kalawaan', 2, 5, 'Sta. Ana', '09:39:00'),
-('Escolta → Kalawaan', 2, 6, 'Lambingan', '09:42:00'),
-('Escolta → Kalawaan', 2, 7, 'Valenzuela', '09:50:00'),
-('Escolta → Kalawaan', 2, 8, 'Hulo', '09:56:00'),
-('Escolta → Kalawaan', 2, 9, 'Guadalupe', '10:00:00'),
-('Escolta → Kalawaan', 2, 10, 'San Joaquin', '10:15:00'),
-('Escolta → Kalawaan', 2, 11, 'Kalawaan', '10:20:00');
-
--- Continue inserting the rest of the schedules...
+CREATE TABLE announcements (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 
+CREATE TABLE login_attempts (
+    ip_address VARCHAR(45) NOT NULL,
+    attempts INT NOT NULL DEFAULT 1,
+    last_attempt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (ip_address)
+);
 
 
 
