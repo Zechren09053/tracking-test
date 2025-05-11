@@ -178,9 +178,7 @@ $conn->close();
                 <div class="tracking">
                     <div class="boat-list">
                         <div class="boat-list-header">Ferry List</div>
-                        <div id="ferry-list" class="boat-list-body">
-                            <!-- Ferry data will be dynamically loaded here -->
-                        </div>
+                        <div id="ferry-list" class="boat-list-body"></div>
                     </div>
 
                     <!-- Map Section -->
