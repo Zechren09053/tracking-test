@@ -67,50 +67,81 @@ $conn->close();
     <title>Ferry Admin Dashboard</title>
     <link rel="stylesheet" href="Db.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
 <body>
     <!-- Main container with rounded edges -->
     <div class="main-container">
         <div class="container">
-        <div class="sidebar-wrapper">
-        <div class="sidebar">
-    <!-- Sidebar top content: Logo and navigation menu -->
-    <div class="sidebar-top">
-        <div class="logo">
-            <img src="PasigRiverFerryServiceLogo.png" alt="Logo" style="width: 30px; height: 30px;">
-            PRFS MANAGEMENT
-        </div>
-        <ul class="nav">
-            <li class="active" data-page="dashboard">Dashboard</li>
-            <li data-page="analytics">Analytics</li>
-            <li data-page="tracking">Tracking</li>
-            <li data-page="ferrymngt">Ferry Management</li>
-            <li data-page="routeschedules">Route and Schedules</li>
-            <li data-page="User Section">User Section</li>
-        </ul>
-    </div>
-
-    <!-- Sidebar bottom content: Settings, Help, Logout, and Profile Section -->
-    <div class="sidebar-bottom">
-        <!-- Settings and Logout Links -->
-        <ul class="nav settings-nav">
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Help</a></li>
-            <li><a href="login.php">Logout</a></li>
-        </ul>
-
-        <!-- Profile Section -->
-        <div class="profile">
-            <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" />
-            <div class="profile-info">
-                <strong class="profile-name" title="<?= htmlspecialchars($name) ?>"><?= htmlspecialchars($name) ?></strong>
-                <span class="profile-email" title="<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></span>
+         <!-- Toggle button now outside sidebar wrapper -->
+         <div class="sidebar" id="sidebar">
+                <div class="sidebar-top">
+                    <div class="main-nav-container">
+                        <div class="logo">
+                            <img src="PasigRiverFerryServiceLogo.png" alt="Logo" style="width: 30px; height: 30px;">
+                            <span class="logo-text">PRFS MANAGEMENT</span>
+                        </div>
+                        <ul class="nav">
+                            <li class="active" data-page="dashboard">
+                                <div class="nav-item-content">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                    <span class="nav-text">Dashboard</span>
+                                </div>
+                            </li>
+                            <li data-page="analytics">
+                                <div class="nav-item-content">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span class="nav-text">Analytics</span>
+                                </div>
+                            </li>
+                            <li data-page="tracking">
+                                <div class="nav-item-content">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span class="nav-text">Tracking</span>
+                                </div>
+                            </li>
+                            <li data-page="ferrymngt">
+                                <div class="nav-item-content">
+                                    <i class="fas fa-ship"></i>
+                                    <span class="nav-text">Ferry Management</span>
+                                </div>
+                            </li>
+                            <li data-page="routeschedules">
+                                <div class="nav-item-content">
+                                    <i class="fas fa-route"></i>
+                                    <span class="nav-text">Route and Schedules</span>
+                                </div>
+                            </li>
+                            <li data-page="Usersection">
+                                <div class="nav-item-content">
+                                    <i class="fas fa-users"></i>
+                                    <span class="nav-text">User Section</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="settings-profile-container">
+                        <ul class="nav settings-nav">
+                            <li><a href="#"><div class="nav-item-content"><i class="fas fa-cog"></i><span class="settings-text">Settings</span></div></a></li>
+                            <li><a href="#"><div class="nav-item-content"><i class="fas fa-question-circle"></i><span class="settings-text">Help</span></div></a></li>
+                            <li><a href="login.php"><div class="nav-item-content"><i class="fas fa-sign-out-alt"></i><span class="settings-text">Logout</span></div></a></li>
+                        </ul>
+                        <div class="profile">
+                            <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" />
+                            <div class="profile-info">
+                                <strong class="profile-name" title="<?= htmlspecialchars($name) ?>"><?= htmlspecialchars($name) ?></strong>
+                                <span class="profile-email" title="<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
-            </div>
 
+            <!-- Toggle button outside sidebar -->
+            <div class="sidebar-toggle" id="sidebar-toggle">
+                <i class="fas fa-chevron-left" id="toggle-icon"></i>
+            </div>
             <!-- Main Dashboard -->
             <div class="main">
                 <div class="header">
@@ -171,6 +202,7 @@ $conn->close();
 
 
     <script>
+        
     var map = L.map('map').setView([14.5896, 121.0360], 13);
     var markers = {};
 
@@ -344,29 +376,7 @@ ferryStations.forEach(station => {
     document.getElementById('map').style.borderRadius = '24px';
     document.getElementById('map').style.overflow = 'hidden';
 
-    const navItems = document.querySelectorAll('.nav li');
 
-    navItems.forEach(item => {
-        item.addEventListener('click', function() {
-            navItems.forEach(item => item.classList.remove('active'));
-            item.classList.add('active');
-            const page = item.getAttribute('data-page');
-            if (page === 'dashboard') {
-                window.location.href = 'Dashboard.php';
-            } else if (page === 'analytics') {
-                window.location.href = 'analytics.php';
-            } else if (page === 'tracking') {
-                window.location.href = 'tracking.php';
-            } else if (page === 'ferrymngt') {
-                window.location.href = 'ferrymngt.php';
-            } else if (page === 'routeschedules') {
-                window.location.href = 'routeschedules.php';
-            } else if (page === 'Users') {
-                window.location.href = 'template.php';
-            }
-        });
-    });
-    
 
     function fetchStatsData() {
     $.ajax({
@@ -400,6 +410,34 @@ function updateClock() {
 
   setInterval(updateClock, 1000);
   updateClock(); // run once on load
+
+  $(document).ready(function() {
+            $("#sidebar-toggle").click(function() {
+                $("#sidebar").toggleClass("sidebar-collapsed");
+                $("#main-content").toggleClass("content-expanded");
+
+                if ($("#sidebar").hasClass("sidebar-collapsed")) {
+                    $("#toggle-icon").removeClass("fa-chevron-left").addClass("fa-chevron-right");
+                } else {
+                    $("#toggle-icon").removeClass("fa-chevron-right").addClass("fa-chevron-left");
+                }
+            });
+
+            const navItems = document.querySelectorAll('.nav li');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                    const page = item.getAttribute('data-page');
+                    if (page === 'dashboard') window.location.href = 'Dashboard.php';
+                    else if (page === 'analytics') window.location.href = 'analytics.php';
+                    else if (page === 'tracking') window.location.href = 'Tracking.php';
+                    else if (page === 'ferrymngt') window.location.href = 'ferrymngt.php';
+                    else if (page === 'routeschedules') window.location.href = 'routeschedules.php';
+                    else if (page === 'Usersection') window.location.href = 'template.php';
+                });
+            });
+        });
 </script>
 
 

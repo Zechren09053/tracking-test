@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collapsible Sidebar Example</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .main-container {
+            display: flex;
+            flex: 1;
+            transition: all 0.3s ease;
+            background-color:whitesmoke
+        }
+        
+        .sidebar {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100vh;
+            width: 250px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar.collapsed {
+            width: 60px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 20px 15px;
+            font-weight: bold;
+            font-size: 18px;
+            border-bottom: 1px solid #34495e;
+        }
+        
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+            background-color: #00b0ff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+        
+        .nav {
+            list-style: none;
+            padding: 20px 0;
+        }
+        
+        .nav li {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: relative;
+        }
+        
+        .nav li:hover {
+            background-color: #34495e;
+        }
+        
+        .nav li.active {
+            background-color: #3498db;
+        }
+        
+        .nav li.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: #00b0ff;
+        }
+        
+        .nav-icon {
+            font-size: 18px;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .sidebar.collapsed .nav-text {
+            display: none;
+        }
+        
+        .sidebar-bottom {
+            border-top: 1px solid #34495e;
+            padding: 15px 0;
+        }
+        
+        .settings-nav {
+            margin-bottom: 15px;
+        }
+        
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+        }
+        
+        .profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .profile-info {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .profile-name {
+            font-weight: 600;
+            display: block;
+            font-size: 14px;
+        }
+        
+        .profile-email {
+            font-size: 12px;
+            color: #bdc3c7;
+        }
+        
+        .sidebar.collapsed .profile-info {
+            display: none;
+        }
+        
+        .toggle-btn {
+            position: absolute;
+            top: 10px;
+            right: -12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .clock {
+            font-size: 16px;
+            color: #00b0ff;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-box {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-box h2 {
+            color: #7f8c8d;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-box p {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .stat-change {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+            
+            .sidebar .logo-text,
+            .sidebar .nav-text,
+            .sidebar .profile-info {
+                display: none;
+            }
+            
+            .sidebar.expanded {
+                width: 250px;
+                position: absolute;
+                z-index: 100;
+            }
+            
+            .sidebar.expanded .logo-text,
+            .sidebar.expanded .nav-text,
+            .sidebar.expanded .profile-info {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="sidebar" id="sidebar">
+            <div class="toggle-btn" id="toggle-btn">
+                <span id="toggle-icon">◀</span>
+            </div>
+            
+            <div>
+                <div class="logo">
+                    <div class="logo-icon">P</div>
+                    <span class="logo-text">PRFS MANAGEMENT</span>
+                </div>
+                
+                <ul class="nav">
+                    <li class="active">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">Dashboard</span>
+                    </li>
+                    <li>
+                        <span class="nav-icon">📈</span>
+                        <span class="nav-text">Analytics</span>
+                    </li>
+                    <li>
+                        <span class="nav-icon">🚢</span>
+                        <span class="nav-text">Tracking</span>
+                    </li>
+                    <li>
+                        <span class="nav-icon">⚙️</span>
+                        <span class="nav-text">Ferry Management</span>
+                    </li>
+                    <li>
+                        <span class="nav-icon">🗺️</span>
+                        <span class="nav-text">Route and Schedules</span>
+                    </li>
+                    <li>
+                        <span class="nav-icon">👥</span>
+                        <span class="nav-text">User Section</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-bottom">
+                <ul class="nav settings-nav">
+                    <li>
+                        <span class="nav-icon">⚙️</span>
+                        <span class="nav-text">Settings</span>
+                    </li>
+                    <li>
+                        <span class="nav-icon">✉️</span>
+                        <span class="nav-text">Mail</span>
+                    </li>
+                    <li>
+                        <span class="nav-icon">🚪</span>
+                        <span class="nav-text">Logout</span>
+                    </li>
+                </ul>
+                
+                <div class="profile">
+                    <img src="https://via.placeholder.com/40" alt="Profile Picture" />
+                    <div class="profile-info">
+                        <span class="profile-name">John Doe</span>
+                        <span class="profile-email">john.doe@example.com</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="header">
+                <h1>Dashboard</h1>
+                <div id="clock" class="clock">Loading time...</div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <h2>Total Passengers</h2>
+                    <p>1,245</p>
+                    <div class="stat-change">↑ based on records</div>
+                </div>
+                
+                <div class="stat-box">
+                    <h2>Active Passes</h2>
+                    <p>876</p>
+                    <div class="stat-change">Currently Valid</div>
+                </div>
+                
+                <div class="stat-box">
+                    <h2>Active Ferries</h2>
+                    <p>8</p>
+                    <div class="stat-change">In Operation Now</div>
+                </div>
+                
+                <div class="stat-box">
+                    <h2>Average Occupancy</h2>
+                    <p>72.5%</p>
+                    <div class="stat-change">Capacity Utilization</div>
+                </div>
+            </div>
+            
+            <div class="content-section">
+                <h2>Main Content</h2>
+                <p>This is where your main content would go. The sidebar can be collapsed to maximize this space.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar collapse
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggle-btn');
+        const toggleIcon = document.getElementById('toggle-icon');
+        
+        toggleBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+            toggleIcon.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+        });
+        
+        // Update clock
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString();
+            document.getElementById("clock").textContent = `${dateString} | ${timeString}`;
+        }
+        
+        setInterval(updateClock, 1000);
+        updateClock(); // run once on load
+        
+        // Mobile-specific functionality
+        function handleResize() {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.add('collapsed');
+                toggleIcon.textContent = '▶';
+                
+                // For mobile, clicking anywhere on the sidebar will expand it
+                sidebar.addEventListener('click', function(e) {
+                    if (!e.target.closest('.toggle-btn')) {
+                        sidebar.classList.toggle('expanded');
+                    }
+                });
+                
+                // Clicking outside the sidebar will collapse it on mobile
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.sidebar') && sidebar.classList.contains('expanded')) {
+                        sidebar.classList.remove('expanded');
+                    }
+                });
+            }
+        }
+        
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Run once on load
+    </script>
+</body>
+</html>
