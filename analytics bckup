@@ -87,6 +87,13 @@ $conn->close();
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .chart-card.loading canvas { opacity: 0.3; }
         .chart-card.loading .loader { display: block; }
+        .audit-box { max-height: 430px; overflow-y: auto; overflow-x: hidden; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); margin-top: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+.audit-box::-webkit-scrollbar { width: 8px; }
+.audit-box::-webkit-scrollbar-track { background: #f1f1f1; }
+.audit-box::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+.audit-box::-webkit-scrollbar-thumb:hover { background: #555; }
+
+
     </style>
 </head>
 <body>
@@ -211,15 +218,15 @@ $conn->close();
                 <div class="auditlog">
                     <div class="info-box">
                         <h3><i class="fas fa-file-export"></i> Export Report</h3>
-                        <div class="report-selector">
-                            <label for="reportType">Report Type:</label>
-                            <select id="reportType" name="reportType">
-                                <option value="boatLogs">Boat Logs</option>
-                                <option value="boatMaintenance">Boat Maintenance</option>
-                                <option value="ticketLogs">Ticket Logs</option>
-                                <option value="repairLogs">Repair Logs</option>
-                            </select>
-                        </div>
+<div class="report-selector">
+  <label for="reportType">Select Report Type:</label>
+  <select id="reportType">
+    <option value="ferry_logs">Ferry Logs</option>
+    <option value="tickets">Tickets</option>
+    <option value="repair_logs">Repair Logs</option>
+    <option value="boat_maintenance">Boat Maintenance</option>
+  </select>
+</div>
                         <div class="export-buttons">
                             <button class="export-btn" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
                             <button class="export-btn" onclick="exportExcel()"><i class="fas fa-file-excel"></i> Excel</button>
@@ -227,57 +234,10 @@ $conn->close();
                             <button class="export-btn" onclick="exportPrint()"><i class="fas fa-print"></i> Print</button>
                         </div>
                     </div>
-                    <div class="audit-box">
-                        <h3><i class="fas fa-history"></i> Audit Log</h3>
-                        <table class="audit-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>User</th>
-                                    <th>Action</th>
-                                    <th>Entity</th>
-                                    <th>Timestamp</th>
-                                </tr>
-                            </thead>
-                            <tbody id="auditLogTable">
-                                <tr>
-                                    <td>1</td>
-                                    <td>Admin</td>
-                                    <td>Login</td>
-                                    <td>System</td>
-                                    <td>2025-05-10 12:34:56</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Admin</td>
-                                    <td>Updated Ferry Status</td>
-                                    <td>Ferry #3</td>
-                                    <td>2025-05-10 12:40:22</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>Operator1</td>
-                                    <td>Changed Schedule</td>
-                                    <td>Route #2</td>
-                                    <td>2025-05-10 13:15:44</td>
-                                </tr>
-                                <tr>
-                                    <td>4</td>
-                                    <td>System</td>
-                                    <td>Automatic Backup</td>
-                                    <td>Database</td>
-                                    <td>2025-05-10 14:00:00</td>
-                                </tr>
-                                <tr>
-                                    <td>5</td>
-                                    <td>Admin</td>
-                                    <td>Added User</td>
-                                    <td>User #12</td>
-                                    <td>2025-05-11 09:22:17</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <div id="auditLogDisplay" class="audit-box">
+                        
+                        <div class="loader" id="auditLoader"></div>
+                        </div>
                 </div>
             </div>
         </div>
@@ -286,6 +246,33 @@ $conn->close();
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+  const reportTypeSelect = document.getElementById('reportType');
+  const auditLogDisplay = document.getElementById('auditLogDisplay');
+  const loader = document.getElementById('auditLoader');
+
+  function loadAuditLog(type) {
+    loader.style.display = 'inline-block';
+    fetch('fetch_audit_log.php?type=' + type)
+      .then(response => response.text())
+      .then(data => {
+        loader.style.display = 'none';
+        auditLogDisplay.innerHTML = data;
+      })
+      .catch(error => {
+        loader.style.display = 'none';
+        auditLogDisplay.innerHTML = '<p style="color:red;">Failed to load audit log.</p>';
+        console.error('Fetch error:', error);
+      });
+  }
+
+  reportTypeSelect.addEventListener('change', function () {
+    loadAuditLog(this.value);
+  });
+
+  // Load initial selection
+  loadAuditLog(reportTypeSelect.value);
+});
         $(document).ready(function() {
             $("#sidebar-toggle").click(function() {
                 $("#sidebar").toggleClass("sidebar-collapsed");
@@ -717,89 +704,39 @@ $conn->close();
             }
         }
         function exportPrint() {
-            const reportType = document.getElementById('reportType').value;
-            const printWindow = window.open('', '_blank');
-            if (!printWindow) {
-                alert('Pop-up blocked. Please allow pop-ups for printing.');
-                return;
-            }
-            const reportTitle = reportType.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-            const printContent = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>${reportTitle} Report</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; }
-                        h1 { color: #0066CC; text-align: center; }
-                        p.date { text-align: center; margin-bottom: 30px; color: #666; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                        th { background-color: #f2f2f2; color: #0066CC; text-align: left; padding: 12px; }
-                        td { border-bottom: 1px solid #ddd; padding: 12px; }
-                        .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #666; }
-                        @media print { .no-print { display: none; } }
-                    </style>
-                </head>
-                <body>
-                    <div class="no-print" style="text-align: center; margin-bottom: 20px;">
-                        <button onclick="window.print();" style="padding: 10px 20px; background: #0066CC; color: white; border: none; border-radius: 4px; cursor: pointer;">Print Report</button>
-                        <button onclick="window.close();" style="padding: 10px 20px; background: #999; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">Close</button>
-                    </div>
-                    <h1>Pasig River Ferry Service</h1>
-                    <h2 style="text-align: center;">${reportTitle} Report</h2>
-                    <p class="date">Generated on: ${new Date().toLocaleString()}</p>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Boat 1</td>
-                                <td>2025-05-10</td>
-                                <td>Active</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Boat 2</td>
-                                <td>2025-05-11</td>
-                                <td>Inactive</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Boat 3</td>
-                                <td>2025-05-12</td>
-                                <td>Maintenance</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>Boat 4</td>
-                                <td>2025-05-13</td>
-                                <td>Active</td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>Boat 5</td>
-                                <td>2025-05-14</td>
-                                <td>Active</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="footer">
-                        <p>© 2025 Pasig River Ferry Service. All rights reserved.</p>
-                    </div>
-                </body>
-                </html>
-            `;
-            printWindow.document.open();
-            printWindow.document.write(printContent);
-            printWindow.document.close();
-        }
+    const reportType = document.getElementById('reportType').value;
+    const printContents = document.getElementById('auditLogDisplay').innerHTML;
+    
+    if (!printContents.trim()) {
+        alert('No report data to print.');
+        return;
+    }
+
+    const originalContents = document.body.innerHTML;
+    const printWindow = window.open('', '', 'height=600,width=800');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>${reportType} Report</title>
+            <style>
+                body { font-family: Arial, sans-serif; color: #000; padding: 20px; }
+                table { width: 100%; border-collapse: collapse; }
+                th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+                h2 { text-align: center; color: #004080; }
+            </style>
+        </head>
+        <body>
+            <h2>Pasig River Ferry Service - ${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report</h2>
+            ${printContents}
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+}
+
     </script>
 </body>
 </html>

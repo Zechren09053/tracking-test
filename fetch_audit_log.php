@@ -14,7 +14,7 @@ switch ($type) {
         $query = "SELECT fl.id, f.name AS ferry_name, fl.trip_date, fl.passenger_count, fl.speed
                   FROM ferry_logs fl
                   JOIN ferries f ON fl.ferry_id = f.id
-                  ORDER BY fl.trip_date DESC LIMIT 20";
+                  ORDER BY fl.trip_date DESC LIMIT 100";
         break;
 
     case 'tickets':
@@ -22,21 +22,21 @@ switch ($type) {
                   FROM tickets t
                   JOIN users u ON t.user_id = u.id
                   JOIN ferries f ON t.ferry_id = f.id
-                  ORDER BY t.purchase_date DESC LIMIT 20";
+                  ORDER BY t.purchase_date DESC LIMIT 100";
         break;
 
     case 'repair_logs':
         $query = "SELECT rl.id, f.name AS ferry_name, rl.reported_at, rl.issue, rl.status
                   FROM repair_logs rl
                   JOIN ferries f ON rl.ferry_id = f.id
-                  ORDER BY rl.reported_at DESC LIMIT 20";
+                  ORDER BY rl.reported_at DESC LIMIT 100";
         break;
 
     case 'boat_maintenance':
         $query = "SELECT bm.id, f.name AS ferry_name, bm.maintenance_date, bm.maintenance_type, bm.next_due_date
                   FROM boat_maintenance bm
                   JOIN ferries f ON bm.ferry_id = f.id
-                  ORDER BY bm.maintenance_date DESC LIMIT 20";
+                  ORDER BY bm.maintenance_date DESC LIMIT 100";
         break;
 
     default:
@@ -51,17 +51,16 @@ if (!$result) {
     exit;
 }
 
-// Output table header
+// Output table headerS
 switch ($type) {
     case 'ferry_logs':
-        echo "<h3>Ferry Logs</h3><table class='audit-table'><tr><th>ID</th><th>Ferry</th><th>Date</th><th>Passengers</th><th>Speed</th></tr>";
+        echo "<h3>Ferry Logs</h3><table class='audit-table'><tr><th>ID</th><th>Ferry</th><th>Date</th><th>Passengers</th></tr>";
         while ($row = $result->fetch_assoc()) {
             echo "<tr>
                     <td>{$row['id']}</td>
                     <td>" . escape($row['ferry_name']) . "</td>
                     <td>{$row['trip_date']}</td>
                     <td>{$row['passenger_count']}</td>
-                    <td>{$row['speed']}</td>
                   </tr>";
         }
         break;

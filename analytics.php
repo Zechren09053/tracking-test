@@ -43,6 +43,7 @@ $conn->close();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ferry Admin - Analytics</title>
     <link rel="stylesheet" href="Db.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -92,7 +93,6 @@ $conn->close();
 .audit-box::-webkit-scrollbar-track { background: #f1f1f1; }
 .audit-box::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
 .audit-box::-webkit-scrollbar-thumb:hover { background: #555; }
-
 
     </style>
 </head>
