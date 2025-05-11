@@ -44,14 +44,14 @@ while ($row = $result->fetch_assoc()) {
     $downstream[$row['row_id']][$row['col_id']] = $row['schedule_time'];
 }
 
-// Fetch announcements - IMPROVED QUERY
+// Fetch announcements
 $announcements = [];
-$announcements_sql = "SELECT * FROM announcements 
-    WHERE (display_from <= CURDATE() AND 
-           DATE_ADD(display_from, INTERVAL display_duration DAY) >= CURDATE())
-    OR display_from > CURDATE()  
-    ORDER BY created_at DESC 
-    LIMIT 10";
+$announcements_sql = "SELECT * FROM announcements
+    WHERE display_from <= CURDATE()
+    ORDER BY created_at DESC
+    LIMIT 10"; // Optional limit
+
+
 
 $result = $conn->query($announcements_sql);
 while ($row = $result->fetch_assoc()) {
@@ -69,24 +69,7 @@ $conn->close();
     <title>Ferry RSA</title>
     <link rel="stylesheet" href="Db.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-
-.announcement-list { list-style: none; padding: 0; margin: 0; }
-.announcement-list li { background-color: #444; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 4px solid #00b0ff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s ease; }
-.announcement-list li:hover { background-color:rgb(124, 124, 124); }
-.announcement-list li strong { display: block; font-size: 16px; margin-bottom: 5px; color: #333; }
-.announcement-list li p { margin: 8px 0; color: white; }
-.announcement-meta { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: #777; }
-.announcement-date, .announcement-duration { display: flex; align-items: center; }
-.announcement-date i, .announcement-duration i { margin-right: 5px; }
-.announcement-list li small { display: block; margin-top: 4px; color: #888; font-size: 11px; }
-#announcementDateFilter { width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; }
-.filter-container { display: flex; align-items: center; gap: 10px; }
-.clear-filter-btn { background: #00b0ff; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; transition: background-color 0.3s; }
-.clear-filter-btn:hover { background: #0091ea; }
-.no-announcements { text-align: center; padding: 20px; color: #666; font-style: italic; }
-
-    </style>
+    
 </head>
 <body>
 <div class="main-container">
@@ -234,7 +217,6 @@ $conn->close();
 
         <!-- Right Container for Announcements and Other Info -->
         <div class="right-container">
-            <!-- Improved Announcement Display Section -->
             <div class="cardlog">
                 <div class="announcement-header">
                     <h3>Announcement Log</h3>
@@ -244,21 +226,13 @@ $conn->close();
                 </div>
                 
                 <!-- Search Bar for Date -->
-                <div class="filter-container" style="display: flex; margin-bottom: 15px; align-items: center;">
-                    <input type="date" id="announcementDateFilter" placeholder="Filter by Date" style="flex-grow: 1;">
-                </div>
+                <input type="date" id="announcementDateFilter" placeholder="Filter by Date">
                 
                 <?php if (empty($announcements)): ?>
                     <p class="no-announcements">No announcements available at this time.</p>
                 <?php else: ?>
-                    <ul class="announcement-list">
+                    <ul>
                         <?php foreach ($announcements as $announcement): ?>
-                            <?php 
-                                // Calculate end date for display
-                                $display_from = new DateTime($announcement['display_from']);
-                                $display_to = clone $display_from;
-                                $display_to->modify('+' . $announcement['display_duration'] . ' days');
-                            ?>
                             <li>
                                 <strong><?= htmlspecialchars($announcement['title']) ?></strong>
                                 <p><?= htmlspecialchars($announcement['message']) ?></p>
@@ -273,8 +247,8 @@ $conn->close();
                                     </span>
                                 </div>
                                 <small>
-                                    Displays: <?= $display_from->format('M d, Y') ?> - 
-                                    <?= $display_to->format('M d, Y') ?>
+                                    Displays: <?= date('M d, Y', strtotime($announcement['display_from'])) ?> - 
+                                    <?= date('M d, Y', strtotime($announcement['display_from'] . ' + ' . $announcement['display_duration'] . ' days')) ?>
                                 </small>
                             </li>
                         <?php endforeach; ?>
@@ -375,7 +349,6 @@ $conn->close();
     });
 
     $(document).ready(function() {
-        // Sidebar toggle
         $("#sidebar-toggle").click(function() {
             $("#sidebar").toggleClass("sidebar-collapsed");
             $("#main-content").toggleClass("content-expanded");
@@ -387,7 +360,6 @@ $conn->close();
             }
         });
 
-        // Navigation
         const navItems = document.querySelectorAll('.nav li');
         navItems.forEach(item => {
             item.addEventListener('click', function() {
@@ -402,132 +374,48 @@ $conn->close();
                 else if (page === 'Usersection') window.location.href = 'template.php';
             });
         });
-
-        // Modal controls
-        const modal = document.getElementById('announcementModal');
-        const openBtn = document.getElementById('openAnnouncementForm');
-        const closeBtn = document.querySelector('.close-modal');
-
-        // Improved modal opening  
-        openBtn.addEventListener('click', function() {
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
-            // Auto-set date to today
-            document.getElementById('display_from').valueAsDate = new Date();
-        });
-
-        // Improved modal closing
-        function closeModal() {
-            modal.style.display = 'none';
-            document.body.style.overflow = ''; // Re-enable scrolling
-        }
-
-        closeBtn.addEventListener('click', closeModal);
-
-        // Close when clicking outside the modal
-        window.addEventListener('click', function(event) {
-            if (event.target === modal) {
-                closeModal();
-            }
-        });
-
-        // Close on escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' && modal.style.display === 'block') {
-                closeModal();
-            }
-        });
     });
 
-    // Improved date filter for announcements
     document.getElementById('announcementDateFilter').addEventListener('change', function() {
-        const filterDate = this.value ? new Date(this.value) : null;
-        const items = document.querySelectorAll('.announcement-list li');
+        const filterDate = this.value;
+        const items = document.querySelectorAll('.cardlog ul li');
         let foundMatch = false;
         
-        // Remove any existing "no announcements" message
-        const existingMsg = document.querySelector('.cardlog > .no-announcements');
-        if (existingMsg) {
-            existingMsg.remove();
-        }
-        
-        if (!filterDate) {
-            // If no filter date selected, show all announcements
-            items.forEach(item => {
-                item.style.display = '';
-            });
-            return;
-        }
-        
-        // Set time to midnight for proper date comparison
-        filterDate.setHours(0, 0, 0, 0);
-        
         items.forEach(item => {
-            // Get the display range text from the announcement
-            const displayRangeText = item.querySelector('small').textContent.trim();
-            
+            const announcementDate = item.querySelector('small').innerText;
             // Extract display date range from the text
-            const startDateText = displayRangeText.split('Displays: ')[1].split(' - ')[0];
-            const endDateText = displayRangeText.split(' - ')[1];
+            const dateRangeText = announcementDate.split('Displays: ')[1];
+            const startDate = dateRangeText.split(' - ')[0];
+            const endDate = dateRangeText.split(' - ')[1];
             
-            // Parse dates properly
-            const startDate = new Date(startDateText);
-            const endDate = new Date(endDateText);
+            // Convert dates to comparable format (YYYY-MM-DD)
+            const startDateObj = new Date(startDate);
+            const endDateObj = new Date(endDate);
+            const filterDateObj = new Date(filterDate);
             
-            // Set times to midnight for proper comparison
-            startDate.setHours(0, 0, 0, 0);
-            endDate.setHours(0, 0, 0, 0);
-            
-            // Check if filter date falls within announcement display period (inclusive)
-            if (filterDate >= startDate && filterDate <= endDate) {
+            // Check if filter date falls within announcement display period
+            if (filterDate && (filterDateObj < startDateObj || filterDateObj > endDateObj)) {
+                item.style.display = 'none'; // Hide the item if date not in range
+            } else {
                 item.style.display = ''; // Show the item
                 foundMatch = true;
-            } else {
-                item.style.display = 'none'; // Hide the item
             }
         });
         
-        // Show message if no matching announcements for the selected date
-        if (!foundMatch && items.length > 0) {
-            const msg = document.createElement('p');
-            msg.className = 'no-announcements';
-            msg.textContent = 'No announcements found for the selected date.';
-            
-            const cardlog = document.querySelector('.cardlog');
-            const announcementList = document.querySelector('.announcement-list');
-            if (announcementList) {
-                cardlog.insertBefore(msg, announcementList);
-            } else {
-                cardlog.appendChild(msg);
+        // Show message if no matching announcements
+        const noAnnouncementsMsg = document.querySelector('.no-announcements');
+        if (!foundMatch && filterDate && items.length > 0) {
+            if (!noAnnouncementsMsg) {
+                const msg = document.createElement('p');
+                msg.className = 'no-announcements';
+                msg.textContent = 'No announcements found for the selected date.';
+                document.querySelector('.cardlog ul').before(msg);
             }
+        } else if (noAnnouncementsMsg && (foundMatch || !filterDate)) {
+            noAnnouncementsMsg.remove();
         }
     });
-    
-    // Add a clear filter button after the date filter
-    const dateFilterInput = document.getElementById('announcementDateFilter');
-    const clearBtn = document.createElement('button');
-    clearBtn.textContent = 'Show All';
-    clearBtn.className = 'clear-filter-btn';
-    clearBtn.style.marginLeft = '10px';
-    clearBtn.style.padding = '8px 12px';
-    clearBtn.style.background = '#00b0ff';
-    clearBtn.style.color = 'white';
-    clearBtn.style.border = 'none';
-    clearBtn.style.borderRadius = '4px';
-    clearBtn.style.cursor = 'pointer';
-    
-    dateFilterInput.parentNode.insertBefore(clearBtn, dateFilterInput.nextSibling);
-    
-    clearBtn.addEventListener('click', function() {
-        // Clear the date filter
-        dateFilterInput.value = '';
-        
-        // Trigger the change event to show all announcements
-        const event = new Event('change');
-        dateFilterInput.dispatchEvent(event);
-    });
 
-    // Clock update
     function updateClock() {
         const now = new Date();
         const timeString = now.toLocaleTimeString();

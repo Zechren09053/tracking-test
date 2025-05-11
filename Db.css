@@ -87,7 +87,7 @@ html,body{height:100%;width:100%;background-color:#1a1a1a;color:#f1f1f1;overflow
 .cardlog h3{font-size:22px;font-weight:bold;color:#00b0ff;margin-bottom:20px}
 .cardlog input[type="date"]{width:100%;padding:12px;font-size:16px;border:1px solid #444;border-radius:6px;background-color:#222;color:#fff;box-sizing:border-box;margin-bottom:15px;transition:border-color 0.3s ease}
 .cardlog input[type="date"]:focus{border-color:#00b0ff}
-.cardlog ul{padding-left:20px;list-style-type:disc;max-height:300px;overflow-y:scroll;padding-right:15px;-ms-overflow-style:none;scrollbar-width:none}
+.cardlog ul{padding-left:20px;list-style-type:disc;max-height:600px;overflow-y:scroll;padding-right:15px;-ms-overflow-style:none;scrollbar-width:none}
 .cardlog ul::-webkit-scrollbar{display:none}
 .cardlog ul li{margin-bottom:15px;color:#f1f1f1}
 .cardlog ul li strong{color:#00b0ff}
@@ -226,3 +226,46 @@ body { margin: 0; font-family: Arial, sans-serif; }
 #next-month, #prev-month { background-color: #1a1a1a; border: 1px solid #444; border-radius: 6px; color: #00b0ff; padding: 6px 10px; cursor: pointer; transition: background-color 0.2s, transform 0.2s; }
 #next-month:hover, #prev-month:hover { background-color: #003366; transform: scale(1.05); }
 #next-month i, #prev-month i { pointer-events: none; }
+
+
+
+
+.right-container { width: 30%; padding: 20px; background-color: #444; border-left: 1px solid #444; height: 100%; overflow-y: hidden; }
+.card, .cardlog { background-color: hsl(0, 0%, 16.5%); border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 20px; margin-bottom: 20px; }
+.card h3, .cardlog h3 { color: #00b0ff; margin: 0 0 15px; font-size: 18px; border-bottom: 2px solid #00b0ff; padding-bottom: 10px; }
+.card form div { margin-bottom: 15px; }
+.card label { display: block; margin-bottom: 5px; font-weight: 500; color: white; }
+.card input[type="text"], .card input[type="date"], .card input[type="number"], .card textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; transition: border 0.3s; }
+.card textarea { min-height: 100px; resize: vertical; }
+.card input:focus, .card textarea:focus { border-color: #00b0ff; outline: none; box-shadow: 0 0 0 2px rgba(0, 176, 255, 0.2); }
+.card button, .add-announcement-btn { background-color: #00b0ff; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: 500; transition: background-color 0.3s; }
+.card button:hover, .add-announcement-btn:hover { background-color: #0091ea; }
+.cardlog { height: 100%; max-height: 80vh; }
+#announcementDateFilter { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #555; border-radius: 4px; background-color: #333; color: white; }
+.cardlog ul { list-style-type: none; padding: 0; margin: 0; }
+.cardlog li { border-bottom: 1px solid #444; padding: 12px 0; position: relative; }
+.cardlog li:last-child { border-bottom: none; }
+.cardlog li strong { display: block; font-size: 16px; color: white; margin-bottom: 5px; }
+.cardlog li p { color: #ccc; margin: 5px 0 10px; line-height: 1.4; }
+.cardlog li small { display: block; color: #999; font-size: 12px; }
+.announcement-date { color: #00b0ff; font-weight: 500; margin-right: 10px; }
+.announcement-duration { background-color: #444; border-radius: 12px; padding: 2px 8px; font-size: 11px; color: #00b0ff; }
+.no-announcements { color: #999; text-align: center; padding: 20px 0; font-style: italic; }
+.announcement-meta { display: flex; align-items: center; margin-bottom: 5px; }
+.modal { display: none; position: fixed; z-index: 9999; width: 100vw;  overflow-y: auto; text-align: center; }
+.modal::before { content: ''; display: inline-block; height: 100%; vertical-align: middle; }
+.modal-content { display: inline-block; vertical-align: middle; background-color: hsl(0, 0%, 16.5%); text-align: left; padding: 25px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); width: 500px; max-width: 90%; animation: modalFadeIn 0.3s; position: relative; margin: 30px 0; }
+@keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.close-modal { color: #aaa; position: absolute; right: 20px; top: 15px; font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.2s; line-height: 28px; }
+.close-modal:hover { color: #00b0ff; }
+.modal-header { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #00b0ff; }
+.modal-header h3 { color: #00b0ff; margin: 0; font-size: 20px; }
+.modal-content form div { margin-bottom: 15px; }
+.modal-content label { display: block; margin-bottom: 8px; font-weight: 500; color: white; }
+.modal-content input[type="text"], .modal-content input[type="date"], .modal-content input[type="number"], .modal-content textarea { width: 100%; padding: 12px; border: 1px solid #555; border-radius: 4px; font-size: 15px; background-color: #333; color: white; transition: border 0.3s, box-shadow 0.3s; }
+.modal-content textarea { min-height: 120px; resize: vertical; }
+.modal-content input:focus, .modal-content textarea:focus { border-color: #00b0ff; outline: none; box-shadow: 0 0 0 2px rgba(0, 176, 255, 0.2); }
+.modal-content button[type="submit"] { background-color: #00b0ff; color: white; border: none; padding: 12px 20px; border-radius: 4px; cursor: pointer; font-weight: 500; transition: background-color 0.3s; width: 100%; margin-top: 10px; font-size: 16px; }
+.modal-content button[type="submit"]:hover { background-color: #0091ea; }
+.announcement-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.announcement-header h3 { margin: 0; }
