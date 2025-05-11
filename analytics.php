@@ -94,97 +94,234 @@ $conn->close();
         .chart-card {
             background: #444;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             padding: 20px;
             width: 100%;
             max-width: 500px;
             color: #fff;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
         .chart-card h3 {
             margin-bottom: 15px;
             font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-card h3 i {
+            color: #00b0ff;
         }
 
         .chart-card canvas {
             width: 100% !important;
-            height: 200px !important;
+            height: 180px !important;
         }
 
-        .info-box {
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .info-box, .audit-box {
             background-color: #2a2f3a;
             padding: 20px;
             border-radius: 10px;
             color: #f1f1f1;
             margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
         }
 
         .audit-box {
-            background-color: #2a2f3a;
-            padding: 20px;
-            border-radius: 10px;
-            color: #f1f1f1;
-            margin-bottom: 10px;
             margin-top: 20px;
         }
+
+        .info-box:hover, .audit-box:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
         .info-box {
-        background-color: #2a2f3a;
-        padding: 20px;
-        border-radius: 10px;
-        color: #f1f1f1;
-        margin-bottom: 10px;
-        text-align: center;
-        display: flex;
-        flex-direction: row;  /* Arrange elements in a row */
-        justify-content: space-between;  /* Distribute space evenly between elements */
-        align-items: center;  /* Vertically center the elements */
-        gap: 15px;  /* Add space between elements */
-    }
+            text-align: center;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
 
-    .info-box h3 {
-        margin-bottom: 0;
-        font-size: 22px;
-    }
+        .info-box h3 {
+            margin-bottom: 0;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    .report-selector {
-        display: flex;
-        flex-direction: column;  /* Stack label and dropdown vertically */
-        gap: 5px;
-    }
+        .info-box h3 i {
+            color: #00b0ff;
+        }
 
-    .report-selector label {
-        font-size: 16px;
-    }
+        .report-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
 
-    .report-selector select {
-        padding: 8px;
-        font-size: 16px;
-        background-color: #444;
-        color: #fff;
-        border: 1px solid #555;
-        border-radius: 5px;
-        width: 200px;  /* Adjust width for a neat look */
-    }
+        .report-selector label {
+            font-size: 16px;
+        }
 
-    .export-buttons {
-        display: flex;
-        gap: 10px;  /* Space between buttons */
-    }
+        .report-selector select {
+            padding: 8px;
+            font-size: 16px;
+            background-color: #444;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 5px;
+            width: 200px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
 
-    .export-btn {
-        background-color: #00b0ff;
-        color: #fff;
-        padding: 10px;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
+        .report-selector select:hover {
+            border-color: #00b0ff;
+        }
 
-    .export-btn:hover {
-        background-color: #008ac1;
-    }
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .export-btn {
+            background-color: #00b0ff;
+            color: #fff;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .export-btn:hover {
+            background-color: #008ac1;
+        }
+        
+        .audit-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .audit-table th, .audit-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #555;
+        }
+
+        .audit-table th {
+            background-color: #1e222c;
+            color: #00b0ff;
+        }
+
+        .audit-table tr:nth-child(even) {
+            background-color: #333942;
+        }
+
+        .audit-table tr:hover {
+            background-color: #464f5e;
+        }
+
+        .stat-box {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .chart-filter {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .time-filter {
+            background: #2a2f3a;
+            border: 1px solid #555;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .time-filter.active {
+            background: #00b0ff;
+            border-color: #00b0ff;
+        }
+
+        .time-filter:hover:not(.active) {
+            border-color: #00b0ff;
+        }
+
+        .loader {
+            display: none;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #00b0ff;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .chart-card.loading canvas {
+            opacity: 0.3;
+        }
+
+        .chart-card.loading .loader {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -270,85 +407,128 @@ $conn->close();
 
                 <div class="stats">
                     <div class="stat-box">
-                        <h2>Total Passengers</h2>
+                        <h2><i class="fas fa-users"></i> Total Passengers</h2>
                         <p><?= $total_passengers ?></p>
                         <div class="stat-change">↑ based on records</div>
                     </div>
                     <div class="stat-box">
-                        <h2>Active Passes</h2>
+                        <h2><i class="fas fa-id-card"></i> Active Passes</h2>
                         <p><?= $active_passes ?></p>
                         <div class="stat-change">Currently Valid</div>
                     </div>
                     <div class="stat-box">
-                        <h2>Active Ferries</h2>
+                        <h2><i class="fas fa-ship"></i> Active Ferries</h2>
                         <p><?= $active_ferries ?></p>
                         <div class="stat-change">In Operation Now</div>
                     </div>
                     <div class="stat-box">
-                        <h2>Average Occupancy</h2>
+                        <h2><i class="fas fa-percentage"></i> Average Occupancy</h2>
                         <p><?= $occupancy_percentage ?>%</p>
                         <div class="stat-change">Capacity Utilization</div>
                     </div>
                 </div>
 
                 <div class="charts">
-                    <div class="chart-card">
-                        <h3>Passenger Growth Over Time</h3>
+                    <div class="chart-card" id="passengerChartCard">
+                        <h3><i class="fas fa-chart-line"></i> Passenger Growth Over Time</h3>
+                        <div class="chart-filter">
+                            <button class="time-filter active" data-period="month">Monthly</button>
+                            <button class="time-filter" data-period="week">Weekly</button>
+                            <button class="time-filter" data-period="day">Daily</button>
+                        </div>
                         <canvas id="passengerChart"></canvas>
+                        <div class="loader"></div>
                     </div>
 
-                    <div class="chart-card">
-                        <h3>Tickets Sold Over Time</h3>
+                    <div class="chart-card" id="ticketChartCard">
+                        <h3><i class="fas fa-ticket-alt"></i> Tickets Sold Over Time</h3>
+                        <div class="chart-filter">
+                            <button class="time-filter active" data-period="month">Monthly</button>
+                            <button class="time-filter" data-period="week">Weekly</button>
+                            <button class="time-filter" data-period="day">Daily</button>
+                        </div>
                         <canvas id="ticketChart"></canvas>
+                        <div class="loader"></div>
                     </div>
                 </div>
 
                 <div class="auditlog">
                     <!-- Existing info box with Printout button -->
                     <div class="info-box">
-    <h3>Export Report</h3>
+                        <h3><i class="fas fa-file-export"></i> Export Report</h3>
 
-    <!-- Dropdown for selecting report type -->
-    <div class="report-selector">
-        <label for="reportType">Report Type:</label>
-        <select id="reportType" name="reportType">
-            <option value="boatLogs">Boat Logs</option>
-            <option value="boatMaintenance">Boat Maintenance</option>
-            <option value="ticketLogs">Ticket Logs</option>
-            <option value="repairLogs">Repair Logs</option>
-        </select>
-    </div>
+                        <!-- Dropdown for selecting report type -->
+                        <div class="report-selector">
+                            <label for="reportType">Report Type:</label>
+                            <select id="reportType" name="reportType">
+                                <option value="boatLogs">Boat Logs</option>
+                                <option value="boatMaintenance">Boat Maintenance</option>
+                                <option value="ticketLogs">Ticket Logs</option>
+                                <option value="repairLogs">Repair Logs</option>
+                            </select>
+                        </div>
 
-    <!-- Export buttons -->
-    <div class="export-buttons">
-        <button class="export-btn" onclick="exportPDF()">Export as PDF</button>
-        <button class="export-btn" onclick="exportExcel()">Export as Excel</button>
-        <button class="export-btn" onclick="exportCSV()">Export as CSV</button>
-        <button class="export-btn" onclick="exportPrint()">Print</button>
-    </div>
-</div>
+                        <!-- Export buttons -->
+                        <div class="export-buttons">
+                            <button class="export-btn" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+                            <button class="export-btn" onclick="exportExcel()"><i class="fas fa-file-excel"></i> Excel</button>
+                            <button class="export-btn" onclick="exportCSV()"><i class="fas fa-file-csv"></i> CSV</button>
+                            <button class="export-btn" onclick="exportPrint()"><i class="fas fa-print"></i> Print</button>
+                        </div>
+                    </div>
                     
                     <!-- New Audit Box -->
                     <div class="audit-box">
-                        <h3>Audit Log</h3>
-                        <p>Audit table is to be displayed here</p>
+                        <h3><i class="fas fa-history"></i> Audit Log</h3>
+                        
                         <!-- Audit Table (for illustration, you can populate this with dynamic data) -->
-                        <table border="1" style="width: 100%; margin-top: 20px;">
-                            <tr>
-                                <th>ID</th>
-                                <th>Action</th>
-                                <th>Timestamp</th>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>Login</td>
-                                <td>2025-05-10 12:34:56</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Updated Ferry Status</td>
-                                <td>2025-05-10 12:40:22</td>
-                            </tr>
+                        <table class="audit-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Entity</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditLogTable">
+                                <tr>
+                                    <td>1</td>
+                                    <td>Admin</td>
+                                    <td>Login</td>
+                                    <td>System</td>
+                                    <td>2025-05-10 12:34:56</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Admin</td>
+                                    <td>Updated Ferry Status</td>
+                                    <td>Ferry #3</td>
+                                    <td>2025-05-10 12:40:22</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Operator1</td>
+                                    <td>Changed Schedule</td>
+                                    <td>Route #2</td>
+                                    <td>2025-05-10 13:15:44</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>System</td>
+                                    <td>Automatic Backup</td>
+                                    <td>Database</td>
+                                    <td>2025-05-10 14:00:00</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>Admin</td>
+                                    <td>Added User</td>
+                                    <td>User #12</td>
+                                    <td>2025-05-11 09:22:17</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -365,6 +545,7 @@ $conn->close();
 
     <script>
        $(document).ready(function() {
+            // Sidebar toggle functionality
             $("#sidebar-toggle").click(function() {
                 $("#sidebar").toggleClass("sidebar-collapsed");
                 $("#main-content").toggleClass("content-expanded");
@@ -376,6 +557,7 @@ $conn->close();
                 }
             });
 
+            // Navigation click handlers
             const navItems = document.querySelectorAll('.nav li');
             navItems.forEach(item => {
                 item.addEventListener('click', function() {
@@ -390,134 +572,633 @@ $conn->close();
                     else if (page === 'Usersection') window.location.href = 'template.php';
                 });
             });
+
+            // Time filter functionality
+            $('.time-filter').click(function() {
+                const $this = $(this);
+                const $card = $this.closest('.chart-card');
+                const chartId = $card.find('canvas').attr('id');
+                const period = $this.data('period');
+                
+                // Update active state
+                $card.find('.time-filter').removeClass('active');
+                $this.addClass('active');
+                
+                // Show loading state
+                $card.addClass('loading');
+                
+                // Simulate data loading
+                setTimeout(() => {
+                    loadChartData(chartId, period);
+                    $card.removeClass('loading');
+                }, 800);
+            });
+
+            // Initialize charts
+            initCharts();
+
+            // Start the clock and stats update
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            fetchStatsData();
+            setInterval(fetchStatsData, 5000);
+
+            // Initialize audit log
+            fetchAuditLog();
         });
 
-        fetch('getChartData.php')
-    .then(res => res.json())
-    .then(data => {
-        const months = data.passengers.map(p => p.month);
-        const passengerCounts = data.passengers.map(p => p.passengers);
-        const ticketCounts = data.tickets.map(t => t.tickets);
+        // Chart initialization
+        let passengerChart;
+        let ticketChart;
 
-        new Chart(document.getElementById('passengerChart'), {
-            type: 'line',
-            data: {
-                labels: months,
-                datasets: [{
-                    label: 'Passengers',
-                    data: passengerCounts,
-                    borderColor: '#36a2eb',
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.3
-                }]
-            }
-        });
-
-        new Chart(document.getElementById('ticketChart'), {
-            type: 'bar',
-            data: {
-                labels: months,
-                datasets: [{
-                    label: 'Tickets Sold',
-                    data: ticketCounts,
-                    backgroundColor: '#4bc0c0'
-                }]
-            }
-        });
-    })
-    .catch(err => console.error('Chart fetch error:', err));
-
-        function fetchStatsData() {
-    $.ajax({
-        url: 'getStats.php',
-        method: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            const statBoxes = document.querySelectorAll('.stat-box');
-
-            if (statBoxes.length >= 4) {
-                statBoxes[0].querySelector('p').textContent = data.total_passengers;
-                statBoxes[1].querySelector('p').textContent = data.active_passes;
-                statBoxes[2].querySelector('p').textContent = data.active_ferries;
-                statBoxes[3].querySelector('p').textContent = data.occupancy_percentage + '%';
-            }
-        },
-        error: function() {
-            console.error('Failed to fetch stats');
+        function initCharts() {
+            // Chart.js global defaults
+            Chart.defaults.font.family = "'Arial', sans-serif";
+            Chart.defaults.font.size = 14;
+            Chart.defaults.color = "#c0c0c0";
+            Chart.defaults.elements.line.borderWidth = 3;
+            Chart.defaults.elements.point.radius = 4;
+            Chart.defaults.elements.point.hoverRadius = 6;
+            Chart.defaults.plugins.tooltip.backgroundColor = "rgba(20, 20, 20, 0.9)";
+            Chart.defaults.plugins.tooltip.padding = 10;
+            Chart.defaults.plugins.tooltip.cornerRadius = 4;
+            Chart.defaults.plugins.tooltip.titleFont.size = 16;
+            Chart.defaults.plugins.legend.display = false;
+            
+            // Define chart configurations
+            const passengerChartConfig = {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Passengers',
+                        data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Placeholder
+                        borderColor: '#36a2eb',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#36a2eb'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    if (value >= 1000) {
+                                        return value / 1000 + 'k';
+                                    }
+                                    return value;
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += new Intl.NumberFormat().format(context.parsed.y);
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            };
+            
+            const ticketChartConfig = {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Tickets Sold',
+                        data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Placeholder
+                        backgroundColor: '#4bc0c0',
+                        borderColor: '#4bc0c0',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        hoverBackgroundColor: '#3da8a8'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    if (value >= 1000) {
+                                        return value / 1000 + 'k';
+                                    }
+                                    return value;
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += new Intl.NumberFormat().format(context.parsed.y);
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            };
+            
+            // Create the charts
+            passengerChart = new Chart(
+                document.getElementById('passengerChart').getContext('2d'),
+                passengerChartConfig
+            );
+            
+            ticketChart = new Chart(
+                document.getElementById('ticketChart').getContext('2d'),
+                ticketChartConfig
+            );
+            
+            // Load initial data
+            loadChartData('passengerChart', 'month');
+            loadChartData('ticketChart', 'month');
         }
-    });
-}
 
-setInterval(fetchStatsData, 1000); // every 5 seconds
-fetchStatsData(); // also run immediately
-function updateClock() {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString();
-    const dateString = now.toLocaleDateString();
-    document.getElementById("clock").textContent = `${dateString} | ${timeString}`;
-  }
-  function exportPDF() {
-    const reportType = document.getElementById('reportType').value;
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    doc.text(`Exporting ${reportType} as PDF`, 20, 20);
-    // Add more content to the PDF as needed, such as table data, etc.
-    
-    doc.save(`${reportType}_Report.pdf`);
-}
+        // Function to load chart data with proper error handling
+        function loadChartData(chartId, period) {
+            // Show loading indicator
+            $(`#${chartId}`).closest('.chart-card').addClass('loading');
+            
+            // Generate sample data based on period if API fails
+            const sampleData = generateSampleData(period);
+            
+            // Try to fetch real data, fallback to sample data
+            fetch('getChartData.php?period=' + period)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateChart(chartId, data, period);
+                })
+                .catch(error => {
+                    console.error('Could not fetch chart data:', error);
+                    // Use sample data as fallback
+                    updateChart(chartId, sampleData, period);
+                })
+                .finally(() => {
+                    // Hide loading indicator
+                    $(`#${chartId}`).closest('.chart-card').removeClass('loading');
+                });
+        }
 
+        // Generate sample data for charts when API fails
+        function generateSampleData(period) {
+            let labels = [];
+            let passengerData = [];
+            let ticketData = [];
+            
+            if (period === 'month') {
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                passengerData = [2800, 3200, 2950, 3600, 4100, 4500, 5200, 4800, 5100, 5600, 6200, 5800];
+                ticketData = [1200, 1350, 1280, 1500, 1700, 1850, 2100, 1950, 2050, 2200, 2400, 2250];
+            } else if (period === 'week') {
+                labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                passengerData = [1200, 1450, 1380, 1650];
+                ticketData = [520, 580, 540, 620];
+            } else if (period === 'day') {
+                labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                passengerData = [520, 580, 610, 550, 690, 780, 410];
+                ticketData = [210, 250, 270, 240, 310, 350, 180];
+            }
+            
+            return {
+                passengers: { 
+                    labels: labels,
+                    data: passengerData
+                },
+                tickets: {
+                    labels: labels,
+                    data: ticketData
+                }
+            };
+        }
 
-    function exportExcel() {
-    const reportType = document.getElementById('reportType').value;
+        // Update chart with new data
+        function updateChart(chartId, data, period) {
+            if (chartId === 'passengerChart') {
+                // Get data from API response or use generated sample
+                const chartData = data.passengers || data.passengers;
+                
+                // Update chart labels and data
+                passengerChart.data.labels = chartData.labels || chartData.map(p => p.month || p.label);
+                passengerChart.data.datasets[0].data = chartData.data || chartData.map(p => p.passengers || p.value);
+                
+                // Update title based on period
+                let title = 'Passenger Growth ';
+                if (period === 'month') title += '(Monthly)';
+                else if (period === 'week') title += '(Weekly)';
+                else if (period === 'day') title += '(Daily)';
+                
+                passengerChart.options.plugins.title = {
+                    display: true,
+                    text: title,
+                    font: {
+                        size: 16
+                    },
+                    color: '#ffffff',
+                    padding: {
+                        bottom: 10
+                    }
+                };
+                
+                // Refresh chart
+                passengerChart.update();
+            } else if (chartId === 'ticketChart') {
+                // Get data from API response or use generated sample
+                const chartData = data.tickets || data.tickets;
+                
+                // Update chart labels and data
+                ticketChart.data.labels = chartData.labels || chartData.map(t => t.month || t.label);
+                ticketChart.data.datasets[0].data = chartData.data || chartData.map(t => t.tickets || t.value);
+                
+                // Update title based on period
+                let title = 'Tickets Sold ';
+                if (period === 'month') title += '(Monthly)';
+                else if (period === 'week') title += '(Weekly)';
+                else if (period === 'day') title += '(Daily)';
+                
+                ticketChart.options.plugins.title = {
+                    display: true,
+                    text: title,
+                    font: {
+                        size: 16
+                    },
+                    color: '#ffffff',
+                    padding: {
+                        bottom: 10
+                    }
+                };
+                
+                // Refresh chart
+                ticketChart.update();
+            }
+        }
 
-    // Example data structure (you would replace this with actual data)
-    const data = [
-        ["ID", "Name", "Date", "Status"],
-        [1, "Boat 1", "2025-05-10", "Active"],
-        [2, "Boat 2", "2025-05-11", "Inactive"]
-    ];
+        // Fetch latest stats data
+        function fetchStatsData() {
+            $.ajax({
+                url: 'getStats.php',
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    const statBoxes = document.querySelectorAll('.stat-box');
 
-    const ws = XLSX.utils.aoa_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, `${reportType} Report`);
-    
-    XLSX.writeFile(wb, `${reportType}_Report.xlsx`);
-}
+                    if (statBoxes.length >= 4) {
+                        // Animate the number change
+                        animateValue(statBoxes[0].querySelector('p'), parseInt(statBoxes[0].querySelector('p').textContent), data.total_passengers || parseInt(statBoxes[0].querySelector('p').textContent), 1000);
+                        animateValue(statBoxes[1].querySelector('p'), parseInt(statBoxes[1].querySelector('p').textContent), data.active_passes || parseInt(statBoxes[1].querySelector('p').textContent), 1000);
+                        animateValue(statBoxes[2].querySelector('p'), parseInt(statBoxes[2].querySelector('p').textContent), data.active_ferries || parseInt(statBoxes[2].querySelector('p').textContent), 1000);
+                        
+                        // For percentage, handle differently
+                        const currentOccupancy = parseFloat(statBoxes[3].querySelector('p').textContent);
+                        const newOccupancy = data.occupancy_percentage || currentOccupancy;
+                        animateValue(statBoxes[3].querySelector('p'), currentOccupancy, newOccupancy, 1000, '%');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to fetch stats:', error);
+                    // Could implement retry logic here
+                }
+            });
+        }
 
-    function exportCSV() {
-    const reportType = document.getElementById('reportType').value;
+        // Animate value changes
+        function animateValue(element, start, end, duration, suffix = '') {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const current = Math.floor(progress * (end - start) + start);
+                element.textContent = current + suffix;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
 
-    // Example data structure (you would replace this with actual data)
-    const data = [
-        ["ID", "Name", "Date", "Status"],
-        [1, "Boat 1", "2025-05-10", "Active"],
-        [2, "Boat 2", "2025-05-11", "Inactive"]
-    ];
+        // Fetch audit log data
+        function fetchAuditLog() {
+            // In a real app, this would fetch from an API
+            // For demo purposes, we'll just simulate a fetch with sample data
+            
+            // Show "loading" indicator if needed
+            // $('#auditLogTable').html('<tr><td colspan="5">Loading...</td></tr>');
+            
+            // Simulated delay to mimic API call
+            setTimeout(() => {
+                // Sample data is already in the HTML
+                console.log('Audit log refreshed');
+                
+                // In a real app, you'd update the table with fetched data
+                // $('#auditLogTable').html(generateAuditRows(data));
+            }, 500);
+        }
 
-    let csvContent = "data:text/csv;charset=utf-8,";
+        // Update the clock
+        function updateClock() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long',
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            };
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString('en-US', options);
+            document.getElementById("clock").innerHTML = `<i class="far fa-clock"></i> ${dateString} | ${timeString}`;
+        }
 
-    data.forEach((rowArray) => {
-        const row = rowArray.join(",");
-        csvContent += row + "\r\n"; // Add each row to the CSV string
-    });
+        // Export functions
+        function exportPDF() {
+            const reportType = document.getElementById('reportType').value;
+            const { jsPDF } = window.jspdf;
+            
+            if (!jsPDF) {
+                alert('PDF library not loaded. Please try again later.');
+                return;
+            }
+            
+            try {
+                const doc = new jsPDF();
+                
+                // Add header
+                doc.setFontSize(22);
+                doc.setTextColor(0, 127, 255);
+                doc.text(`Pasig River Ferry Service`, 105, 20, { align: 'center' });
+                
+                doc.setFontSize(16);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`${reportType.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} Report`, 105, 30, { align: 'center' });
+                
+                // Add date
+                doc.setFontSize(12);
+                doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, 40, { align: 'center' });
+                
+                // Add table header
+                doc.setFontSize(12);
+                doc.setTextColor(0, 127, 255);
+                doc.text("ID", 20, 60);
+                doc.text("Name", 40, 60);
+                doc.text("Date", 100, 60);
+                doc.text("Status", 160, 60);
+                
+                // Add line
+                doc.setLineWidth(0.5);
+                doc.line(20, 65, 190, 65);
+                
+                // Add sample data
+                doc.setTextColor(0, 0, 0);
+                doc.text("1", 20, 75);
+                doc.text("Boat 1", 40, 75);
+                doc.text("2025-05-10", 100, 75);
+                doc.text("Active", 160, 75);
+                
+                doc.text("2", 20, 85);
+                doc.text("Boat 2", 40, 85);
+                doc.text("2025-05-11", 100, 85);
+                doc.text("Inactive", 160, 85);
+                
+                // Save PDF
+                doc.save(`${reportType}_Report.pdf`);
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Failed to generate PDF. Please try again.');
+            }
+        }
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `${reportType}_Report.csv`);
-    link.click();
-}
+        function exportExcel() {
+            const reportType = document.getElementById('reportType').value;
+            
+            if (!XLSX) {
+                alert('Excel library not loaded. Please try again later.');
+                return;
+            }
+            
+            try {
+                // Example data structure (you would replace this with actual data)
+                const data = [
+                    ["ID", "Name", "Date", "Status"],
+                    [1, "Boat 1", "2025-05-10", "Active"],
+                    [2, "Boat 2", "2025-05-11", "Inactive"],
+                    [3, "Boat 3", "2025-05-12", "Maintenance"],
+                    [4, "Boat 4", "2025-05-13", "Active"],
+                    [5, "Boat 5", "2025-05-14", "Active"]
+                ];
 
-    function exportPrint() {
-        const reportType = document.getElementById('reportType').value;
-        alert(`Printing ${reportType}`);
-        window.print();
-    }
-  setInterval(updateClock, 1000);
-  updateClock(); // run once on load
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, `${reportType} Report`);
+                
+                // Add some styling (limited support in XLSX)
+                const headerStyle = {
+                    font: { bold: true, color: { rgb: "0066CC" } },
+                    fill: { fgColor: { rgb: "EEEEEE" } }
+                };
+                
+                // Apply styles (header row)
+                for (let i = 0; i < data[0].length; i++) {
+                    const cellRef = XLSX.utils.encode_cell({r: 0, c: i});
+                    if (!ws[cellRef].s) ws[cellRef].s = {};
+                    Object.assign(ws[cellRef].s, headerStyle);
+                }
+                
+                XLSX.writeFile(wb, `${reportType}_Report.xlsx`);
+            } catch (error) {
+                console.error('Error generating Excel:', error);
+                alert('Failed to generate Excel file. Please try again.');
+            }
+        }
+
+        function exportCSV() {
+            const reportType = document.getElementById('reportType').value;
+            
+            try {
+                // Example data structure (you would replace this with actual data)
+                const data = [
+                    ["ID", "Name", "Date", "Status"],
+                    [1, "Boat 1", "2025-05-10", "Active"],
+                    [2, "Boat 2", "2025-05-11", "Inactive"],
+                    [3, "Boat 3", "2025-05-12", "Maintenance"],
+                    [4, "Boat 4", "2025-05-13", "Active"],
+                    [5, "Boat 5", "2025-05-14", "Active"]
+                ];
+
+                let csvContent = "data:text/csv;charset=utf-8,";
+
+                data.forEach((rowArray) => {
+                    const row = rowArray.join(",");
+                    csvContent += row + "\r\n"; // Add each row to the CSV string
+                });
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `${reportType}_Report.csv`);
+                document.body.appendChild(link); // Required for Firefox
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                console.error('Error generating CSV:', error);
+                alert('Failed to generate CSV file. Please try again.');
+            }
+        }
+
+        function exportPrint() {
+            const reportType = document.getElementById('reportType').value;
+            
+            // Create a printable version
+            const printWindow = window.open('', '_blank');
+            
+            if (!printWindow) {
+                alert('Pop-up blocked. Please allow pop-ups for printing.');
+                return;
+            }
+            
+            const reportTitle = reportType.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+            
+            // Generate HTML content for printing
+            const printContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${reportTitle} Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        h1 { color: #0066CC; text-align: center; }
+                        p.date { text-align: center; margin-bottom: 30px; color: #666; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th { background-color: #f2f2f2; color: #0066CC; text-align: left; padding: 12px; }
+                        td { border-bottom: 1px solid #ddd; padding: 12px; }
+                        .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #666; }
+                        @media print {
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="no-print" style="text-align: center; margin-bottom: 20px;">
+                        <button onclick="window.print();" style="padding: 10px 20px; background: #0066CC; color: white; border: none; border-radius: 4px; cursor: pointer;">Print Report</button>
+                        <button onclick="window.close();" style="padding: 10px 20px; background: #999; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">Close</button>
+                    </div>
+                    
+                    <h1>Pasig River Ferry Service</h1>
+                    <h2 style="text-align: center;">${reportTitle} Report</h2>
+                    <p class="date">Generated on: ${new Date().toLocaleString()}</p>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Boat 1</td>
+                                <td>2025-05-10</td>
+                                <td>Active</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Boat 2</td>
+                                <td>2025-05-11</td>
+                                <td>Inactive</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Boat 3</td>
+                                <td>2025-05-12</td>
+                                <td>Maintenance</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Boat 4</td>
+                                <td>2025-05-13</td>
+                                <td>Active</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Boat 5</td>
+                                <td>2025-05-14</td>
+                                <td>Active</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="footer">
+                        <p>© 2025 Pasig River Ferry Service. All rights reserved.</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            printWindow.document.open();
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+        }
     </script>
 </body>
 </html>
