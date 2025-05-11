@@ -19,7 +19,7 @@ html,body{height:100%;width:100%;background-color:#1a1a1a;color:#f1f1f1;overflow
 .profile:hover .profile-info{max-width:none}
 .profile:hover{background-color:#333;cursor:pointer}
 .profile:hover .profile-name,.profile:hover .profile-email{color:#00b0ff}
-.main{flex:1;padding:30px;overflow-y:auto;height:100%}
+.main{flex:1;padding:30px;;height:100%}
 .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
 .header h1{font-size:24px;font-weight:600;color:#00b0ff}
 .stats{display:flex;gap:20px;margin-bottom:30px;flex-wrap:wrap}
@@ -44,7 +44,7 @@ html,body{height:100%;width:100%;background-color:#1a1a1a;color:#f1f1f1;overflow
 .status-active{background-color:#28a745}
 .status-inactive{background-color:#dc3545}
 .middle-row{display:flex;justify-content:space-between;align-items:flex-start;margin-top:8px;gap:10px}
-.left-info{font-size:12px;color:#aaa;flex:1}
+.left-info{font-size:12px;color:#ffffff;flex:1}
 .capacity-info{font-size:12px;color:#f1f1f1;font-weight:bold;text-align:right;white-space:nowrap}
 .main-layout{display:flex;min-height:100vh;overflow:hidden;padding-bottom:10px}
 .sidebar { width: 250px; height: 100%; background-color: #333; border-right: 1px solid #444; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 10px; box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03); position: relative; overflow-y: hidden; border-radius: 16px; }
@@ -77,7 +77,12 @@ html,body{height:100%;width:100%;background-color:#1a1a1a;color:#f1f1f1;overflow
 .content-area ::-webkit-scrollbar{width:8px}
 .content-area::-webkit-scrollbar-thumb{background-color:transparent}
 .content-area::-webkit-scrollbar-track{background-color:transparent}
-.right-container{width:30%;padding:20px;background-color:#494848;border-radius:16px;margin-top:90px}
+.right-container{width:30%;padding:20px;background-color:#494848;border-radius:16px;margin-top:90px; overflow-y: scroll;max-height: 80vh;}
+.right-container::-webkit-scrollbar { width: 10px; }
+.right-container::-webkit-scrollbar-track { background: #ccc; border-radius: 10px; }
+.right-container::-webkit-scrollbar-thumb { background-color: #666; border-radius: 10px; border: 2px solid #ccc; }
+.right-container::-webkit-scrollbar-thumb:hover { background-color: #444; }
+
 .cardlog{background-color:#292929;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.1);margin-bottom:20px;padding:20px;max-height:400px;overflow-y:scroll;position:relative}
 .cardlog h3{font-size:22px;font-weight:bold;color:#00b0ff;margin-bottom:20px}
 .cardlog input[type="date"]{width:100%;padding:12px;font-size:16px;border:1px solid #444;border-radius:6px;background-color:#222;color:#fff;box-sizing:border-box;margin-bottom:15px;transition:border-color 0.3s ease}
@@ -147,7 +152,7 @@ input[type="text"]:focus,input[type="number"]:focus{outline:none;border-color:#0
 .ferry-status input:checked+.slider{background-color:#4CAF50}
 .ferry-status input:checked+.slider:before{transform:translateX(20px)}
 .map-box{padding:10px;background-color:#444 ;border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,0.15);overflow:hidden;height:100%}
-#map{width:100%;height:100%;border-radius:12px}
+#map{width:100%;height:100%;border-radius:12px;}
 
 body { margin: 0; font-family: Arial, sans-serif; }
 .main-container { display: flex; flex-direction: column; }
@@ -169,3 +174,55 @@ body { margin: 0; font-family: Arial, sans-serif; }
 .header h1 { margin: 0 0 10px; }
 .sidebar-top { display: flex; flex-direction: column; height: 100%; justify-content: space-between; }
 .main-nav-container { flex-grow: 0; }
+
+.card form div { margin-bottom: 15px; }
+.card label { display: block; font-weight: bold; margin-bottom: 5px; color: #f5f5f5; }
+.card input[type="text"], .card input[type="date"], .card input[type="number"], .card textarea { width: 100%; padding: 8px 10px; font-size: 14px; border: 1px solid #413131; border-radius: 4px; box-sizing: border-box; background-color: #323131; transition: border-color 0.3s ease-in-out; }
+.card input[type="text"]:focus, .card input[type="date"]:focus, .card input[type="number"]:focus, .card textarea:focus { border-color: #007bff; outline: none; background-color: #4d4b4b; }
+.card button[type="submit"] { background-color: #007bff; color: white; padding: 10px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: background-color 0.3s ease; }
+.card button[type="submit"]:hover { background-color: #0056b3; }
+
+/* Updated layout CSS */
+.left-panel { display: flex; flex-direction: column; width: 380px; min-width: 380px; }
+.boat-list { width: 100%; background-color: #444; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); margin-bottom: 20px; overflow: hidden; }
+.boat-list-header { padding: 10px 15px; font-weight: bold; background-color: #333; border-bottom: 1px solid #444; color: #00b0ff; }
+.boat-list-body { max-height: 300px; overflow-y: auto; }
+.boat-card { padding: 12px; border-bottom: 1px solid #444; position: relative; cursor: pointer; transition: background-color 0.2s; color: #e0e0e0; }
+.boat-card:hover { background-color: #1890c3; }
+
+
+.tracking { display: flex; gap: 20px; }
+.calendar-container { width: 100%; max-width: 2000px; border-radius: 16px; background-color: #444; box-shadow: 0 4px 12px rgba(0,0,0,0.2); margin: 0px auto; padding: 20px; font-size: 12px; display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; box-sizing: border-box; }
+.calendar-section { flex: 1; min-width: 200px; max-width: 330px; }
+.calendar-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 8px; }
+.calendar-header h3 { margin: 0 0 8px 0; font-size: 14px; color: #00b0ff; }
+.calendar-nav { display: flex; justify-content: space-between; width: 100%; margin-bottom: 8px; }
+.calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: bold; font-size: 11px; color: #00b0ff; margin-bottom: 5px; }
+.calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); grid-gap: 2px; }
+.calendar-day { text-align: center; padding: 3px 0; font-size: 11px; cursor: default; border-radius: 4px; height: 18px; line-height: 18px; }
+.current-month { color: #e0e0e0; }
+.other-month { color: #666; }
+.today { background-color: #003366; font-weight: bold; }
+.has-event { background-color: rgba(0, 176, 255, 0.3); cursor: pointer; }
+.has-event:hover { background-color: rgba(0, 176, 255, 0.5); }
+.selected { background-color: #00b0ff; color: white; }
+.event-details { flex: 1; min-width: 300px; margin-left: 10px; border-left: 1px solid #000000; padding-left: 10px; max-height: none; overflow-y: auto; }
+.event-details h4 { margin: 0 0 8px 0; font-size: 13px; color: #00b0ff; }
+.event-item { border-left: 3px solid #00b0ff; padding-left: 5px; margin-bottom: 10px; background-color: rgba(0, 176, 255, 0.1); padding: 5px; border-radius: 4px; }
+.event-item h5 { margin: 2px 0; font-size: 12px; color: #e0e0e0; }
+.event-item p { margin: 2px 0; font-size: 11px; color: #ccc; }
+.date-range { color: #888; font-style: italic; font-size: 10px; }
+@media (max-width: 1200px) {
+    .tracking { flex-direction: column; }
+    .left-panel { width: 100%; max-width: 100%; }
+    .map { width: 100%; }
+    .calendar-container { flex-direction: column; }
+    .calendar-section { max-width: 100%; }
+    .event-details { margin-left: 0; margin-top: 10px; border-left: none; border-top: 1px solid #444; padding-left: 0; padding-top: 10px; }
+}
+@media (max-width: 768px) {
+    .left-panel { flex-direction: column; }
+}
+#next-month, #prev-month { background-color: #1a1a1a; border: 1px solid #444; border-radius: 6px; color: #00b0ff; padding: 6px 10px; cursor: pointer; transition: background-color 0.2s, transform 0.2s; }
+#next-month:hover, #prev-month:hover { background-color: #003366; transform: scale(1.05); }
+#next-month i, #prev-month i { pointer-events: none; }

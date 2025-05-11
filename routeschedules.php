@@ -46,7 +46,11 @@ while ($row = $result->fetch_assoc()) {
 
 // Fetch announcements
 $announcements = [];
-$announcements_sql = "SELECT * FROM announcements ORDER BY created_at DESC";
+$announcements_sql = "SELECT * FROM announcements
+    WHERE CURDATE() BETWEEN display_from AND DATE_ADD(display_from, INTERVAL display_duration DAY)
+    ORDER BY created_at DESC
+";
+
 $result = $conn->query($announcements_sql);
 while ($row = $result->fetch_assoc()) {
     $announcements[] = $row;
@@ -224,10 +228,19 @@ $conn->close();
             <textarea id="message" name="message" required></textarea>
         </div>
         <div>
+            <label for="display_from">Display From</label>
+            <input type="date" id="display_from" name="display_from" required>
+        </div>
+        <div>
+            <label for="display_duration">Display Duration (in days)</label>
+            <input type="number" id="display_duration" name="display_duration" min="1" required>
+        </div>
+        <div>
             <button type="submit">Add Announcement</button>
         </div>
     </form>
 </div>
+
 <div class="cardlog"> 
     <h3>Announcement Log</h3>
     

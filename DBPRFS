@@ -1,123 +1,182 @@
-CREATE TABLE ferries (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    operator VARCHAR(100),
-    status VARCHAR(50) NOT NULL DEFAULT 'inactive',
-    status_changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    active_time FLOAT,
-    latitude DECIMAL(9, 6),
-    longitude DECIMAL(9, 6),
-    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    max_capacity INT NOT NULL DEFAULT 30,  -- Max capacity of the ferry
-    current_capacity INT NOT NULL DEFAULT 0,  -- Current passengers on the ferry
-    speed FLOAT DEFAULT 0  -- Current speed of the ferry
+-- Create the announcements table with scheduling support
+CREATE TABLE `announcements` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(255) NOT NULL,
+  `message` TEXT NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  `display_from` DATE NOT NULL, -- When the announcement should start displaying
+  `display_duration` INT(11) NOT NULL, -- Number of days the announcement should remain visible
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Query to fetch currently active announcements
+SELECT *
+FROM `announcements`
+WHERE CURDATE() BETWEEN `display_from` AND DATE_ADD(`display_from`, INTERVAL `display_duration` DAY);
+
+
+
+
+CREATE TABLE `downstream_schedules` (
+  `id` int(11) NOT NULL,
+  `route_name` varchar(255) NOT NULL DEFAULT 'Pinagbuhatan → Escolta',
+  `row_id` int(11) NOT NULL,
+  `col_id` int(11) NOT NULL,
+  `station_name` varchar(255) NOT NULL,
+  `schedule_time` time NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `ferries` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `latitude` decimal(9,6) DEFAULT NULL,
+  `longitude` decimal(9,6) DEFAULT NULL,
+  `last_updated` timestamp NOT NULL DEFAULT current_timestamp(),
+  `active_time` float DEFAULT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'inactive',
+  `operator` varchar(100) DEFAULT NULL,
+  `status_changed_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `max_capacity` int(11) NOT NULL DEFAULT 30,
+  `current_capacity` int(11) NOT NULL DEFAULT 0,
+  `speed` float DEFAULT 0,
+  `route_index` int(11) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `ferry_locations` (
+  `id` int(11) NOT NULL,
+  `code` varchar(50) NOT NULL,
+  `latitude` decimal(10,8) NOT NULL,
+  `longitude` decimal(11,8) NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `ferry_logs` (
+  `id` int(11) NOT NULL,
+  `ferry_id` int(11) NOT NULL,
+  `trip_date` datetime DEFAULT current_timestamp(),
+  `passenger_count` int(11) NOT NULL,
+  `speed` float DEFAULT 0,
+  `latitude` decimal(9,6) DEFAULT NULL,
+  `longitude` decimal(9,6) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `ferry_routes` (
+  `id` int(11) NOT NULL,
+  `route_name` varchar(100) DEFAULT NULL,
+  `origin` varchar(50) DEFAULT NULL,
+  `destination` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `ferry_stops` (
+  `id` int(11) NOT NULL,
+  `route_id` int(11) DEFAULT NULL,
+  `stop_name` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `login_attempts` (
+  `ip_address` varchar(45) NOT NULL,
+  `attempts` int(11) NOT NULL DEFAULT 1,
+  `last_attempt` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `passenger_id_pass` (
+  `id` int(11) NOT NULL,
+  `passenger_id` int(11) NOT NULL,
+  `full_name` varchar(100) NOT NULL,
+  `birth_date` date NOT NULL,
+  `profile_image` varchar(255) DEFAULT NULL,
+  `email` varchar(100) NOT NULL,
+  `phone_number` varchar(20) NOT NULL,
+  `qr_code_data` varchar(255) NOT NULL,
+  `issued_at` datetime DEFAULT current_timestamp(),
+  `expires_at` datetime NOT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `last_used` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `staff_users` (
+  `staff_id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('super_admin','admin','employee') NOT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `middle_name` varchar(50) DEFAULT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `position` varchar(100) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `profile_pic` varchar(255) DEFAULT 'default.png'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `upstream_schedules` (
+  `id` int(11) NOT NULL,
+  `route_name` varchar(255) NOT NULL DEFAULT 'Escolta → Kalawaan',
+  `row_id` int(11) NOT NULL,
+  `col_id` int(11) NOT NULL,
+  `station_name` varchar(255) NOT NULL,
+  `schedule_time` time NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE boat_maintenance (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  ferry_id INT NOT NULL,
+  maintenance_date DATE NOT NULL,
+  maintenance_type VARCHAR(100) NOT NULL, -- e.g., "Engine Overhaul"
+  performed_by VARCHAR(100),
+  notes TEXT,
+  next_due_date DATE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (ferry_id) REFERENCES ferries(id)
 );
 
-ALTER TABLE ferries ADD route_index INT DEFAULT 0;
 
-CREATE TABLE staff_users (
-    staff_id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role ENUM('super_admin', 'admin', 'employee') NOT NULL,
-    first_name VARCHAR(50) NOT NULL,
-    middle_name VARCHAR(50),
-    last_name VARCHAR(50) NOT NULL,
-    position VARCHAR(100),
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    profile_pic VARCHAR(255) DEFAULT 'default.png'
+
+CREATE TABLE repair_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  ferry_id INT NOT NULL,
+  reported_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  repair_date DATE,
+  issue TEXT NOT NULL,
+  repair_action TEXT,
+  repaired_by VARCHAR(100),
+  cost DECIMAL(10,2),
+  status ENUM('Pending','In Progress','Completed') DEFAULT 'Pending',
+  FOREIGN KEY (ferry_id) REFERENCES ferries(id)
+);
+CREATE TABLE passengers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  full_name VARCHAR(100) NOT NULL,
+  email VARCHAR(100),
+  phone_number VARCHAR(20),
+  registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE passenger_id_pass (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    passenger_id INT NOT NULL,
-    full_name VARCHAR(100) NOT NULL,
-    birth_date DATE NOT NULL,
-    profile_image VARCHAR(255) DEFAULT NULL,  -- Path to profile image
-    email VARCHAR(100) NOT NULL,
-    phone_number VARCHAR(20) NOT NULL,
-    qr_code_data VARCHAR(255) NOT NULL UNIQUE,
-    issued_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    expires_at DATETIME NOT NULL,
-    is_active BOOLEAN DEFAULT TRUE,
-    last_used DATETIME NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  full_name VARCHAR(100) NOT NULL,
+  birth_date DATE NOT NULL,
+  profile_image VARCHAR(255),  -- optional, can be a file path or URL
+  email VARCHAR(100) NOT NULL UNIQUE,
+  phone_number VARCHAR(20) NOT NULL,
+  qr_code_data VARCHAR(255) NOT NULL,  -- this will be encoded in their QR
+  issued_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  expires_at DATETIME NOT NULL,
+  is_active TINYINT(1) DEFAULT 1,
+  last_used DATETIME DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE ferry_logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    ferry_id INT NOT NULL,
-    trip_date DATETIME DEFAULT CURRENT_TIMESTAMP,  -- When the log happened
-    passenger_count INT NOT NULL,                  -- Number of passengers at this time
-    speed FLOAT DEFAULT 0,                         -- Optional: Speed of ferry during the trip
-    latitude DECIMAL(9, 6),                        -- Optional: GPS location
-    longitude DECIMAL(9, 6),                       -- Optional: GPS location
-    FOREIGN KEY (ferry_id) REFERENCES ferries(id) ON DELETE CASCADE
-);
-SELECT 
-    MONTH(trip_date) AS month, 
-    YEAR(trip_date) AS year, 
-    SUM(passenger_count) AS total_passengers 
-FROM ferry_logs 
-GROUP BY YEAR(trip_date), MONTH(trip_date) 
-ORDER BY year, month;
 
 CREATE TABLE tickets (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    ticket_type VARCHAR(255) NOT NULL,
-    purchase_date DATETIME DEFAULT CURRENT_TIMESTAMP,  -- Timestamp for when the ticket was purchased
-    amount DECIMAL(10, 2) NOT NULL,  -- Price of the ticket
-    FOREIGN KEY (user_id) REFERENCES staff_users(id) ON DELETE CASCADE
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,  -- from users table
+  ferry_id INT NOT NULL, -- from ferries table
+  ticket_type VARCHAR(50) NOT NULL,  -- e.g., 'Regular', 'Student', 'Senior'
+  amount DECIMAL(10,2) NOT NULL,
+  purchase_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  valid_until DATETIME,  -- optional, for time-limited passes
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (ferry_id) REFERENCES ferries(id)
 );
-
-
-SELECT 
-    MONTH(purchase_date) AS month, 
-    YEAR(purchase_date) AS year, 
-    COUNT(*) AS total_tickets 
-FROM tickets 
-GROUP BY YEAR(purchase_date), MONTH(purchase_date) 
-ORDER BY year, month;
-
-CREATE TABLE upstream_schedules (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    route_name VARCHAR(255) NOT NULL DEFAULT 'Escolta → Kalawaan',
-    row_id INT NOT NULL,
-    col_id INT NOT NULL,
-    station_name VARCHAR(255) NOT NULL,
-    schedule_time TIME NOT NULL,
-    UNIQUE(route_name, row_id, col_id) -- Ensures each combination is unique
-);
-CREATE TABLE downstream_schedules (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    route_name VARCHAR(255) NOT NULL DEFAULT 'Pinagbuhatan → Escolta',
-    row_id INT NOT NULL,
-    col_id INT NOT NULL,
-    station_name VARCHAR(255) NOT NULL,
-    schedule_time TIME NOT NULL,
-    UNIQUE(route_name, row_id, col_id) -- Ensures each combination is unique
-);
-
-
-CREATE TABLE announcements (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    message TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-
-CREATE TABLE login_attempts (
-    ip_address VARCHAR(45) NOT NULL,
-    attempts INT NOT NULL DEFAULT 1,
-    last_attempt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (ip_address)
-);
-
 
 
 
@@ -143,6 +202,7 @@ proximity announcement
 
 
 
+print reports per station?/
 
 
 

@@ -1,34 +1,25 @@
 <?php
-session_start();
-$servername = "localhost";
-$db_username = "PRFS";
-$db_password = "1111";
-$dbname = "prfs";
+require 'db_connect.php';
 
-// Create DB connection
-$conn = new mysqli($servername, $db_username, $db_password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Handle the form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = $_POST['title'];
-    $message = $_POST['message'];
+    $title = $_POST['title'] ?? '';
+    $message = $_POST['message'] ?? '';
+    $display_from = $_POST['display_from'] ?? '';
+    $display_duration = intval($_POST['display_duration'] ?? 1);
 
-    // Insert the new announcement into the database
-    $sql = "INSERT INTO announcements (title, message) VALUES (?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $title, $message);
-
-    if ($stmt->execute()) {
-        // Redirect back to the dashboard
-        header("Location: routeschedules.php");
+    if (!empty($title) && !empty($message) && !empty($display_from) && $display_duration > 0) {
+        $stmt = $conn->prepare("INSERT INTO announcements (title, message, display_from, display_duration) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("sssi", $title, $message, $display_from, $display_duration);
+        if ($stmt->execute()) {
+            header("Location: routeschedules.php?success=1");
+            exit();
+        } else {
+            echo "Error: " . $stmt->error;
+        }
+        $stmt->close();
     } else {
-        echo "Error: " . $stmt->error;
+        echo "Please fill in all fields.";
     }
-
-    $stmt->close();
 }
 
 $conn->close();

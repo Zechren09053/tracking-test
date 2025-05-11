@@ -175,20 +175,54 @@ $conn->close();
 </div>
 
 
-                <div class="tracking">
-                    <div class="boat-list">
-                        <div class="boat-list-header">Ferry List</div>
-                        <div id="ferry-list" class="boat-list-body"></div>
-                    </div>
+<!-- Tracking section with ferry list and map side by side -->
+<div class="tracking">
+    <!-- Left panel: Ferry list only -->
+    <div class="left-panel">
+        <div class="boat-list">
+            <div class="boat-list-header">Ferry List</div>
+            <div id="ferry-list" class="boat-list-body"></div>
+        </div>
+    </div>
 
-                    <!-- Map Section -->
-                    <div class="map">
-    <div class="map-box">
-        <div id="map"></div>
+    <!-- Right panel: Map -->
+    <div class="map">
+        <div class="map-box">
+            <div id="map"></div>
+        </div>
     </div>
 </div>
 
-                </div>
+<!-- Bottom panel: Calendar + Event details -->
+<div class="calendar-container">
+    <div class="calendar-section">
+        <div class="calendar-header">
+            <h3>Calendar</h3>
+            <div class="calendar-nav">
+                <button id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                <span id="current-month-display">May 2025</span>
+                <button id="next-month"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+        <div class="calendar" id="announcements-calendar">
+            <div class="calendar-weekdays">
+                <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+            </div>
+            <div class="calendar-days" id="calendar-days">
+                <!-- Days will be filled in dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <div id="event-details" class="event-details">
+        <h4>Announcement Details</h4>
+        <div id="selected-event-details">
+            <p>Select a day with announcements to view details</p>
+        </div>
+    </div>
+</div>
+
+
             </div>
         </div>
     </div>
@@ -436,6 +470,232 @@ function updateClock() {
                 });
             });
         });
+        // Add this to your existing script section
+
+// Calendar functionality
+document.addEventListener('DOMContentLoaded', function() {
+    let currentDate = new Date();
+    let currentMonth = currentDate.getMonth();
+    let currentYear = currentDate.getFullYear();
+    let selectedDate = null;
+    let announcements = [];
+
+    // Initialize calendar
+    updateCalendar(currentMonth, currentYear);
+
+    // Navigation buttons
+    document.getElementById('prev-month').addEventListener('click', function() {
+        currentMonth--;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        updateCalendar(currentMonth, currentYear);
+    });
+
+    document.getElementById('next-month').addEventListener('click', function() {
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        updateCalendar(currentMonth, currentYear);
+    });
+
+    // Update the calendar view
+    function updateCalendar(month, year) {
+        const monthNames = [
+            "January", "February", "March", "April", "May", "June", 
+            "July", "August", "September", "October", "November", "December"
+        ];
+        
+        document.getElementById('current-month-display').textContent = `${monthNames[month]} ${year}`;
+        
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const daysInMonth = lastDay.getDate();
+        const startDayOfWeek = firstDay.getDay(); // 0 = Sunday
+        
+        // Clear calendar days
+        const calendarDays = document.getElementById('calendar-days');
+        calendarDays.innerHTML = '';
+        
+        // Fetch announcements for this month
+        fetchAnnouncements(month + 1, year, function() {
+            // Add previous month's days
+            let dayCounter = 0;
+            for (let i = 0; i < startDayOfWeek; i++) {
+                const prevMonthLastDay = new Date(year, month, 0).getDate();
+                const dayNum = prevMonthLastDay - startDayOfWeek + i + 1;
+                
+                const dayElement = createDayElement(dayNum, false);
+                calendarDays.appendChild(dayElement);
+                dayCounter++;
+            }
+            
+            // Add current month's days
+            for (let i = 1; i <= daysInMonth; i++) {
+                const currentDateCheck = new Date();
+                const isToday = i === currentDateCheck.getDate() && 
+                                month === currentDateCheck.getMonth() && 
+                                year === currentDateCheck.getFullYear();
+                
+                const dayElement = createDayElement(i, true, isToday);
+                
+                // Check if this day has announcements
+                const dateStr = formatDate(new Date(year, month, i));
+                const hasEvents = hasAnnouncementsOnDate(dateStr);
+                
+                if (hasEvents) {
+                    dayElement.classList.add('has-event');
+                    dayElement.setAttribute('data-date', dateStr);
+                    dayElement.addEventListener('click', function() {
+                        selectDate(dateStr, this);
+                    });
+                }
+                
+                calendarDays.appendChild(dayElement);
+                dayCounter++;
+            }
+            
+            // Add next month's days
+            const remainingCells = 42 - dayCounter; // 6 rows × 7 days = 42 cells
+            for (let i = 1; i <= remainingCells; i++) {
+                const dayElement = createDayElement(i, false);
+                calendarDays.appendChild(dayElement);
+            }
+        });
+    }
+
+    // Create a day element for the calendar
+    function createDayElement(dayNum, isCurrentMonth, isToday = false) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day';
+        dayElement.textContent = dayNum;
+        
+        if (isCurrentMonth) {
+            dayElement.classList.add('current-month');
+        } else {
+            dayElement.classList.add('other-month');
+        }
+        
+        if (isToday) {
+            dayElement.classList.add('today');
+        }
+        
+        return dayElement;
+    }
+
+    // Format date as YYYY-MM-DD
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Check if there are announcements on a specific date
+    function hasAnnouncementsOnDate(dateStr) {
+        const date = new Date(dateStr);
+        
+        return announcements.some(announcement => {
+            const startDate = new Date(announcement.display_from);
+            const endDate = new Date(announcement.end_date);
+            
+            return date >= startDate && date <= endDate;
+        });
+    }
+
+    // Select a date and show its announcements
+    function selectDate(dateStr, element) {
+        // Remove selection from previously selected element
+        if (selectedDate) {
+            const elements = document.querySelectorAll('.calendar-day.selected');
+            elements.forEach(el => el.classList.remove('selected'));
+        }
+        
+        // Add selection to new element
+        element.classList.add('selected');
+        selectedDate = dateStr;
+        
+        // Show announcements for this date
+        showAnnouncementsForDate(dateStr);
+    }
+
+    // Show announcements for a specific date
+    function showAnnouncementsForDate(dateStr) {
+        const date = new Date(dateStr);
+        const detailsContainer = document.getElementById('selected-event-details');
+        detailsContainer.innerHTML = '';
+        
+        const dateAnnouncements = announcements.filter(announcement => {
+            const startDate = new Date(announcement.display_from);
+            const endDate = new Date(announcement.end_date);
+            
+            return date >= startDate && date <= endDate;
+        });
+        
+        if (dateAnnouncements.length === 0) {
+            detailsContainer.innerHTML = '<p>No announcements for this day</p>';
+            return;
+        }
+        
+        dateAnnouncements.forEach(announcement => {
+            const eventItem = document.createElement('div');
+            eventItem.className = 'event-item';
+            
+            const title = document.createElement('h5');
+            title.textContent = announcement.title;
+            
+            const message = document.createElement('p');
+            message.textContent = announcement.message.length > 100 
+                ? announcement.message.substring(0, 100) + '...' 
+                : announcement.message;
+            
+            const dateRange = document.createElement('p');
+            dateRange.className = 'date-range';
+            dateRange.textContent = `${formatReadableDate(announcement.display_from)} - ${formatReadableDate(announcement.end_date)}`;
+            
+            eventItem.appendChild(title);
+            eventItem.appendChild(message);
+            eventItem.appendChild(dateRange);
+            
+            detailsContainer.appendChild(eventItem);
+        });
+    }
+
+    // Format date as readable string (May 11, 2025)
+    function formatReadableDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', {
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric'
+        });
+    }
+
+    // Fetch announcements from the server
+    function fetchAnnouncements(month, year, callback) {
+        $.ajax({
+            url: 'getAnnouncements.php',
+            method: 'GET',
+            data: {
+                month: month,
+                year: year
+            },
+            dataType: 'json',
+            success: function(data) {
+                announcements = data;
+                if (callback) callback();
+            },
+            error: function() {
+                console.error('Failed to fetch announcements');
+                announcements = [];
+                if (callback) callback();
+            }
+        });
+    }
+});
 </script>
 
 
