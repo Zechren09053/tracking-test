@@ -87,6 +87,13 @@ $conn->close();
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .chart-card.loading canvas { opacity: 0.3; }
         .chart-card.loading .loader { display: block; }
+        .audit-box { max-height: 430px; overflow-y: auto; overflow-x: hidden; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); margin-top: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+.audit-box::-webkit-scrollbar { width: 8px; }
+.audit-box::-webkit-scrollbar-track { background: #f1f1f1; }
+.audit-box::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+.audit-box::-webkit-scrollbar-thumb:hover { background: #555; }
+
+
     </style>
 </head>
 <body>
