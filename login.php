@@ -43,6 +43,7 @@ if ($_SESSION['login_attempts'] >= 3) {
     $user = trim($_POST['username']);
     $pass = $_POST['password'];
 
+    // Prepare query to fetch user details
     $stmt = $conn->prepare("SELECT staff_id, username, password, role, first_name, last_name FROM staff_users WHERE username = ? AND is_active = 1");
     $stmt->bind_param("s", $user);
     $stmt->execute();
@@ -54,6 +55,7 @@ if ($_SESSION['login_attempts'] >= 3) {
     if ($valid) {
         session_regenerate_id(true);
 
+        // Store user details in session
         $_SESSION['staff_id'] = $row['staff_id'];
         $_SESSION['username'] = $row['username'];
         $_SESSION['role'] = $row['role'];
@@ -61,8 +63,24 @@ if ($_SESSION['login_attempts'] >= 3) {
 
         $_SESSION['login_attempts'] = 0;
 
-        header("Location: Dashboard.php");
+        switch ($_SESSION['role']) {
+            case 'super_admin':
+                header("Location: Dashboard.php");
+                break;
+            case 'admin':
+                header("Location: Dashboard.php");
+                break;
+            case 'operator':
+                header("Location: track_ferry.php");
+                break;
+            case 'auditor':
+                header("Location: audit_dashboard.php"); // You can set this to the appropriate page for auditors
+                break;
+            default:
+                header("Location: Dashboard.php");
+        }
         exit();
+        
     } else {
         $error = "Invalid username or password.";
         $_SESSION['login_attempts']++;
@@ -74,6 +92,7 @@ if ($_SESSION['login_attempts'] >= 3) {
 
 $conn->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

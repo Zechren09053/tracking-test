@@ -104,173 +104,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Register | Ferry Admin</title>
     <link rel="stylesheet" href="Db.css">
     <style>
-        body {
-            background-color: #1f1f1f;
-            color: white;
-            font-family: Arial, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px 0;
-        }
+       body { background-color: #1f1f1f; color: white; font-family: Arial, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px 0; }
+.register-container { background-color: #2c2c2c; padding: 40px; border-radius: 16px; width: 100%; max-width: 450px; box-shadow: 0 0 20px rgba(0, 188, 212, 0.7); border: 2px solid #00bcd4; animation: subtle-pulse 4s infinite; }
+@keyframes subtle-pulse { 0% { box-shadow: 0 0 15px rgba(0, 188, 212, 0.6); } 50% { box-shadow: 0 0 25px rgba(0, 188, 212, 0.8); } 100% { box-shadow: 0 0 15px rgba(0, 188, 212, 0.6); } }
+.register-container h2 { text-align: center; margin-bottom: 30px; color: #00bcd4; font-size: 24px; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; margin-bottom: 6px; font-size: 14px; color: #ccc; }
+.input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+.input-group .form-group { flex: 1; margin-bottom: 0; }
+.register-container input, .register-container select { width: 100%; padding: 12px; border: none; border-radius: 8px; background-color: #3a3a3a; color: white; font-size: 15px; transition: all 0.3s ease; }
+.register-container input:focus, .register-container select:focus { outline: none; box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.5); background-color: #444; }
+.register-container input[type="submit"] { background-color: #00bcd4; font-weight: bold; cursor: pointer; padding: 14px; margin-top: 10px; font-size: 16px; transition: all 0.3s ease; }
+.register-container input[type="submit"]:hover { background-color: #00acc1; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
+.register-container input[type="submit"]:active { transform: translateY(0); }
+.message { text-align: center; margin-top: 20px; padding: 10px; border-radius: 8px; }
+.message.success { background-color: rgba(0, 128, 0, 0.2); color: lightgreen; }
+.message.error { background-color: rgba(255, 0, 0, 0.2); color: #ff6b6b; }
+.feedback { font-size: 12px; margin-top: 5px; min-height: 18px; transition: all 0.3s ease; }
+.strength-meter { height: 4px; width: 100%; background-color: #444; margin-top: 8px; border-radius: 2px; position: relative; overflow: hidden; }
+.strength-meter .fill { height: 100%; transition: width 0.3s ease, background-color 0.3s ease; width: 0; background-color: red; }
+.login-link { text-align: center; margin-top: 20px; font-size: 14px; color: #ccc; }
+.login-link a { color: #00bcd4; text-decoration: none; }
+.login-link a:hover { text-decoration: underline; }
+.dev-mode { position: fixed; top: 10px; right: 10px; background-color: #ff5722; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; z-index: 1000; }
 
-        .register-container {
-            background-color: #2c2c2c;
-            padding: 40px;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 0 20px rgba(0, 188, 212, 0.7);
-            border: 2px solid #00bcd4;
-            animation: subtle-pulse 4s infinite;
-        }
-
-        @keyframes subtle-pulse {
-            0% { box-shadow: 0 0 15px rgba(0, 188, 212, 0.6); }
-            50% { box-shadow: 0 0 25px rgba(0, 188, 212, 0.8); }
-            100% { box-shadow: 0 0 15px rgba(0, 188, 212, 0.6); }
-        }
-
-        .register-container h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #00bcd4;
-            font-size: 24px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 14px;
-            color: #ccc;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .input-group .form-group {
-            flex: 1;
-            margin-bottom: 0;
-        }
-
-        .register-container input,
-        .register-container select {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background-color: #3a3a3a;
-            color: white;
-            font-size: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .register-container input:focus,
-        .register-container select:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.5);
-            background-color: #444;
-        }
-
-        .register-container input[type="submit"] {
-            background-color: #00bcd4;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 14px;
-            margin-top: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .register-container input[type="submit"]:hover {
-            background-color: #00acc1;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .register-container input[type="submit"]:active {
-            transform: translateY(0);
-        }
-
-        .message {
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        .message.success {
-            background-color: rgba(0, 128, 0, 0.2);
-            color: lightgreen;
-        }
-
-        .message.error {
-            background-color: rgba(255, 0, 0, 0.2);
-            color: #ff6b6b;
-        }
-
-        .feedback {
-            font-size: 12px;
-            margin-top: 5px;
-            min-height: 18px;
-            transition: all 0.3s ease;
-        }
-
-        .strength-meter {
-            height: 4px;
-            width: 100%;
-            background-color: #444;
-            margin-top: 8px;
-            border-radius: 2px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .strength-meter .fill {
-            height: 100%;
-            transition: width 0.3s ease, background-color 0.3s ease;
-            width: 0;
-            background-color: red;
-        }
-
-        .login-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #ccc;
-        }
-
-        .login-link a {
-            color: #00bcd4;
-            text-decoration: none;
-        }
-
-        .login-link a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Developer mode indicator */
-        .dev-mode {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background-color: #ff5722;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            z-index: 1000;
-        }
     </style>
 </head>
 <body>
@@ -324,9 +181,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="form-group">
             <label for="role">Role</label>
             <select id="role" name="role">
-                <option value="employee" <?= (isset($_POST['role']) && $_POST['role'] === 'employee') ? 'selected' : '' ?>>Employee</option>
-                <option value="admin" <?= (isset($_POST['role']) && $_POST['role'] === 'admin') ? 'selected' : '' ?>>Admin</option>
+    <option value="employee" <?= (isset($_POST['role']) && $_POST['role'] === 'employee') ? 'selected' : '' ?>>Employee</option>
+    <option value="admin" <?= (isset($_POST['role']) && $_POST['role'] === 'admin') ? 'selected' : '' ?>>Admin</option>
+    <option value="operator" <?= (isset($_POST['role']) && $_POST['role'] === 'operator') ? 'selected' : '' ?>>Operator</option>
+    <option value="auditor" <?= (isset($_POST['role']) && $_POST['role'] === 'auditor') ? 'selected' : '' ?>>Auditor</option>
             </select>
+
         </div>
 
         <input type="submit" value="Register" id="submit-btn">

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 10, 2025 at 04:48 PM
+-- Generation Time: May 12, 2025 at 01:06 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -88,20 +88,54 @@ CREATE TABLE `announcements` (
   `id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
   `message` text NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `display_from` date NOT NULL,
+  `display_duration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `announcements`
 --
 
-INSERT INTO `announcements` (`id`, `title`, `message`, `created_at`) VALUES
-(1, 'New Announcement', 'test 1 announce ', '2025-05-07 13:44:42'),
-(2, 'New Announcement2', 'adawd1dawda', '2025-05-07 13:45:37'),
-(3, '3', '3', '2025-05-07 13:54:44'),
-(4, '4', '4', '2025-05-07 13:54:46'),
-(5, '5', 'weqweqwe', '2025-05-07 15:48:03'),
-(6, '6', '667', '2025-05-09 01:00:33');
+INSERT INTO `announcements` (`id`, `title`, `message`, `created_at`, `display_from`, `display_duration`) VALUES
+(4, 'Ferry Maintenance', 'Ferry 1 will be under maintenance', '2025-05-11 14:17:14', '2025-05-15', 3),
+(5, 'Service Interruption', 'No service at Guadalupe station due to repairs', '2025-05-11 14:17:14', '2025-05-20', 5),
+(6, 'Special Schedule', 'Holiday schedule in effect for Independence Day', '2025-05-11 14:17:14', '2025-06-12', 1),
+(7, 'New Ferry Service', 'Additional ferry service added to Escolta route', '2025-05-11 14:17:14', '2025-05-10', 14),
+(8, 'test2', 'to test', '2025-05-11 18:20:47', '2025-05-13', 1),
+(9, '123123123', '3123', '2025-05-11 18:21:29', '2025-05-13', 1),
+(10, '123', '1231', '2025-05-11 18:33:32', '2025-05-13', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `boat_maintenance`
+--
+
+CREATE TABLE `boat_maintenance` (
+  `id` int(11) NOT NULL,
+  `ferry_id` int(11) NOT NULL,
+  `maintenance_date` date NOT NULL,
+  `maintenance_type` varchar(100) NOT NULL,
+  `maintenance_type_detail` varchar(100) DEFAULT NULL,
+  `performed_by` varchar(100) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `parts_replaced` text DEFAULT NULL,
+  `cost` decimal(10,2) DEFAULT 0.00,
+  `status` enum('Scheduled','In Progress','Completed','Skipped') DEFAULT 'Scheduled',
+  `next_due_date` date DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `boat_maintenance`
+--
+
+INSERT INTO `boat_maintenance` (`id`, `ferry_id`, `maintenance_date`, `maintenance_type`, `maintenance_type_detail`, `performed_by`, `notes`, `parts_replaced`, `cost`, `status`, `next_due_date`, `created_at`) VALUES
+(1, 1, '2025-05-01', 'Engine Check', NULL, 'Juan Dela Cruz', 'Routine engine inspection. All clear.', NULL, 0.00, 'Scheduled', '2025-08-01', '2025-05-11 04:30:29'),
+(2, 2, '2025-04-20', 'Hull Cleaning', NULL, 'Pedro Santos', 'Cleaned algae buildup. Improved efficiency.', NULL, 0.00, 'Scheduled', '2025-07-20', '2025-05-11 04:30:29'),
+(3, 1, '2025-01-15', 'Propeller Maintenance', NULL, 'MarineTech Co.', 'Replaced worn-out propeller blade.', NULL, 0.00, 'Scheduled', '2025-06-15', '2025-05-11 04:30:29'),
+(4, 1, '2024-04-25', 'Engine Overhaul', 'Engine Oil Change', NULL, 'Routine monthly checkup', 'Oil filter, fuel filter', 15000.00, 'Completed', NULL, '2025-05-11 22:42:32');
 
 -- --------------------------------------------------------
 
@@ -129,7 +163,7 @@ INSERT INTO `downstream_schedules` (`id`, `route_name`, `row_id`, `col_id`, `sta
 (4, 'Kalawaan → Escolta', 1, 4, 'Hulo', '06:25:00'),
 (5, 'Kalawaan → Escolta', 1, 5, 'Valenzuela', '06:28:00'),
 (6, 'Kalawaan → Escolta', 1, 6, 'Lambingan', '06:35:00'),
-(7, 'Kalawaan → Escolta', 1, 7, 'Sta. Ana', '06:39:00'),
+(7, 'Kalawaan → Escolta', 1, 7, 'Sta. Ana', '06:40:00'),
 (8, 'Kalawaan → Escolta', 1, 8, 'PUP', '06:46:00'),
 (9, 'Kalawaan → Escolta', 1, 9, 'Quinta', '07:00:00'),
 (10, 'Kalawaan → Escolta', 1, 10, 'Lawton', '07:03:00'),
@@ -210,16 +244,36 @@ INSERT INTO `downstream_schedules` (`id`, `route_name`, `row_id`, `col_id`, `sta
 CREATE TABLE `ferries` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
+  `ferry_code` varchar(20) DEFAULT NULL,
   `latitude` decimal(9,6) DEFAULT NULL,
   `longitude` decimal(9,6) DEFAULT NULL,
   `last_updated` timestamp NOT NULL DEFAULT current_timestamp(),
   `active_time` float DEFAULT NULL,
   `status` varchar(20) NOT NULL DEFAULT 'inactive',
   `operator` varchar(100) DEFAULT NULL,
+  `ferry_type` enum('passenger','cargo','mixed') DEFAULT 'passenger',
   `status_changed_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `max_capacity` int(11) NOT NULL DEFAULT 30,
+  `cargo_capacity` int(11) DEFAULT 0,
   `current_capacity` int(11) NOT NULL DEFAULT 0,
+  `length` decimal(6,2) DEFAULT NULL,
+  `width` decimal(6,2) DEFAULT NULL,
   `speed` float DEFAULT 0,
+  `max_speed` decimal(6,2) DEFAULT NULL,
+  `fuel_type` enum('diesel','gasoline','electric','hybrid','other') DEFAULT 'diesel',
+  `engine_power` int(11) DEFAULT NULL,
+  `engine_count` int(11) DEFAULT 1,
+  `manufacturer` varchar(100) DEFAULT NULL,
+  `model` varchar(100) DEFAULT NULL,
+  `year_built` int(11) DEFAULT NULL,
+  `hull_material` enum('steel','aluminum','fiberglass','wood','composite','other') DEFAULT NULL,
+  `registration_number` varchar(50) DEFAULT NULL,
+  `registration_date` date DEFAULT NULL,
+  `last_inspection_date` date DEFAULT NULL,
+  `next_inspection_date` date DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `image_path` varchar(255) DEFAULT NULL,
+  `registration_document_path` varchar(255) DEFAULT NULL,
   `route_index` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -227,15 +281,19 @@ CREATE TABLE `ferries` (
 -- Dumping data for table `ferries`
 --
 
-INSERT INTO `ferries` (`id`, `name`, `latitude`, `longitude`, `last_updated`, `active_time`, `status`, `operator`, `status_changed_at`, `max_capacity`, `current_capacity`, `speed`, `route_index`) VALUES
-(1, 'Ferry 001', 14.559700, 121.066400, '2025-05-09 07:51:04', 2, 'active', NULL, '2025-05-10 14:29:11', 30, 27, 0, 5),
-(2, 'Ferry 215', 14.553300, 121.080600, '2025-05-09 07:51:04', NULL, 'active', NULL, '2025-05-10 14:29:10', 30, 0, 0, 5),
-(3, 'Ferry 212', 14.554200, 121.075000, '2025-05-07 16:57:25', NULL, 'active', NULL, '2025-05-10 14:29:08', 30, 24, 0, 5),
-(4, 'Ferry 241', 14.553300, 121.080600, '2025-05-09 07:51:04', NULL, 'inactive', NULL, '2025-05-07 15:57:16', 30, 0, 0, 5),
-(8, 'Ferry 4', 14.564400, 121.059200, '2025-05-07 16:57:25', NULL, 'inactive', 'RE', '2025-05-09 08:01:10', 23, 0, 0, 0),
-(14, 'Ferry Alpha', 14.555000, 121.073100, '2025-05-09 07:51:04', 3.5, 'active', 'Pasig River Transport Inc.', '2025-05-09 01:23:47', 40, 25, 12.4, 1),
-(15, 'Ferry Bravo', 14.562200, 121.061400, '2025-05-09 07:51:04', 2.8, 'inactive', 'Metro Ferries Co.', '2025-05-09 01:23:47', 35, 18, 10.2, 2),
-(16, 'Ferry Charlie', NULL, NULL, '2025-05-09 01:23:47', 0, 'inactive', 'Pasig River Transport Inc.', '2025-05-09 01:23:47', 30, 0, 0, 3);
+INSERT INTO `ferries` (`id`, `name`, `ferry_code`, `latitude`, `longitude`, `last_updated`, `active_time`, `status`, `operator`, `ferry_type`, `status_changed_at`, `max_capacity`, `cargo_capacity`, `current_capacity`, `length`, `width`, `speed`, `max_speed`, `fuel_type`, `engine_power`, `engine_count`, `manufacturer`, `model`, `year_built`, `hull_material`, `registration_number`, `registration_date`, `last_inspection_date`, `next_inspection_date`, `notes`, `image_path`, `registration_document_path`, `route_index`) VALUES
+(1, 'Ferry 001', 'PX-001', 14.566017, 121.048317, '2025-05-12 11:04:27', 2584, 'active', NULL, 'passenger', '2025-05-12 03:08:35', 30, 0, 27, 35.50, 7.20, 0, 22.50, 'diesel', 1200, 2, 'PhilShip Co.', 'PS-2023', 2020, 'steel', 'REG-998877', '2021-06-15', '2024-05-01', '2025-05-01', 'Underwent full repainting in April 2024.', 'uploads/ferries/px001.jpg', 'uploads/docs/px001_reg.pdf', 5),
+(2, 'Ferry 215', NULL, 14.553300, 121.080600, '2025-05-12 10:34:29', 2582, 'active', NULL, 'passenger', '2025-05-12 03:09:07', 30, 0, 0, NULL, NULL, 0, NULL, 'diesel', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 5),
+(3, 'Ferry 212', NULL, 14.554200, 121.075000, '2025-05-07 16:57:25', NULL, 'inactive', NULL, 'passenger', '2025-05-10 15:54:00', 30, 0, 24, NULL, NULL, 0, NULL, 'diesel', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 5),
+(4, 'Ferry 241', NULL, 14.553300, 121.080600, '2025-05-09 07:51:04', NULL, 'inactive', NULL, 'passenger', '2025-05-11 11:30:01', 30, 0, 0, NULL, NULL, 0, NULL, 'diesel', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 5),
+(8, 'Ferry 4', NULL, 14.564400, 121.059200, '2025-05-12 10:34:29', 4915, 'active', 'RE', 'passenger', '2025-05-10 23:43:20', 23, 0, 0, NULL, NULL, 0, NULL, 'diesel', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0),
+(14, 'Ferry Alpha', NULL, 14.555000, 121.073100, '2025-05-12 10:34:29', 2585, 'active', 'Pasig River Transport Inc.', 'passenger', '2025-05-09 01:23:47', 40, 0, 25, NULL, NULL, 12.4, NULL, 'diesel', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
+(15, 'Ferry Bravo', NULL, 14.562200, 121.061400, '2025-05-12 10:34:29', 2584, 'active', 'Metro Ferries Co.', 'passenger', '2025-05-10 23:43:30', 35, 0, 18, NULL, NULL, 10.2, NULL, 'diesel', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2),
+(16, 'Ferry Charlie', NULL, NULL, NULL, '2025-05-12 10:34:29', 2969, 'active', 'Pasig River Transport Inc.', 'passenger', '2025-05-11 13:21:22', 30, 0, 0, NULL, NULL, 0, NULL, 'diesel', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 3),
+(17, 'Ferry A', NULL, NULL, NULL, '2025-05-12 10:34:29', 0, 'active', NULL, 'passenger', '2025-05-12 02:54:11', 30, 0, 0, NULL, NULL, 0, NULL, 'diesel', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0),
+(18, 'Ferry B', NULL, NULL, NULL, '2025-05-12 10:34:29', 0, 'active', NULL, 'passenger', '2025-05-12 02:54:07', 30, 0, 0, NULL, NULL, 0, NULL, 'diesel', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0),
+(19, 'Ferry C', NULL, NULL, NULL, '2025-05-11 17:11:42', NULL, 'inactive', NULL, 'passenger', '2025-05-11 17:11:42', 30, 0, 0, NULL, NULL, 0, NULL, 'diesel', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0),
+(20, 'Ferry Alpha', 'PRFS001', NULL, NULL, '2025-05-12 09:36:09', NULL, 'inactive', 'John Doe', 'passenger', '2025-05-12 09:36:09', 100, 0, 0, NULL, NULL, 0, NULL, 'diesel', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0);
 
 --
 -- Triggers `ferries`
@@ -248,6 +306,71 @@ CREATE TRIGGER `update_status_timestamp` BEFORE UPDATE ON `ferries` FOR EACH ROW
 END
 $$
 DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ferry_assignments`
+--
+
+CREATE TABLE `ferry_assignments` (
+  `id` int(11) NOT NULL,
+  `ferry_id` int(11) NOT NULL,
+  `route_id` int(11) NOT NULL,
+  `assigned_date` date NOT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `notes` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ferry_crew`
+--
+
+CREATE TABLE `ferry_crew` (
+  `id` int(11) NOT NULL,
+  `ferry_id` int(11) NOT NULL,
+  `staff_id` int(11) NOT NULL,
+  `role` enum('captain','engineer','crew','attendant') NOT NULL,
+  `assigned_date` date NOT NULL,
+  `end_date` date DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ferry_crew`
+--
+
+INSERT INTO `ferry_crew` (`id`, `ferry_id`, `staff_id`, `role`, `assigned_date`, `end_date`, `is_active`) VALUES
+(4, 1, 1, 'captain', '2025-05-12', NULL, 1),
+(5, 1, 104, 'captain', '2025-05-12', NULL, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ferry_fuel_logs`
+--
+
+CREATE TABLE `ferry_fuel_logs` (
+  `id` int(11) NOT NULL,
+  `ferry_id` int(11) NOT NULL,
+  `refuel_date` datetime NOT NULL,
+  `fuel_amount` decimal(10,2) NOT NULL,
+  `fuel_type` enum('diesel','gasoline','other') NOT NULL,
+  `cost_per_unit` decimal(10,2) NOT NULL,
+  `total_cost` decimal(10,2) NOT NULL,
+  `odometer_reading` int(11) DEFAULT NULL,
+  `recorded_by` int(11) DEFAULT NULL,
+  `notes` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ferry_fuel_logs`
+--
+
+INSERT INTO `ferry_fuel_logs` (`id`, `ferry_id`, `refuel_date`, `fuel_amount`, `fuel_type`, `cost_per_unit`, `total_cost`, `odometer_reading`, `recorded_by`, `notes`) VALUES
+(2, 1, '2024-05-05 08:30:00', 200.00, 'diesel', 55.00, 11000.00, 103450, NULL, 'Initial fuel log entry');
 
 -- --------------------------------------------------------
 
@@ -427,7 +550,13 @@ INSERT INTO `ferry_logs` (`id`, `ferry_id`, `trip_date`, `passenger_count`, `spe
 (117, 1, '2025-01-10 23:44:01', 24, 13.54, 14.588156, 121.053081),
 (118, 1, '2025-03-07 10:38:08', 22, 13.45, 14.581330, 121.059394),
 (119, 1, '2025-03-22 11:10:15', 16, 10.97, 14.588733, 121.058817),
-(120, 2, '2025-02-05 02:52:57', 24, 11.12, 14.588042, 121.054616);
+(120, 2, '2025-02-05 02:52:57', 24, 11.12, 14.588042, 121.054616),
+(121, 1, '2025-05-12 19:04:26', 0, 0, 14.670000, 121.050000),
+(122, 1, '2025-05-12 19:04:26', 0, 0, 14.670000, 121.050000),
+(123, 1, '2025-05-12 19:04:26', 0, 0, 14.670000, 121.050000),
+(124, 1, '2025-05-12 19:04:27', 0, 0, 14.566017, 121.048317),
+(125, 1, '2025-05-12 19:04:27', 0, 0, 14.566017, 121.048317),
+(126, 1, '2025-05-12 19:04:27', 0, 0, 14.566017, 121.048317);
 
 -- --------------------------------------------------------
 
@@ -450,6 +579,31 @@ CREATE TABLE `ferry_routes` (
 INSERT INTO `ferry_routes` (`id`, `route_name`, `origin`, `destination`, `created_at`) VALUES
 (1, 'Pinagbuhatan → Escolta', 'Pinagbuhatan', 'Escolta', '2025-05-05 12:45:37'),
 (2, 'Escolta → Kalawaan', 'Escolta', 'Kalawaan', '2025-05-05 12:45:37');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ferry_safety_equipment`
+--
+
+CREATE TABLE `ferry_safety_equipment` (
+  `id` int(11) NOT NULL,
+  `ferry_id` int(11) NOT NULL,
+  `equipment_type` enum('life_jackets','life_rafts','fire_extinguishers','first_aid','emergency_radio','other') NOT NULL,
+  `quantity` int(11) DEFAULT 1,
+  `last_inspection` date DEFAULT NULL,
+  `notes` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ferry_safety_equipment`
+--
+
+INSERT INTO `ferry_safety_equipment` (`id`, `ferry_id`, `equipment_type`, `quantity`, `last_inspection`, `notes`) VALUES
+(1, 1, 'life_jackets', 50, '2024-04-01', 'All jackets inspected and tagged'),
+(2, 1, 'fire_extinguishers', 6, '2024-03-20', '2 replaced due to expiry'),
+(3, 1, 'first_aid', 1, '2024-02-15', 'Kit restocked'),
+(4, 1, 'emergency_radio', 1, '2024-04-10', 'Fully operational');
 
 -- --------------------------------------------------------
 
@@ -529,6 +683,33 @@ CREATE TABLE `passenger_id_pass` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `repair_logs`
+--
+
+CREATE TABLE `repair_logs` (
+  `id` int(11) NOT NULL,
+  `ferry_id` int(11) NOT NULL,
+  `reported_at` datetime DEFAULT current_timestamp(),
+  `repair_date` date DEFAULT NULL,
+  `issue` text NOT NULL,
+  `repair_action` text DEFAULT NULL,
+  `repaired_by` varchar(100) DEFAULT NULL,
+  `cost` decimal(10,2) DEFAULT NULL,
+  `status` enum('Pending','In Progress','Completed') DEFAULT 'Pending'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `repair_logs`
+--
+
+INSERT INTO `repair_logs` (`id`, `ferry_id`, `reported_at`, `repair_date`, `issue`, `repair_action`, `repaired_by`, `cost`, `status`) VALUES
+(1, 2, '2025-05-10 14:00:00', '2025-05-11', 'Engine overheating', 'Replaced coolant system', 'RiverWorks Inc.', 15000.00, 'Completed'),
+(2, 1, '2025-05-09 09:00:00', NULL, 'Communication radio not working', NULL, NULL, 0.00, 'Pending'),
+(3, 3, '2025-04-28 10:30:00', '2025-04-29', 'Navigation system error', 'System recalibrated and updated firmware', 'Nautical Techs', 5000.00, 'Completed');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `staff_users`
 --
 
@@ -537,7 +718,7 @@ CREATE TABLE `staff_users` (
   `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` enum('super_admin','admin','employee') NOT NULL,
+  `role` enum('superadmin','admin','employee','operator','Auditor') NOT NULL,
   `first_name` varchar(50) NOT NULL,
   `middle_name` varchar(50) DEFAULT NULL,
   `last_name` varchar(50) NOT NULL,
@@ -553,12 +734,15 @@ CREATE TABLE `staff_users` (
 --
 
 INSERT INTO `staff_users` (`staff_id`, `username`, `email`, `password`, `role`, `first_name`, `middle_name`, `last_name`, `position`, `is_active`, `created_at`, `updated_at`, `profile_pic`) VALUES
-(1, 'superadmin', 'john.doe@example.com', 'password123', 'admin', 'John', 'Michael', 'Doe', 'Manager', 1, '2025-05-02 06:56:41', '2025-05-02 06:57:17', 'Pic1.png'),
-(2, 'admin1', 'admin1@example.com', '123', 'super_admin', 'Lara', 'M.', 'Santos', 'System Admin', 1, '2025-05-09 01:23:55', '2025-05-09 21:03:56', 'default.png'),
-(5, 'test1', '', '$2y$10$fSDE2lj0C1ec5QSw87fCN.ZPgmCYp2kskqWr/ts5/jJie3TGvIbZe', 'admin', 'howie', NULL, 'severino', NULL, 1, '2025-05-09 21:10:55', '2025-05-09 21:10:55', 'default.png'),
-(7, 'test2', '12312ADAW@HOTMAIL.com', '$2y$10$JzsU67ADlm86qbkt6qLtmu8ER9zxbl//a3hlwvajoD6seN1hXzFd2', 'employee', 'WOIHO', NULL, '13', NULL, 1, '2025-05-09 21:23:15', '2025-05-09 21:23:15', 'default.png'),
-(8, '@test1234567', 'severinokenji@gmail.com', '$2y$10$/Dxvo3zsE/HdvyjHrvVlpe8GaXnIfIk3OPfv/y68cHorstuXN/poi', 'employee', 'Howie', NULL, 'sevr', NULL, 1, '2025-05-10 10:27:40', '2025-05-10 10:27:40', 'default.png'),
-(9, 'superadmin2', '1severinokenji@gmail.com', '$2y$10$nu/D5duFuoAFh6Jm4DlpJuP9dsTY3kYZL/YLPbKOIBylCUaJHZsq2', 'admin', 'howie2', NULL, 'severino', NULL, 1, '2025-05-10 11:04:36', '2025-05-10 11:04:36', 'default.png');
+(1, 'superadmin', 'john.doe@example.com', 'password123', '', 'John', 'Michael', 'Doe', 'Manager', 1, '2025-05-02 06:56:41', '2025-05-02 06:57:17', 'Pic1.png'),
+(2, 'admin1', 'admin1@example.com', '123', '', 'Lara', 'M.', 'Santos', 'System Admin', 1, '2025-05-09 01:23:55', '2025-05-09 21:03:56', 'default.png'),
+(5, 'test1', '', '$2y$10$fSDE2lj0C1ec5QSw87fCN.ZPgmCYp2kskqWr/ts5/jJie3TGvIbZe', '', 'howie', NULL, 'severino', NULL, 1, '2025-05-09 21:10:55', '2025-05-09 21:10:55', 'default.png'),
+(7, 'test2', '12312ADAW@HOTMAIL.com', '$2y$10$JzsU67ADlm86qbkt6qLtmu8ER9zxbl//a3hlwvajoD6seN1hXzFd2', '', 'WOIHO', NULL, '13', NULL, 1, '2025-05-09 21:23:15', '2025-05-09 21:23:15', 'default.png'),
+(8, '@test1234567', 'severinokenji@gmail.com', '$2y$10$/Dxvo3zsE/HdvyjHrvVlpe8GaXnIfIk3OPfv/y68cHorstuXN/poi', '', 'Howie', NULL, 'sevr', NULL, 1, '2025-05-10 10:27:40', '2025-05-10 10:27:40', 'default.png'),
+(9, 'superadmin2', '1severinokenji@gmail.com', '$2y$10$nu/D5duFuoAFh6Jm4DlpJuP9dsTY3kYZL/YLPbKOIBylCUaJHZsq2', '', 'howie2', NULL, 'severino', NULL, 1, '2025-05-10 11:04:36', '2025-05-11 04:06:03', 'Pic1.png'),
+(101, 'jdoe', 'jdoe@example.com', 'hashed_password_here', '', 'John', NULL, 'Doe', NULL, 1, '2025-05-11 22:44:38', '2025-05-11 22:44:38', 'default.png'),
+(103, 'operator1', 'operator1@example.com', '$2y$10$B1BqZzJ1cdVjCpH2k/Mh1uj2nGnGqmgqk2fw5h9Wdi80FxkG7keDO\r\n', '', 'John', NULL, 'Doe', 'Ferry Operator', 1, '2025-05-12 09:36:09', '2025-05-12 09:40:12', 'default.png'),
+(104, 'Operator2', 'Sailawayvella@gmail.com', '$2y$10$IRpFGMQ4NJ1UW.druI7Ii.cJilT6uA2163e/aVnR4JrTgOm8mGx5m', 'operator', 'Sailor', NULL, 'Moon', NULL, 1, '2025-05-12 09:49:31', '2025-05-12 09:54:12', 'default.png');
 
 -- --------------------------------------------------------
 
@@ -569,9 +753,62 @@ INSERT INTO `staff_users` (`staff_id`, `username`, `email`, `password`, `role`, 
 CREATE TABLE `tickets` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `ticket_type` varchar(255) NOT NULL,
+  `ferry_id` int(11) NOT NULL,
+  `ticket_type` varchar(50) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
   `purchase_date` datetime DEFAULT current_timestamp(),
-  `amount` decimal(10,2) NOT NULL
+  `valid_until` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tickets`
+--
+
+INSERT INTO `tickets` (`id`, `user_id`, `ferry_id`, `ticket_type`, `amount`, `purchase_date`, `valid_until`) VALUES
+(1, 1, 1, 'Regular', 25.00, '2025-05-11 17:41:14', '2025-05-11 23:59:00'),
+(2, 2, 2, 'Student', 15.00, '2025-05-11 17:41:14', '2025-05-11 23:59:00'),
+(3, 3, 3, 'Senior', 10.00, '2025-05-11 17:41:14', '2025-05-11 23:59:00'),
+(4, 1, 1, 'Regular', 25.00, '2025-05-11 17:54:14', '2025-06-01 23:59:00'),
+(5, 2, 2, 'Student', 15.00, '2025-05-11 17:54:14', '2025-06-05 23:59:00'),
+(6, 3, 3, 'Senior', 10.00, '2025-05-11 17:54:14', '2025-06-10 23:59:00'),
+(7, 1, 2, 'Regular', 25.00, '2025-05-11 17:54:14', '2025-04-15 23:59:00'),
+(8, 2, 3, 'Student', 15.00, '2025-05-11 17:54:14', '2025-03-30 23:59:00'),
+(9, 3, 1, 'Senior', 10.00, '2025-05-11 17:54:14', '2025-02-28 23:59:00'),
+(10, 1, 3, 'Regular', 30.00, '2025-05-11 17:54:14', '2025-12-25 23:59:00'),
+(11, 2, 1, 'Student', 12.50, '2025-05-11 17:54:14', '2025-12-31 23:59:00'),
+(12, 3, 2, 'Senior', 8.00, '2025-05-11 17:54:14', '2026-01-10 23:59:00'),
+(20, 3, 8, 'Student', 66.77, '2025-02-16 01:11:51', '2025-05-18 01:11:51'),
+(21, 3, 15, 'Senior', 69.11, '2025-05-02 01:11:51', '2025-05-16 01:11:51'),
+(22, 3, 18, 'Senior', 96.72, '2025-05-02 01:11:51', '2025-05-18 01:11:51'),
+(23, 1, 8, 'Student', 77.59, '2025-05-12 01:11:51', '2025-05-15 01:11:51'),
+(24, 1, 15, 'Senior', 77.44, '2025-02-20 01:11:51', '2025-05-19 01:11:51'),
+(25, 1, 18, 'Student', 75.93, '2025-03-08 01:11:51', '2025-05-13 01:11:51'),
+(26, 4, 8, 'Regular', 70.25, '2025-03-12 01:11:51', '2025-05-14 01:11:51'),
+(27, 4, 15, 'Senior', 96.85, '2025-02-13 01:11:51', '2025-05-13 01:11:51'),
+(28, 4, 18, 'Student', 80.64, '2025-04-15 01:11:51', '2025-05-17 01:11:51'),
+(29, 5, 8, 'Student', 63.08, '2025-02-17 01:11:51', '2025-05-19 01:11:51'),
+(30, 5, 15, 'Senior', 55.36, '2025-04-23 01:11:51', '2025-05-18 01:11:51'),
+(31, 5, 18, 'Regular', 77.92, '2025-04-17 01:11:51', '2025-05-18 01:11:51'),
+(32, 2, 8, 'Senior', 91.04, '2025-03-11 01:11:51', '2025-05-13 01:11:51'),
+(33, 2, 15, 'Regular', 64.32, '2025-04-25 01:11:51', '2025-05-13 01:11:51'),
+(34, 2, 18, 'Regular', 87.80, '2025-03-10 01:11:51', '2025-05-14 01:11:51'),
+(35, 6, 8, 'Regular', 56.15, '2025-05-06 01:11:51', '2025-05-13 01:11:51'),
+(36, 6, 15, 'Senior', 98.01, '2025-04-05 01:11:51', '2025-05-14 01:11:51'),
+(37, 6, 18, 'Senior', 69.85, '2025-03-23 01:11:51', '2025-05-17 01:11:51');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ticket_logs`
+--
+
+CREATE TABLE `ticket_logs` (
+  `id` int(11) NOT NULL,
+  `ticket_id` int(11) NOT NULL,
+  `stop_id` int(11) NOT NULL,
+  `scanned_at` datetime DEFAULT current_timestamp(),
+  `verified_by` int(11) DEFAULT NULL,
+  `scan_status` enum('valid','expired','duplicate','invalid') DEFAULT 'valid'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -672,6 +909,39 @@ INSERT INTO `upstream_schedules` (`id`, `route_name`, `row_id`, `col_id`, `stati
 (450, 'Escolta → Kalawaan', 7, 10, 'San Joaquin', '15:07:00'),
 (451, 'Escolta → Kalawaan', 7, 11, 'Kalawaan', '15:15:00');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `full_name` varchar(100) NOT NULL,
+  `birth_date` date NOT NULL,
+  `profile_image` varchar(255) DEFAULT NULL,
+  `email` varchar(100) NOT NULL,
+  `phone_number` varchar(20) NOT NULL,
+  `qr_code_data` varchar(255) NOT NULL,
+  `issued_at` datetime DEFAULT current_timestamp(),
+  `expires_at` datetime NOT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `last_used` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `full_name`, `birth_date`, `profile_image`, `email`, `phone_number`, `qr_code_data`, `issued_at`, `expires_at`, `is_active`, `last_used`, `created_at`) VALUES
+(1, 'Carlos Reyes', '1995-04-20', 'carlos.jpg', 'carlos@example.com', '09171234567', 'QRUSER001', '2025-05-11 17:41:06', '2025-12-31 00:00:00', 1, NULL, '2025-05-11 09:41:06'),
+(2, 'Ana Dela Cruz', '2001-09-10', 'ana.jpg', 'ana@example.com', '09181234567', 'QRUSER002', '2025-05-11 17:41:06', '2025-12-31 00:00:00', 1, NULL, '2025-05-11 09:41:06'),
+(3, 'Joanna Santos', '1980-03-15', 'joanna.jpg', 'joanna@example.com', '09191234567', 'QRUSER003', '2025-05-11 17:41:06', '2025-12-31 00:00:00', 1, NULL, '2025-05-11 09:41:06'),
+(4, 'Juan Dela Cruz', '1990-05-10', NULL, 'juan1@example.com', '09171234567', 'QRJUAN001', '2025-05-12 01:11:30', '2025-12-31 00:00:00', 1, NULL, '2025-05-11 17:11:30'),
+(5, 'Maria Clara', '1985-08-15', NULL, 'maria@example.com', '09181234567', 'QRMARIA002', '2025-05-12 01:11:30', '2025-12-31 00:00:00', 1, NULL, '2025-05-11 17:11:30'),
+(6, 'Pedro Penduko', '2000-01-01', NULL, 'pedro@example.com', '09191234567', 'QRPEDRO003', '2025-05-12 01:11:30', '2025-12-31 00:00:00', 1, NULL, '2025-05-11 17:11:30');
+
 --
 -- Indexes for dumped tables
 --
@@ -681,6 +951,13 @@ INSERT INTO `upstream_schedules` (`id`, `route_name`, `row_id`, `col_id`, `stati
 --
 ALTER TABLE `announcements`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `boat_maintenance`
+--
+ALTER TABLE `boat_maintenance`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ferry_id` (`ferry_id`);
 
 --
 -- Indexes for table `downstream_schedules`
@@ -693,7 +970,35 @@ ALTER TABLE `downstream_schedules`
 -- Indexes for table `ferries`
 --
 ALTER TABLE `ferries`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_ferries_ferry_code` (`ferry_code`),
+  ADD KEY `idx_ferries_ferry_type` (`ferry_type`),
+  ADD KEY `idx_ferries_registration_number` (`registration_number`),
+  ADD KEY `idx_ferries_inspection_dates` (`last_inspection_date`,`next_inspection_date`);
+
+--
+-- Indexes for table `ferry_assignments`
+--
+ALTER TABLE `ferry_assignments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ferry_id` (`ferry_id`),
+  ADD KEY `route_id` (`route_id`);
+
+--
+-- Indexes for table `ferry_crew`
+--
+ALTER TABLE `ferry_crew`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ferry_id` (`ferry_id`),
+  ADD KEY `staff_id` (`staff_id`);
+
+--
+-- Indexes for table `ferry_fuel_logs`
+--
+ALTER TABLE `ferry_fuel_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ferry_id` (`ferry_id`),
+  ADD KEY `recorded_by` (`recorded_by`);
 
 --
 -- Indexes for table `ferry_locations`
@@ -713,6 +1018,13 @@ ALTER TABLE `ferry_logs`
 --
 ALTER TABLE `ferry_routes`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `ferry_safety_equipment`
+--
+ALTER TABLE `ferry_safety_equipment`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ferry_id` (`ferry_id`);
 
 --
 -- Indexes for table `ferry_stops`
@@ -735,6 +1047,13 @@ ALTER TABLE `passenger_id_pass`
   ADD UNIQUE KEY `qr_code_data` (`qr_code_data`);
 
 --
+-- Indexes for table `repair_logs`
+--
+ALTER TABLE `repair_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ferry_id` (`ferry_id`);
+
+--
 -- Indexes for table `staff_users`
 --
 ALTER TABLE `staff_users`
@@ -747,7 +1066,17 @@ ALTER TABLE `staff_users`
 --
 ALTER TABLE `tickets`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `ferry_id` (`ferry_id`);
+
+--
+-- Indexes for table `ticket_logs`
+--
+ALTER TABLE `ticket_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ticket_id` (`ticket_id`),
+  ADD KEY `stop_id` (`stop_id`),
+  ADD KEY `verified_by` (`verified_by`);
 
 --
 -- Indexes for table `upstream_schedules`
@@ -757,6 +1086,13 @@ ALTER TABLE `upstream_schedules`
   ADD UNIQUE KEY `route_name` (`route_name`,`row_id`,`col_id`);
 
 --
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -764,7 +1100,13 @@ ALTER TABLE `upstream_schedules`
 -- AUTO_INCREMENT for table `announcements`
 --
 ALTER TABLE `announcements`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `boat_maintenance`
+--
+ALTER TABLE `boat_maintenance`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `downstream_schedules`
@@ -776,7 +1118,25 @@ ALTER TABLE `downstream_schedules`
 -- AUTO_INCREMENT for table `ferries`
 --
 ALTER TABLE `ferries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+
+--
+-- AUTO_INCREMENT for table `ferry_assignments`
+--
+ALTER TABLE `ferry_assignments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `ferry_crew`
+--
+ALTER TABLE `ferry_crew`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `ferry_fuel_logs`
+--
+ALTER TABLE `ferry_fuel_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `ferry_locations`
@@ -788,13 +1148,19 @@ ALTER TABLE `ferry_locations`
 -- AUTO_INCREMENT for table `ferry_logs`
 --
 ALTER TABLE `ferry_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
 
 --
 -- AUTO_INCREMENT for table `ferry_routes`
 --
 ALTER TABLE `ferry_routes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `ferry_safety_equipment`
+--
+ALTER TABLE `ferry_safety_equipment`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `ferry_stops`
@@ -809,16 +1175,28 @@ ALTER TABLE `passenger_id_pass`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `repair_logs`
+--
+ALTER TABLE `repair_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `staff_users`
 --
 ALTER TABLE `staff_users`
-  MODIFY `staff_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `staff_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
 -- AUTO_INCREMENT for table `tickets`
 --
 ALTER TABLE `tickets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+
+--
+-- AUTO_INCREMENT for table `ticket_logs`
+--
+ALTER TABLE `ticket_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `upstream_schedules`
@@ -827,8 +1205,41 @@ ALTER TABLE `upstream_schedules`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=452;
 
 --
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `boat_maintenance`
+--
+ALTER TABLE `boat_maintenance`
+  ADD CONSTRAINT `boat_maintenance_ibfk_1` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`);
+
+--
+-- Constraints for table `ferry_assignments`
+--
+ALTER TABLE `ferry_assignments`
+  ADD CONSTRAINT `fk_ferry_assignments_ferry` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_ferry_assignments_route` FOREIGN KEY (`route_id`) REFERENCES `ferry_routes` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `ferry_crew`
+--
+ALTER TABLE `ferry_crew`
+  ADD CONSTRAINT `fk_ferry_crew_ferry` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_ferry_crew_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff_users` (`staff_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `ferry_fuel_logs`
+--
+ALTER TABLE `ferry_fuel_logs`
+  ADD CONSTRAINT `fk_ferry_fuel_ferry` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_ferry_fuel_staff` FOREIGN KEY (`recorded_by`) REFERENCES `staff_users` (`staff_id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `ferry_logs`
@@ -837,16 +1248,37 @@ ALTER TABLE `ferry_logs`
   ADD CONSTRAINT `ferry_logs_ibfk_1` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `ferry_safety_equipment`
+--
+ALTER TABLE `ferry_safety_equipment`
+  ADD CONSTRAINT `fk_ferry_safety_equip` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `ferry_stops`
 --
 ALTER TABLE `ferry_stops`
   ADD CONSTRAINT `ferry_stops_ibfk_1` FOREIGN KEY (`route_id`) REFERENCES `ferry_routes` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `repair_logs`
+--
+ALTER TABLE `repair_logs`
+  ADD CONSTRAINT `repair_logs_ibfk_1` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`);
+
+--
 -- Constraints for table `tickets`
 --
 ALTER TABLE `tickets`
-  ADD CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `staff_users` (`staff_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `tickets_ibfk_2` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`);
+
+--
+-- Constraints for table `ticket_logs`
+--
+ALTER TABLE `ticket_logs`
+  ADD CONSTRAINT `ticket_logs_ibfk_1` FOREIGN KEY (`ticket_id`) REFERENCES `tickets` (`id`),
+  ADD CONSTRAINT `ticket_logs_ibfk_2` FOREIGN KEY (`stop_id`) REFERENCES `ferry_stops` (`id`),
+  ADD CONSTRAINT `ticket_logs_ibfk_3` FOREIGN KEY (`verified_by`) REFERENCES `staff_users` (`staff_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
