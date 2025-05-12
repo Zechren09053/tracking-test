@@ -1,22 +1,19 @@
--- Create the announcements table with scheduling support
+-- Create announcements table
 CREATE TABLE `announcements` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(255) NOT NULL,
   `message` TEXT NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-  `display_from` DATE NOT NULL, -- When the announcement should start displaying
-  `display_duration` INT(11) NOT NULL, -- Number of days the announcement should remain visible
+  `display_from` DATE NOT NULL,
+  `display_duration` INT(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Query to fetch currently active announcements
-SELECT *
-FROM `announcements`
+-- Fetch active announcements
+SELECT * FROM `announcements`
 WHERE CURDATE() BETWEEN `display_from` AND DATE_ADD(`display_from`, INTERVAL `display_duration` DAY);
 
-
-
-
+-- Downstream schedules
 CREATE TABLE `downstream_schedules` (
   `id` int(11) NOT NULL,
   `route_name` varchar(255) NOT NULL DEFAULT 'Pinagbuhatan → Escolta',
@@ -25,21 +22,51 @@ CREATE TABLE `downstream_schedules` (
   `station_name` varchar(255) NOT NULL,
   `schedule_time` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Ferries table
 CREATE TABLE `ferries` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
+  `ferry_code` VARCHAR(20),
   `latitude` decimal(9,6) DEFAULT NULL,
   `longitude` decimal(9,6) DEFAULT NULL,
   `last_updated` timestamp NOT NULL DEFAULT current_timestamp(),
   `active_time` float DEFAULT NULL,
   `status` varchar(20) NOT NULL DEFAULT 'inactive',
   `operator` varchar(100) DEFAULT NULL,
+  `ferry_type` ENUM('passenger', 'cargo', 'mixed') DEFAULT 'passenger',
   `status_changed_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `max_capacity` int(11) NOT NULL DEFAULT 30,
   `current_capacity` int(11) NOT NULL DEFAULT 0,
+  `cargo_capacity` INT DEFAULT 0,
+  `length` DECIMAL(6,2) DEFAULT NULL,
+  `width` DECIMAL(6,2) DEFAULT NULL,
   `speed` float DEFAULT 0,
-  `route_index` int(11) DEFAULT 0
+  `max_speed` DECIMAL(6,2) DEFAULT NULL,
+  `route_index` int(11) DEFAULT 0,
+  `fuel_type` ENUM('diesel', 'gasoline', 'electric', 'hybrid', 'other') DEFAULT 'diesel',
+  `engine_power` INT DEFAULT NULL,
+  `engine_count` INT DEFAULT 1,
+  `manufacturer` VARCHAR(100) DEFAULT NULL,
+  `model` VARCHAR(100) DEFAULT NULL,
+  `year_built` INT DEFAULT NULL,
+  `hull_material` ENUM('steel', 'aluminum', 'fiberglass', 'wood', 'composite', 'other') DEFAULT NULL,
+  `registration_number` VARCHAR(50) DEFAULT NULL,
+  `registration_date` DATE DEFAULT NULL,
+  `last_inspection_date` DATE DEFAULT NULL,
+  `next_inspection_date` DATE DEFAULT NULL,
+  `notes` TEXT DEFAULT NULL,
+  `image_path` VARCHAR(255) DEFAULT NULL,
+  `registration_document_path` VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE INDEX `idx_ferries_ferry_code` ON `ferries` (`ferry_code`);
+CREATE INDEX `idx_ferries_ferry_type` ON `ferries` (`ferry_type`);
+CREATE INDEX `idx_ferries_registration_number` ON `ferries` (`registration_number`);
+CREATE INDEX `idx_ferries_inspection_dates` ON `ferries` (`last_inspection_date`, `next_inspection_date`);
+
+-- Ferry locations
 CREATE TABLE `ferry_locations` (
   `id` int(11) NOT NULL,
   `code` varchar(50) NOT NULL,
@@ -48,6 +75,8 @@ CREATE TABLE `ferry_locations` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Ferry logs
 CREATE TABLE `ferry_logs` (
   `id` int(11) NOT NULL,
   `ferry_id` int(11) NOT NULL,
@@ -57,6 +86,8 @@ CREATE TABLE `ferry_logs` (
   `latitude` decimal(9,6) DEFAULT NULL,
   `longitude` decimal(9,6) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Ferry routes
 CREATE TABLE `ferry_routes` (
   `id` int(11) NOT NULL,
   `route_name` varchar(100) DEFAULT NULL,
@@ -64,16 +95,22 @@ CREATE TABLE `ferry_routes` (
   `destination` varchar(50) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Ferry stops
 CREATE TABLE `ferry_stops` (
   `id` int(11) NOT NULL,
   `route_id` int(11) DEFAULT NULL,
   `stop_name` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Login attempts
 CREATE TABLE `login_attempts` (
   `ip_address` varchar(45) NOT NULL,
   `attempts` int(11) NOT NULL DEFAULT 1,
   `last_attempt` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Passenger ID pass
 CREATE TABLE `passenger_id_pass` (
   `id` int(11) NOT NULL,
   `passenger_id` int(11) NOT NULL,
@@ -89,6 +126,8 @@ CREATE TABLE `passenger_id_pass` (
   `last_used` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Staff users
 CREATE TABLE `staff_users` (
   `staff_id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
@@ -105,6 +144,7 @@ CREATE TABLE `staff_users` (
   `profile_pic` varchar(255) DEFAULT 'default.png'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Upstream schedules
 CREATE TABLE `upstream_schedules` (
   `id` int(11) NOT NULL,
   `route_name` varchar(255) NOT NULL DEFAULT 'Escolta → Kalawaan',
@@ -114,22 +154,25 @@ CREATE TABLE `upstream_schedules` (
   `schedule_time` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
-CREATE TABLE boat_maintenance (
+-- Boat maintenance
+CREATE TABLE `boat_maintenance` (
   id INT AUTO_INCREMENT PRIMARY KEY,
   ferry_id INT NOT NULL,
   maintenance_date DATE NOT NULL,
-  maintenance_type VARCHAR(100) NOT NULL, -- e.g., "Engine Overhaul"
+  maintenance_type VARCHAR(100) NOT NULL,
+  maintenance_type_detail VARCHAR(100),
   performed_by VARCHAR(100),
   notes TEXT,
+  parts_replaced TEXT,
   next_due_date DATE,
+  cost DECIMAL(10,2) DEFAULT 0.00,
+  status ENUM('Scheduled', 'In Progress', 'Completed', 'Skipped') DEFAULT 'Scheduled',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (ferry_id) REFERENCES ferries(id)
 );
 
-
-
-CREATE TABLE repair_logs (
+-- Repair logs
+CREATE TABLE `repair_logs` (
   id INT AUTO_INCREMENT PRIMARY KEY,
   ferry_id INT NOT NULL,
   reported_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -141,6 +184,8 @@ CREATE TABLE repair_logs (
   status ENUM('Pending','In Progress','Completed') DEFAULT 'Pending',
   FOREIGN KEY (ferry_id) REFERENCES ferries(id)
 );
+
+-- Passengers
 CREATE TABLE passengers (
   id INT AUTO_INCREMENT PRIMARY KEY,
   full_name VARCHAR(100) NOT NULL,
@@ -149,15 +194,15 @@ CREATE TABLE passengers (
   registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
+-- Users (ticket holders)
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   full_name VARCHAR(100) NOT NULL,
   birth_date DATE NOT NULL,
-  profile_image VARCHAR(255),  -- optional, can be a file path or URL
+  profile_image VARCHAR(255),
   email VARCHAR(100) NOT NULL UNIQUE,
   phone_number VARCHAR(20) NOT NULL,
-  qr_code_data VARCHAR(255) NOT NULL,  -- this will be encoded in their QR
+  qr_code_data VARCHAR(255) NOT NULL,
   issued_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   expires_at DATETIME NOT NULL,
   is_active TINYINT(1) DEFAULT 1,
@@ -165,21 +210,81 @@ CREATE TABLE users (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
+-- Tickets
 CREATE TABLE tickets (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,  -- from users table
-  ferry_id INT NOT NULL, -- from ferries table
-  ticket_type VARCHAR(50) NOT NULL,  -- e.g., 'Regular', 'Student', 'Senior'
+  user_id INT NOT NULL,
+  ferry_id INT NOT NULL,
+  ticket_type VARCHAR(50) NOT NULL,
   amount DECIMAL(10,2) NOT NULL,
   purchase_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-  valid_until DATETIME,  -- optional, for time-limited passes
+  valid_until DATETIME,
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (ferry_id) REFERENCES ferries(id)
 );
 
+-- Ferry safety equipment
+CREATE TABLE `ferry_safety_equipment` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `ferry_id` INT(11) NOT NULL,
+  `equipment_type` ENUM('life_jackets', 'life_rafts', 'fire_extinguishers', 'first_aid', 'emergency_radio', 'other') NOT NULL,
+  `quantity` INT(11) DEFAULT 1,
+  `last_inspection` DATE DEFAULT NULL,
+  `notes` TEXT DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ferry_id` (`ferry_id`),
+  CONSTRAINT `fk_ferry_safety_equip` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Ferry assignments
+CREATE TABLE `ferry_assignments` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `ferry_id` INT(11) NOT NULL,
+  `route_id` INT(11) NOT NULL,
+  `assigned_date` DATE NOT NULL,
+  `is_active` TINYINT(1) DEFAULT 1,
+  `notes` TEXT DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ferry_id` (`ferry_id`),
+  KEY `route_id` (`route_id`),
+  CONSTRAINT `fk_ferry_assignments_ferry` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_ferry_assignments_route` FOREIGN KEY (`route_id`) REFERENCES `ferry_routes` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Ferry crew
+CREATE TABLE `ferry_crew` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `ferry_id` INT(11) NOT NULL,
+  `staff_id` INT(11) NOT NULL,
+  `role` ENUM('captain', 'engineer', 'crew', 'attendant') NOT NULL,
+  `assigned_date` DATE NOT NULL,
+  `end_date` DATE DEFAULT NULL,
+  `is_active` TINYINT(1) DEFAULT 1,
+  PRIMARY KEY (`id`),
+  KEY `ferry_id` (`ferry_id`),
+  KEY `staff_id` (`staff_id`),
+  CONSTRAINT `fk_ferry_crew_ferry` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_ferry_crew_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff_users` (`staff_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Ferry fuel logs
+CREATE TABLE `ferry_fuel_logs` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `ferry_id` INT(11) NOT NULL,
+  `refuel_date` DATETIME NOT NULL,
+  `fuel_amount` DECIMAL(10,2) NOT NULL,
+  `fuel_type` ENUM('diesel', 'gasoline', 'other') NOT NULL,
+  `cost_per_unit` DECIMAL(10,2) NOT NULL,
+  `total_cost` DECIMAL(10,2) NOT NULL,
+  `odometer_reading` INT DEFAULT NULL,
+  `recorded_by` INT(11) DEFAULT NULL,
+  `notes` TEXT DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ferry_id` (`ferry_id`),
+  KEY `recorded_by` (`recorded_by`),
+  CONSTRAINT `fk_ferry_fuel_ferry` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_ferry_fuel_staff` FOREIGN KEY (`recorded_by`) REFERENCES `staff_users` (`staff_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 to do list

@@ -732,12 +732,7 @@ $conn->close();
                 document.getElementById("registration-form").style.display = "none";
             }
         };
-        document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape' || event.keyCode === 27) {
-        document.getElementById('registration-form').style.display = 'none';
-    }
-});
-
+        
     </script>
 </body>
 </html>

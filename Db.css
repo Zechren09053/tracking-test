@@ -115,7 +115,7 @@ html,body{height:100%;width:100%;background-color:#1a1a1a;color:#f1f1f1;overflow
 .slider:before{position:absolute;content:"";height:12px;width:12px;border-radius:50%;left:4px;bottom:4px;background-color:white;transition:.4s}
 input:checked+.slider{background-color:#4CAF50}
 input:checked+.slider:before{transform:translateX(14px)}
-#registration-form{background-color:#292929;padding:2px;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.1);max-width:1000px;margin:0 auto;display:none;color:#f1f1f1}
+#registration-form{background-color:#292929;padding:2px;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.1);max-width:10000px;margin:0 auto;display:none;color:#f1f1f1}
 #registration-form h3{color:#00b0ff;font-size:24px;margin-bottom:20px;text-align:center}
 #registration-form input[type=" text"],#registration-form input[type="number"],#registration-form select{width:100%;padding:10px;margin:10px 0;border:1px solid #444;border-radius:4px;font-size:16px;color:#f1f1f1;background-color:#222;box-sizing:border-box}
 #registration-form input[type="text"]:focus,#registration-form input[type="number"]:focus,#registration-form select:focus{border-color:#00b0ff;outline:none}
