@@ -44,7 +44,8 @@ if ($_SESSION['login_attempts'] >= 3) {
     $pass = $_POST['password'];
 
     // Prepare query to fetch user details
-    $stmt = $conn->prepare("SELECT staff_id, username, password, role, first_name, last_name FROM staff_users WHERE username = ? AND is_active = 1");
+    $stmt = $conn->prepare("SELECT staff_id, username, password, role, first_name, last_name, email FROM staff_users WHERE username = ? AND is_active = 1");
+
     $stmt->bind_param("s", $user);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -60,24 +61,25 @@ if ($_SESSION['login_attempts'] >= 3) {
         $_SESSION['username'] = $row['username'];
         $_SESSION['role'] = $row['role'];
         $_SESSION['name'] = $row['first_name'] . " " . $row['last_name'];
+        $_SESSION['email'] = $row['email']; // for sending 2FA code
 
         $_SESSION['login_attempts'] = 0;
 
         switch ($_SESSION['role']) {
             case 'super_admin':
-                header("Location: Dashboard.php");
+                header("Location: 2fa.php");;
                 break;
             case 'admin':
-                header("Location: Dashboard.php");
+                header("Location: 2fa.php");;
                 break;
             case 'operator':
-                header("Location: track_ferry.php");
+                header("Location: 2fa.php");;
                 break;
             case 'Auditor':
-                header("Location: monitor_users.php"); // You can set this to the appropriate page for auditors
+                header("Location: 2fa.php"); // You can set this to the appropriate page for auditors
                 break;
             default:
-                header("Location: Dashboard.php");
+            header("Location: 2fa.php");
         }
         exit();
         

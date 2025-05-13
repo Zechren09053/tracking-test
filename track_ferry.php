@@ -1,5 +1,10 @@
 <?php
 session_start();
+if (!isset($_SESSION['staff_id'], $_SESSION['2fa_verified']) || $_SESSION['2fa_verified'] !== true) {
+    header("Location: login.php");
+    exit();
+}
+
 require 'db_connect.php';
 
 // Ensure only operators can access this page
