@@ -147,11 +147,11 @@ $conn->close();
                             </ul>
                         </div>
                         <div class="settings-profile-container">
-                            <ul class="nav settings-nav">
-                                <li><a href="#"><div class="nav-item-content"><i class="fas fa-cog"></i><span class="settings-text">Settings</span></div></a></li>
-                                <li><a href="#"><div class="nav-item-content"><i class="fa-solid fa-envelope"></i></i><span class="settings-text">Mail</div></a></li>
-                                <li><a href="login.php"><div class="nav-item-content"><i class="fas fa-sign-out-alt"></i><span class="settings-text">Logout</span></div></a></li>
-                            </ul>
+                        <ul class="nav settings-nav">
+                            <li><a href="settings.php"><div class="nav-item-content"><i class="fas fa-cog"></i><span class="settings-text">Settings</span></div></a></li>
+                            <li><a href="mail.php"><div class="nav-item-content"><i class="fa-solid fa-envelope"></i></i><span class="settings-text">Mail</div></a></li>
+                            <li><a href="login.php"><div class="nav-item-content"><i class="fas fa-sign-out-alt"></i><span class="settings-text">Logout</span></div></a></li>
+                        </ul>
                             <div class="profile">
                                 <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" />
                                 <div class="profile-info">
