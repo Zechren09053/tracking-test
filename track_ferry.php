@@ -18,68 +18,18 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'operator') {
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            display: flex; 
-            height: 100vh; 
-            background-color: #f4f4f4;
-        }
-        #tracking-container {
-            display: flex;
-            width: 100%;
-        }
-        #sidebar {
-            width: 300px;
-            padding: 15px;
-            background: #2c2c2c;
-            color: white;
-            border-right: 1px solid #444;
-        }
-        #map { 
-            flex-grow: 1; 
-            height: 100vh; 
-        }
-        .ferry-item {
-            cursor: pointer;
-            padding: 10px;
-            border-bottom: 1px solid #444;
-            transition: background 0.3s ease;
-        }
-        .ferry-item:hover {
-            background: #3a3a3a;
-        }
-        .ferry-item.active {
-            background: #00bcd4;
-            color: white;
-        }
-        #logout-btn {
-            width: 100%;
-            padding: 10px;
-            margin-top: 15px;
-            background-color: #f44336;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #logout-btn:hover {
-            background-color: #d32f2f;
-        }
-        #user-info {
-            margin-bottom: 15px;
-            padding: 10px;
-            background: #3a3a3a;
-            border-radius: 5px;
-        }
-        #status-display {
-            margin-top: 15px;
-            padding: 10px;
-            background: #3a3a3a;
-            border-radius: 5px;
-            text-align: center;
-        }
+       body { font-family: Arial, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: #f4f4f4; }
+#tracking-container { display: flex; width: 100%; }
+#sidebar { width: 300px; padding: 15px; background: #2c2c2c; color: white; border-right: 1px solid #444; }
+#map { flex-grow: 1; height: 100vh; }
+.ferry-item { cursor: pointer; padding: 10px; border-bottom: 1px solid #444; transition: background 0.3s ease; }
+.ferry-item:hover { background: #3a3a3a; }
+.ferry-item.active { background: #00bcd4; color: white; }
+#logout-btn { width: 100%; padding: 10px; margin-top: 15px; background-color: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer; }
+#logout-btn:hover { background-color: #d32f2f; }
+#user-info { margin-bottom: 15px; padding: 10px; background: #3a3a3a; border-radius: 5px; }
+#status-display { margin-top: 15px; padding: 10px; background: #3a3a3a; border-radius: 5px; text-align: center; }
+
     </style>
 </head>
 <body>

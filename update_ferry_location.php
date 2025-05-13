@@ -23,7 +23,7 @@ $speed = isset($_POST['speed']) ? floatval($_POST['speed']) : 0;
 
 // Verify the ferry is actually assigned to this operator
 $stmt = $conn->prepare("
-    SELECT f.id 
+    SELECT f.ferry_code 
     FROM ferry_crew fc
     JOIN ferries f ON fc.ferry_id = f.id
     WHERE fc.staff_id = ? AND fc.ferry_id = ? AND fc.is_active = 1
@@ -38,7 +38,10 @@ if ($result->num_rows === 0) {
     exit();
 }
 
-// Update ferry location
+$row = $result->fetch_assoc();
+$ferry_code = $row['ferry_code'];
+
+// Prepare update and log statements
 $update_stmt = $conn->prepare("
     UPDATE ferries 
     SET latitude = ?, longitude = ?, speed = ?, last_updated = NOW() 
@@ -46,21 +49,32 @@ $update_stmt = $conn->prepare("
 ");
 $update_stmt->bind_param("dddi", $latitude, $longitude, $speed, $ferry_id);
 
-// Log location
 $log_stmt = $conn->prepare("
-    INSERT INTO ferry_logs 
-    (ferry_id, latitude, longitude, speed, trip_date) 
+    INSERT INTO ferry_logs (ferry_id, latitude, longitude, speed, trip_date) 
     VALUES (?, ?, ?, ?, NOW())
 ");
 $log_stmt->bind_param("iddd", $ferry_id, $latitude, $longitude, $speed);
 
+// Insert or update ferry_locations table
+$location_stmt = $conn->prepare("
+    INSERT INTO ferry_locations (id, code, latitude, longitude, updated_at, last_updated)
+    VALUES (?, ?, ?, ?, NOW(), NOW())
+    ON DUPLICATE KEY UPDATE 
+        latitude = VALUES(latitude),
+        longitude = VALUES(longitude),
+        updated_at = NOW(),
+        last_updated = NOW()
+");
+$location_stmt->bind_param("issd", $ferry_id, $ferry_code, $latitude, $longitude);
+
 try {
     $conn->begin_transaction();
-    
+
     $update_result = $update_stmt->execute();
     $log_result = $log_stmt->execute();
-    
-    if ($update_result && $log_result) {
+    $location_result = $location_stmt->execute();
+
+    if ($update_result && $log_result && $location_result) {
         $conn->commit();
         echo json_encode(['status' => 'success', 'message' => 'Location updated']);
     } else {
@@ -74,7 +88,10 @@ try {
     echo json_encode(['status' => 'error', 'message' => 'Database error']);
 }
 
+// Clean up
 $stmt->close();
 $update_stmt->close();
 $log_stmt->close();
+$location_stmt->close();
 $conn->close();
+?>

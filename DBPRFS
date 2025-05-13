@@ -75,6 +75,9 @@ CREATE TABLE `ferry_locations` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+ALTER TABLE ferry_locations MODIFY id INT NOT NULL;
+ALTER TABLE ferry_locations DROP PRIMARY KEY;
+ALTER TABLE ferry_locations ADD PRIMARY KEY (id);
 
 -- Ferry logs
 CREATE TABLE `ferry_logs` (
@@ -143,6 +146,8 @@ CREATE TABLE `staff_users` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `profile_pic` varchar(255) DEFAULT 'default.png'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+ALTER TABLE `staff_users`
+MODIFY `role` ENUM('superadmin', 'admin', 'employee', 'operator','Auditor') NOT NULL;
 
 -- Upstream schedules
 CREATE TABLE `upstream_schedules` (
@@ -287,84 +292,3 @@ CREATE TABLE `ferry_fuel_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
-to do list
-
-user int
-
-sched and route
-
-fix tracking live
-
-make user id card
-
-rbac
-
-station stops
-Loading:
-Unloading:
-
-proximity announcement
-
-
-
-print reports per station?/
-
-
-
-announcements
-downstream_schedules
-ferries
-ferry_locations
-ferry_logs
-ferry_routes
-ferry_stops
-login_attempts
-passenger_id_pass
-staff_users
-tickets
-upstream_schedules
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- Main Pasig River Ferry Stations (11):
-Pinagbuhatan – Pasig City (easternmost terminus)
-
-San Joaquin – Pasig City
-
-Maybunga (branch/extension — see below)
-
-Bambang – Pasig City
-
-Kalawaan – Pasig City
-
-Guadalupe – Makati City
-
-Hulo – Mandaluyong City
-
-Lambingan – Sta. Ana, Manila
-
-Sta. Ana – Manila
-
-PUP – Polytechnic University of the Philippines, Manila
-
-Lawton – Near Intramuros and Manila Post Office
-
-Escolta – Binondo, Manila
-
-Plaza Mexico (Intramuros) – Near the mouth of the river

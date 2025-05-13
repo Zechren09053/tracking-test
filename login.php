@@ -73,8 +73,8 @@ if ($_SESSION['login_attempts'] >= 3) {
             case 'operator':
                 header("Location: track_ferry.php");
                 break;
-            case 'auditor':
-                header("Location: audit_dashboard.php"); // You can set this to the appropriate page for auditors
+            case 'Auditor':
+                header("Location: monitor_users.php"); // You can set this to the appropriate page for auditors
                 break;
             default:
                 header("Location: Dashboard.php");
