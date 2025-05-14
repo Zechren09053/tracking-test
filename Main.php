@@ -318,11 +318,159 @@ $announcements = getActiveAnnouncements();
   </div>
 </section>
 
-  <!-- Gallery Section (Placeholder) -->
-  <section id="gallery" class="container">
-    <h2 class="section-title">Gallery</h2>
-    <!-- Add gallery here -->
-  </section>
+<!-- Gallery Section -->
+<section id="gallery" class="container">
+  <h2 class="section-title">Experience the Pasig River Ferry</h2>
+  
+  <div class="gallery-filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="ferries">Ferries</button>
+    <button class="filter-btn" data-filter="stations">Stations</button>
+    <button class="filter-btn" data-filter="landmarks">River Landmarks</button>
+    <button class="filter-btn" data-filter="experiences">Passenger Experiences</button>
+  </div>
+  
+  <div class="gallery-grid">
+    <!-- Ferry Images -->
+    <div class="gallery-item" data-category="ferries">
+      <div class="gallery-image">
+        <img src="BOAT1.jpg" alt="Modern ferry boat cruising along Pasig River" />
+      </div>
+      <div class="gallery-caption">
+        <h4>Modern Ferry Vessels</h4>
+        <p>Our fleet features comfortable air-conditioned vessels for a pleasant journey</p>
+      </div>
+    </div>
+    
+    <div class="gallery-item" data-category="ferries">
+      <div class="gallery-image">
+        <img src="BOAT.jpg" alt="Ferry boat interior showing comfortable seating" />
+      </div>
+      <div class="gallery-caption">
+        <h4>Comfortable Interiors</h4>
+        <p>Spacious seating arrangements for a relaxing commute</p>
+      </div>
+    </div>
+    
+    <!-- Station Images -->
+    <div class="gallery-item" data-category="stations">
+      <div class="gallery-image">
+        <img src="ESCOL.jpg" alt="Escolta Ferry Terminal" />
+      </div>
+      <div class="gallery-caption">
+        <h4>Escolta Terminal</h4>
+        <p>Our well-maintained terminal in the historic district of Manila</p>
+      </div>
+    </div>
+    
+    <div class="gallery-item" data-category="stations">
+      <div class="gallery-image">
+        <img src="PRFS.jpg" alt="Guadalupe Ferry Station" />
+      </div>
+      <div class="gallery-caption">
+        <h4>Guadalupe Station</h4>
+        <p>Convenient access point near the Guadalupe Bridge</p>
+      </div>
+    </div>
+    
+    <!-- Landmark Images -->
+    <div class="gallery-item" data-category="landmarks">
+      <div class="gallery-image">
+        <img src="mala.jpg" alt="View of Malacañang Palace from the river" />
+      </div>
+      <div class="gallery-caption">
+        <h4>Malacañang View</h4>
+        <p>Glimpse the historic presidential palace from the river</p>
+      </div>
+    </div>
+    
+    <div class="gallery-item" data-category="landmarks">
+      <div class="gallery-image">
+        <img src="BRIDGE.jpg" alt="Historic bridges spanning the Pasig River" />
+      </div>
+      <div class="gallery-caption">
+        <h4>Historic Bridges</h4>
+        <p>Pass under Manila's iconic bridges with unique vantage points</p>
+      </div>
+    </div>
+    
+    <!-- Experience Images -->
+    <div class="gallery-item" data-category="experiences">
+      <div class="gallery-image">
+        <img src="passenger.jpg" alt="Passengers enjoying the ferry ride" />
+      </div>
+      <div class="gallery-caption">
+        <h4>Commuter Experience</h4>
+        <p>Daily commuters enjoy a traffic-free journey to work</p>
+      </div>
+    </div>
+    
+    <div class="gallery-item" data-category="experiences">
+      <div class="gallery-image">
+        <img src="live.jpg" alt="Tourist taking photos from the ferry" />
+      </div>
+      <div class="gallery-caption">
+        <h4>Tourist Explorations</h4>
+        <p>A unique way to experience Manila's waterway heritage</p>
+      </div>
+    </div>
+    
+    <!-- More Items -->
+    <div class="gallery-item" data-category="landmarks">
+      <div class="gallery-image">
+        <img src="sunset.jpg" alt="Sunset over the Pasig River" />
+      </div>
+      <div class="gallery-caption">
+        <h4>Sunset Views</h4>
+        <p>Experience stunning sunset views along your journey</p>
+      </div>
+    </div>
+    
+    <div class="gallery-item" data-category="stations">
+      <div class="gallery-image">
+        <img src="pup.jpg" alt="PUP Ferry Station" />
+      </div>
+      <div class="gallery-caption">
+        <h4>PUP Station</h4>
+        <p>Convenient access for university students and faculty</p>
+      </div>
+    </div>
+    
+    <div class="gallery-item" data-category="ferries">
+      <div class="gallery-image">
+        <img src="cap.jpg" alt="Ferry captain at the helm" />
+      </div>
+      <div class="gallery-caption">
+        <h4>Expert Navigation</h4>
+        <p>Our experienced captains ensure safe and efficient journeys</p>
+      </div>
+    </div>
+    
+    <div class="gallery-item" data-category="experiences">
+      <div class="gallery-image">
+        <img src="fam.jpg" alt="Family enjoying the ferry service" />
+      </div>
+      <div class="gallery-caption">
+        <h4>Family Outings</h4>
+        <p>A fun alternative for weekend family adventures</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Lightbox container for full-size image viewing -->
+  <div class="gallery-lightbox" id="galleryLightbox">
+    <span class="lightbox-close">&times;</span>
+    <img class="lightbox-content" id="lightboxImage">
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+    <button class="lightbox-nav prev">&lsaquo;</button>
+    <button class="lightbox-nav next">&rsaquo;</button>
+  </div>
+  
+  <div class="gallery-cta">
+    <p>Want to share your Pasig River Ferry experience with us?</p>
+    <a href="#" class="btn btn-primary">Submit Your Photos</a>
+  </div>
+</section>
 
   <!-- Footer -->
   <footer>
@@ -369,6 +517,152 @@ $announcements = getActiveAnnouncements();
   </footer>
 
   <script>
+    // Gallery section JavaScript
+
+// Handle gallery filtering
+function initGalleryFilters() {
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const galleryItems = document.querySelectorAll('.gallery-item');
+  
+  filterButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      // Remove active class from all buttons
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      
+      // Add active class to clicked button
+      this.classList.add('active');
+      
+      // Get the filter value
+      const filterValue = this.getAttribute('data-filter');
+      
+      // Filter the gallery items
+      galleryItems.forEach(item => {
+        if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
+          item.style.display = '';
+          
+          // Add a slight delay for smoother appearance
+          setTimeout(() => {
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+          }, 50);
+        } else {
+          item.style.opacity = '0';
+          item.style.transform = 'translateY(20px)';
+          
+          // Hide after fade out animation
+          setTimeout(() => {
+            item.style.display = 'none';
+          }, 300);
+        }
+      });
+    });
+  });
+}
+
+// Handle gallery lightbox
+function initGalleryLightbox() {
+  const galleryItems = document.querySelectorAll('.gallery-item');
+  const lightbox = document.getElementById('galleryLightbox');
+  const lightboxImg = document.getElementById('lightboxImage');
+  const lightboxCaption = document.getElementById('lightboxCaption');
+  const closeBtn = document.querySelector('.lightbox-close');
+  const nextBtn = document.querySelector('.lightbox-nav.next');
+  const prevBtn = document.querySelector('.lightbox-nav.prev');
+  
+  let currentIndex = 0;
+  const visibleItems = [];
+  
+  function updateVisibleItems() {
+    visibleItems.length = 0;
+    galleryItems.forEach((item, index) => {
+      if (item.style.display !== 'none') {
+        visibleItems.push({
+          index: index,
+          item: item
+        });
+      }
+    });
+  }
+  
+  function showImage(index) {
+    updateVisibleItems();
+    if (visibleItems.length === 0) return;
+    
+    currentIndex = index;
+    
+    // Ensure currentIndex is within bounds
+    if (currentIndex >= visibleItems.length) currentIndex = 0;
+    if (currentIndex < 0) currentIndex = visibleItems.length - 1;
+    
+    const currentItem = visibleItems[currentIndex].item;
+    const imgSrc = currentItem.querySelector('img').src;
+    const captionText = currentItem.querySelector('.gallery-caption').innerHTML;
+    
+    lightboxImg.src = imgSrc;
+    lightboxCaption.innerHTML = captionText;
+    lightbox.style.display = 'block';
+    
+    // Prevent body scrolling when lightbox is open
+    document.body.style.overflow = 'hidden';
+  }
+  
+  // Set up click events for gallery items
+  galleryItems.forEach((item, index) => {
+    item.addEventListener('click', function() {
+      showImage(index);
+    });
+  });
+  
+  // Close lightbox
+  closeBtn.addEventListener('click', function() {
+    lightbox.style.display = 'none';
+    document.body.style.overflow = '';
+  });
+  
+  // Outside click to close
+  lightbox.addEventListener('click', function(e) {
+    if (e.target === lightbox) {
+      lightbox.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  });
+  
+  // Next image
+  nextBtn.addEventListener('click', function() {
+    showImage(currentIndex + 1);
+  });
+  
+  // Previous image
+  prevBtn.addEventListener('click', function() {
+    showImage(currentIndex - 1);
+  });
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (lightbox.style.display === 'block') {
+      if (e.key === 'ArrowRight') {
+        showImage(currentIndex + 1);
+      } else if (e.key === 'ArrowLeft') {
+        showImage(currentIndex - 1);
+      } else if (e.key === 'Escape') {
+        lightbox.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    }
+  });
+}
+
+// Initialize gallery functionality
+document.addEventListener('DOMContentLoaded', function() {
+  initGalleryFilters();
+  initGalleryLightbox();
+  
+  // Apply initial staggered animation to gallery items
+  const galleryItems = document.querySelectorAll('.gallery-item');
+  galleryItems.forEach((item, index) => {
+    item.style.animationDelay = `${index * 0.1}s`;
+  });
+});
     // Update the current time
     function updateClock() {
       const now = new Date();
