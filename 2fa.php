@@ -80,7 +80,7 @@ $atPos = strpos($email, '@');
 $maskedEmail = substr($email, 0, 2) . str_repeat('*', $atPos - 2) . substr($email, $atPos);
 ?>
 <p>A 6-digit code has been sent to <strong><?= htmlspecialchars($maskedEmail) ?></strong></p>
-
+    
 
         <input type="text" name="code" placeholder="Enter code" maxlength="6" required>
         <input type="submit" value="Verify">

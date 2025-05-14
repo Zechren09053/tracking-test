@@ -1,177 +1,4 @@
-<?php
-session_start();
-
-$servername = "localhost";
-$db_username = "PRFS";
-$db_password = "1111";
-$dbname = "prfs";
-
-$conn = new mysqli($servername, $db_username, $db_password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-$username = $_SESSION['username'] ?? null;
-if ($username) {
-    $sql = "SELECT first_name, last_name, email, profile_pic FROM staff_users WHERE username = ?";
-    $stmt = $conn->prepare($sql);   
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-        $name = $user['first_name'] . ' ' . $user['last_name'];
-        $email = $user['email'];
-        $profile_pic = $user['profile_pic'] ?? 'uploads/default.png';
-    } else {
-        $name = 'Unknown User';
-        $email = 'unknown@email.com';
-        $profile_pic = 'uploads/default.png';
-    }
-
-    $stmt->close();
-} else {
-    $name = 'Guest';
-    $email = 'guest@email.com';
-    $profile_pic = 'uploads/default.png';
-}
-
-// Live stats
-$passenger_sql = "SELECT SUM(current_capacity) AS total_passengers FROM ferries";
-$passenger_result = $conn->query($passenger_sql);
-$total_passengers = $passenger_result->fetch_assoc()['total_passengers'] ?? 0;
-
-$passes_sql = "SELECT COUNT(*) AS active_passes FROM passenger_id_pass WHERE is_active = 1 AND expires_at > NOW()";
-$passes_result = $conn->query($passes_sql);
-$active_passes = $passes_result->fetch_assoc()['active_passes'] ?? 0;
-
-$ferry_sql = "SELECT COUNT(*) AS active_ferries FROM ferries WHERE status = 'active'";
-$ferry_result = $conn->query($ferry_sql);
-$active_ferries = $ferry_result->fetch_assoc()['active_ferries'] ?? 0;
-
-$occupancy_sql = "SELECT AVG(current_capacity / max_capacity) AS avg_occupancy FROM ferries WHERE max_capacity > 0";
-$occupancy_result = $conn->query($occupancy_sql);
-$avg_occupancy = $occupancy_result->fetch_assoc()['avg_occupancy'] ?? 0;
-$occupancy_percentage = round($avg_occupancy * 100, 1);
-
-$conn->close();
-?>
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Ferry Admin Dashboard</title>
-    <link rel="stylesheet" href="Db.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-</head>
-<body>
-    <!-- Main container with rounded edges -->
-    <div class="main-container">
-        <div class="container">
-        <div class="sidebar-wrapper">
-            <div class="sidebar">
-                <div>
-                    <div class="logo">
-                        <img src="PasigRiverFerryServiceLogo.png" alt="Logo" style="width: 30px; height: 30px;">
-                        PRFS MANAGEMENT
-                    </div>
-
-                   
-                    <ul class="nav">
-                        <li class="active" data-page="dashboard">Dashboard</li>
-                        <li data-page="analytics">Analytics</li>
-                        <li data-page="tracking">Tracking</li>
-                        <li data-page="ferrymngt">Ferry Management</li>
-                        <li data-page="routeschedules">Route and Schedules</li>
-                        <li data-page="User Section">User Section</li>
-                    </ul>
-
-                    <!-- Settings, Help, and Logout Section -->
-                    <ul class="nav settings-nav">
-                        <li><a href="#">Settings</a></li>
-                        <li><a href="#">Help</a></li>
-                        <li><a href="login.php">Logout</a></li>
-                    </ul>
-
-                    <div class="profile">
-                    <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" />
-    <div class="profile-info">
-    <strong class="profile-name" title="<?= htmlspecialchars($name) ?>"><?= htmlspecialchars($name) ?></strong>
-<span class="profile-email" title="<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></span>
-
-    </div>
-</div>
-</div>
-
-
-                </div>
-            </div>
-
-            <!-- Main Dashboard -->
-            <div class="main">
-                <div class="header">
-                    <h1>Dashboard</h1>
-                    <div id="clock" style="margin-bottom: 20px; font-size: 16px; color: #00b0ff;"></div>
-                </div>
-<div class="stats">
-<div class="stat-box">
-    <h2>Total Passengers</h2>
-    <p><?= $total_passengers ?></p>
-    <div class="stat-change">↑ based on records</div>
-</div>
-
-<div class="stat-box">
-    <h2>Active Passes</h2>
-    <p><?= $active_passes ?></p>
-    <div class="stat-change">Currently Valid</div>
-</div>
-
-<div class="stat-box">
-    <h2>Active Ferries</h2>
-    <p><?= $active_ferries ?></p>
-    <div class="stat-change">In Operation Now</div>
-</div>
-
-<div class="stat-box">
-    <h2>Average Occupancy</h2>
-    <p><?= $occupancy_percentage ?>%</p>
-    <div class="stat-change">Capacity Utilization</div>
-</div>
-</div>
-
-
-                <div class="tracking">
-                    <div class="boat-list">
-                        <div class="boat-list-header">Ferry List</div>
-                        <div id="ferry-list" class="boat-list-body">
-                            <!-- Ferry data will be dynamically loaded here -->
-                        </div>
-                    </div>
-
-                    <!-- Map Section -->
-                    <div class="map">
-    <div class="map-box">
-        <div id="map"></div>
-    </div>
-</div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add your script tags for your custom JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    
-
-
-    <script>
-    var map = L.map('map').setView([14.5896, 121.0360], 13);
+var map = L.map('map').setView([14.5896, 121.0360], 13);
     var markers = {};
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -199,37 +26,7 @@ const pasigRiverRoute2 = [
   [14.5803,121.0819],[14.5833,121.0828],[14.5833,121.0828],[14.5872,121.0833],[14.5928,121.0822],
   [14.5978,121.0825],[14.6025,121.0825]
 ];
-const ferryStations = [
-  { name: "Pinagbuhatan", coords: [14.5972, 121.0825] },
-  { name: "Kalawaan", coords: [14.5914, 121.0825] },
-  { name: "San Joaquin", coords: [14.5581, 121.0669] },
-  { name: "Maybunga", coords: [14.5760, 121.0785] },
-  { name: "Guadalupe", coords: [14.5672, 121.0347] },
-  { name: "Hulo", coords: [14.5744, 121.0256] },
-  { name: "Valenzuela", coords: [14.5835, 121.0190] },
-  { name: "Lambingan", coords: [14.5869, 121.0190] },
-  { name: "Santa Ana", coords: [14.5900, 121.0142] },
-  { name: "PUP", coords: [14.5968, 121.0035] },
-  { name: "Lawton", coords: [14.5935, 120.9838] },
-  { name: "Escolta", coords: [14.5965, 120.9790] },
-  { name: "Plaza Mexico", coords: [14.5957, 120.9745] }
-];
 
-ferryStations.forEach(station => {
-  const marker = L.circleMarker(station.coords, {
-    radius: 6,
-    fillColor: "#0066ff",
-    color: "#003366",
-    weight: 1,
-    opacity: 1,
-    fillOpacity: 0.9
-  }).addTo(map);
-  marker.bindTooltip(station.name, {
-    permanent: true,
-    direction: 'top',
-    className: 'ferry-label'
-  });
-});
 
     const riverRoute = L.polyline(pasigRiverRoute, {
         color: 'blue',
@@ -360,7 +157,7 @@ ferryStations.forEach(station => {
             } else if (page === 'ferrymngt') {
                 window.location.href = 'ferrymngt.php';
             } else if (page === 'routeschedules') {
-                window.location.href = 'routeschedules.php';
+                window.location.href = 'template.php';
             } else if (page === 'Users') {
                 window.location.href = 'template.php';
             }
@@ -391,17 +188,3 @@ ferryStations.forEach(station => {
 
 setInterval(fetchStatsData, 1000); // every 5 seconds
 fetchStatsData(); // also run immediately
-function updateClock() {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString();
-    const dateString = now.toLocaleDateString();
-    document.getElementById("clock").textContent = `${dateString} | ${timeString}`;
-  }
-
-  setInterval(updateClock, 1000);
-  updateClock(); // run once on load
-</script>
-
-
-</body>
-</html>

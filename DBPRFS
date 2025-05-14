@@ -23,6 +23,16 @@ CREATE TABLE `downstream_schedules` (
   `schedule_time` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Upstream schedules
+CREATE TABLE `upstream_schedules` (
+  `id` int(11) NOT NULL,
+  `route_name` varchar(255) NOT NULL DEFAULT 'Escolta → Kalawaan',
+  `row_id` int(11) NOT NULL,
+  `col_id` int(11) NOT NULL,
+  `station_name` varchar(255) NOT NULL,
+  `schedule_time` time NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- Ferries table
 CREATE TABLE `ferries` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -148,16 +158,6 @@ CREATE TABLE `staff_users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ALTER TABLE `staff_users`
 MODIFY `role` ENUM('superadmin', 'admin', 'employee', 'operator','Auditor') NOT NULL;
-
--- Upstream schedules
-CREATE TABLE `upstream_schedules` (
-  `id` int(11) NOT NULL,
-  `route_name` varchar(255) NOT NULL DEFAULT 'Escolta → Kalawaan',
-  `row_id` int(11) NOT NULL,
-  `col_id` int(11) NOT NULL,
-  `station_name` varchar(255) NOT NULL,
-  `schedule_time` time NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Boat maintenance
 CREATE TABLE `boat_maintenance` (

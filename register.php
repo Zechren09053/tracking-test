@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Register | Ferry Admin</title>
     <link rel="stylesheet" href="Db.css">
     <style>
-       body { background-color: #1f1f1f; color: white; font-family: Arial, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px 0; }
+body { background-color: #1f1f1f; color: white; font-family: Arial, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px 0; }
 .register-container { background-color: #2c2c2c; padding: 40px; border-radius: 16px; width: 100%; max-width: 450px; box-shadow: 0 0 20px rgba(0, 188, 212, 0.7); border: 2px solid #00bcd4; animation: subtle-pulse 4s infinite; }
 @keyframes subtle-pulse { 0% { box-shadow: 0 0 15px rgba(0, 188, 212, 0.6); } 50% { box-shadow: 0 0 25px rgba(0, 188, 212, 0.8); } 100% { box-shadow: 0 0 15px rgba(0, 188, 212, 0.6); } }
 .register-container h2 { text-align: center; margin-bottom: 30px; color: #00bcd4; font-size: 24px; }

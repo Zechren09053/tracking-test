@@ -1,0 +1,75 @@
+🧩 Step-by-Step: composer init
+When you run composer init, it will ask you a series of questions to generate a composer.json file.
+
+🔹 1. Package name
+bash
+Copy
+Edit
+Package name (<vendor>/<name>) [onyx/onyx]:
+You can just press Enter to accept the default (onyx/onyx), or change it if you want (e.g., prfs/ferry-system).
+
+🔹 2. Description
+bash
+Copy
+Edit
+Description []:
+Write a short description. Example:
+
+sql
+Copy
+Edit
+PRFS Ferry Tracking System with 2FA
+🔹 3. Author
+bash
+Copy
+Edit
+Author [Your Name <your@email.com>, n to skip]:
+Enter your name and email, or press n to skip.
+
+🔹 4. Minimum Stability
+bash
+Copy
+Edit
+Minimum Stability []:
+Leave it blank (just press Enter) unless you specifically want to use unstable packages.
+
+🔹 5. Package Type
+bash
+Copy
+Edit
+Package Type (e.g. library, project, metapackage, composer-plugin) []:
+Type: project
+This is a web project, not a library.
+
+🔹 6. License
+bash
+Copy
+Edit
+License []:
+Type: MIT (or press Enter to skip)
+
+🔹 7. Would you like to define your dependencies (require) interactively?
+bash
+Copy
+Edit
+Would you like to define your dependencies (require) interactively [yes]?
+Type: no
+
+You will add the required packages manually in the next step.
+
+✅ After Composer is Initialized
+You’ll now have a composer.json file in your project folder.
+
+🚀 Install Required Packages for 2FA
+Run these two commands to install the libraries you need:
+
+bash
+Copy
+Edit
+composer require spomky-labs/otphp
+composer require endroid/qr-code
+This will:
+
+Download the libraries to the vendor/ directory
+
+Automatically update composer.json and composer.lock
