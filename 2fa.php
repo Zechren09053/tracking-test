@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header("Location: track_ferry.php");
                 break;
             case 'Auditor':
-                header("Location: monitor_users.php");
+                header("Location: ticket.php");
                 break;
             default:
                 header("Location: Dashboard.php");

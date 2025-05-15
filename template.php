@@ -498,7 +498,7 @@ $conn->close();
                     else if (page === 'tracking') window.location.href = 'Tracking.php';
                     else if (page === 'ferrymngt') window.location.href = 'ferrymngt.php';
                     else if (page === 'routeschedules') window.location.href = 'routeschedules.php';
-                    else if (page === 'Usersection') window.location.href = 'Usersection.php';
+                    else if (page === 'Usersection') window.location.href = 'template.php';
                 });
             });
             
