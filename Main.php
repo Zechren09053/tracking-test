@@ -38,7 +38,7 @@
         <a href="#schedules">Schedules</a>
         <a href="#routes">Routes</a>
         <a href="#gallery">Gallery</a>
-        <a href="#">Community</a>
+        
       </nav>
     </div>
     
@@ -97,7 +97,7 @@
         <a href="#schedules">Schedules</a>
         <a href="#routes">Routes</a>
         <a href="#gallery">Gallery</a>
-        <a href="#">Community</a>
+        
       </div>
 
       <div class="nav-buttons">
@@ -237,7 +237,7 @@
                 <tbody>
                   <?php for($i = 1; $i <= $maxUpstreamTrips; $i++): ?>
                     <tr>
-                      <td class="trip-number">Trip <?php echo $i; ?></td>
+                      <td class="trip-number"> <?php echo $i; ?></td>
                       <?php foreach(array_keys($upstreamData['stations']) as $colId): ?>
                         <td><?php echo isset($upstreamData['data'][$i][$colId]) ? 
                           htmlspecialchars($upstreamData['data'][$i][$colId]) : '—'; ?></td>
@@ -267,7 +267,7 @@
                 <tbody>
                   <?php for($i = 1; $i <= $maxDownstreamTrips; $i++): ?>
                     <tr>
-                      <td class="trip-number">Trip <?php echo $i; ?></td>
+                      <td class="trip-number"> <?php echo $i; ?></td>
                       <?php foreach(array_keys($downstreamData['stations']) as $colId): ?>
                         <td><?php echo isset($downstreamData['data'][$i][$colId]) ? 
                           htmlspecialchars($downstreamData['data'][$i][$colId]) : '—'; ?></td>
@@ -504,7 +504,7 @@
                 <li><a href="#schedules">Schedules</a></li>
                 <li><a href="#routes">Routes</a></li>
                 <li><a href="#gallery">Gallery</a></li>
-                <li><a href="#">Community</a></li>
+                
               </ul>
             </div>
             <div class="footer-column">
