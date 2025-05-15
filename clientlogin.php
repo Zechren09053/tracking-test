@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -149,9 +148,16 @@
     </div>
 
     <script>
+        // Global variables
+        let sessionCheckInterval;
+        let sessionLastChecked = 0;
+        let currentUserId = null;
+        const SESSION_CHECK_INTERVAL = 5000; // Check every 5 seconds
+        
         // Check session state on page load
         document.addEventListener('DOMContentLoaded', function() {
-            checkSession();
+            // Initialize session sync for cross-tab communication
+            initSessionSync();
             
             // Handle image preview
             document.getElementById('profile_image').addEventListener('change', function(e) {
@@ -190,26 +196,149 @@
             // Set up form submission handlers
             document.getElementById('login-form').addEventListener('submit', handleLogin);
             document.getElementById('registration-form').addEventListener('submit', handleRegistration);
+            
+            // Listen for storage events for cross-tab communication
+            window.addEventListener('storage', handleStorageChange);
         });
+        
+        // Initialize session synchronization
+        function initSessionSync() {
+            // Check session immediately
+            checkSession();
+            
+            // Set up interval for periodic checks
+            sessionCheckInterval = setInterval(() => {
+                // Only check if the tab is visible/active
+                if (!document.hidden) {
+                    checkSession();
+                }
+            }, SESSION_CHECK_INTERVAL);
+            
+            // Add visibility change listener to pause/resume checking when tab is hidden/visible
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    // Tab is hidden, clear the interval
+                    clearInterval(sessionCheckInterval);
+                } else {
+                    // Tab is visible again, check immediately and restart interval
+                    checkSession();
+                    sessionCheckInterval = setInterval(checkSession, SESSION_CHECK_INTERVAL);
+                }
+            });
+        }
+        
+        // Handle localStorage changes from other tabs
+        function handleStorageChange(event) {
+            // Listen for specific login/logout events
+            if (event.key === 'userLoginState') {
+                const loginState = JSON.parse(event.newValue);
+                
+                if (loginState && loginState.loggedIn) {
+                    // Another tab logged in, update this tab's UI
+                    currentUserId = loginState.userId;
+                    updateUIForLogin(loginState.userId);
+                } else {
+                    // Another tab logged out, update this tab's UI
+                    currentUserId = null;
+                    updateUIForLogout();
+                }
+            }
+        }
         
         // Check if user is logged in
         function checkSession() {
-            fetch('check_session.php')
+            // Add timestamp to prevent caching
+            const timestamp = new Date().getTime();
+            fetch(`check_session.php?_=${timestamp}`)
                 .then(response => response.json())
                 .then(data => {
+                    // Update last checked time
+                    sessionLastChecked = timestamp;
+                    
                     if (data.logged_in) {
-                        // User is logged in, show dashboard
-                        document.getElementById('dashboard-tab').style.display = 'block';
-                        openTab('dashboard');
-                        loadUserData(data.user_id);
+                        // User is logged in
+                        if (currentUserId !== data.user_id) {
+                            // Login state changed or initial load
+                            currentUserId = data.user_id;
+                            updateUIForLogin(data.user_id);
+                            
+                            // Update localStorage to notify other tabs
+                            localStorage.setItem('userLoginState', JSON.stringify({
+                                loggedIn: true,
+                                userId: data.user_id,
+                                timestamp: Date.now()
+                            }));
+                        }
                     } else {
                         // User is not logged in
-                        document.getElementById('dashboard-tab').style.display = 'none';
+                        if (currentUserId !== null) {
+                            // Logout detected
+                            currentUserId = null;
+                            updateUIForLogout();
+                            
+                            // Update localStorage to notify other tabs
+                            localStorage.setItem('userLoginState', JSON.stringify({
+                                loggedIn: false,
+                                timestamp: Date.now()
+                            }));
+                        }
                     }
                 })
                 .catch(error => {
                     console.error('Error checking session:', error);
                 });
+        }
+        
+        // Update UI for login state
+        function updateUIForLogin(userId) {
+            document.getElementById('dashboard-tab').style.display = 'block';
+            openTab('dashboard');
+            loadUserData(userId);
+        }
+        
+        // Update UI for logout state
+        function updateUIForLogout() {
+            document.getElementById('dashboard-tab').style.display = 'none';
+            openTab('login');
+            
+            // Display logout message if on login tab
+            if (document.getElementById('login').classList.contains('active')) {
+                showLogoutMessage();
+            }
+        }
+        
+        // Show logout success message
+        function showLogoutMessage() {
+            // Remove any existing logout message
+            const existingMessage = document.querySelector('.success-message');
+            if (existingMessage) {
+                existingMessage.parentNode.removeChild(existingMessage);
+            }
+            
+            document.getElementById('login-general-error').textContent = '';
+            const logoutMessage = document.createElement('div');
+            logoutMessage.className = 'success-message';
+            logoutMessage.textContent = 'You have been logged out.';
+            logoutMessage.style.color = '#10b981';
+            logoutMessage.style.padding = '10px';
+            logoutMessage.style.marginTop = '15px';
+            logoutMessage.style.textAlign = 'center';
+            logoutMessage.style.fontWeight = 'bold';
+            
+            // Insert message before the login form
+            const loginForm = document.getElementById('login-form');
+            loginForm.parentNode.insertBefore(logoutMessage, loginForm);
+            
+            // Remove message after 5 seconds
+            setTimeout(() => {
+                logoutMessage.style.opacity = '0';
+                logoutMessage.style.transition = 'opacity 1s';
+                setTimeout(() => {
+                    if (logoutMessage.parentNode) {
+                        logoutMessage.parentNode.removeChild(logoutMessage);
+                    }
+                }, 1000);
+            }, 5000);
         }
         
         // Handle login form submission
@@ -251,9 +380,17 @@
             .then(data => {
                 if (data.success) {
                     // Login successful
-                    document.getElementById('dashboard-tab').style.display = 'block';
-                    openTab('dashboard');
-                    loadUserData(data.user_id);
+                    currentUserId = data.user_id;
+                    
+                    // Update localStorage to notify other tabs
+                    localStorage.setItem('userLoginState', JSON.stringify({
+                        loggedIn: true,
+                        userId: data.user_id,
+                        timestamp: Date.now()
+                    }));
+                    
+                    // Update UI
+                    updateUIForLogin(data.user_id);
                 } else {
                     // Login failed
                     document.getElementById('login-general-error').textContent = data.message || 'Invalid credentials';
@@ -632,40 +769,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Hide dashboard tab
-                        document.getElementById('dashboard-tab').style.display = 'none';
+                        // Update localStorage to notify other tabs
+                        localStorage.setItem('userLoginState', JSON.stringify({
+                            loggedIn: false,
+                            timestamp: Date.now()
+                        }));
                         
-                        // Show login tab
-                        openTab('login');
-                        
-                        // Clear login form
-                        document.getElementById('login-form').reset();
-                        
-                        // Display logout success message
-                        document.getElementById('login-general-error').textContent = '';
-                        const logoutMessage = document.createElement('div');
-                        logoutMessage.className = 'success-message';
-                        logoutMessage.textContent = 'You have been successfully logged out.';
-                        logoutMessage.style.color = '#10b981';
-                        logoutMessage.style.padding = '10px';
-                        logoutMessage.style.marginTop = '15px';
-                        logoutMessage.style.textAlign = 'center';
-                        logoutMessage.style.fontWeight = 'bold';
-                        
-                        // Insert message before the login form
-                        const loginForm = document.getElementById('login-form');
-                        loginForm.parentNode.insertBefore(logoutMessage, loginForm);
-                        
-                        // Remove message after 5 seconds
-                        setTimeout(() => {
-                            logoutMessage.style.opacity = '0';
-                            logoutMessage.style.transition = 'opacity 1s';
-                            setTimeout(() => {
-                                if (logoutMessage.parentNode) {
-                                    logoutMessage.parentNode.removeChild(logoutMessage);
-                                }
-                            }, 1000);
-                        }, 5000);
+                        // Update current tab's UI
+                        currentUserId = null;
+                        updateUIForLogout();
                     }
                 })
                 .catch(error => {
