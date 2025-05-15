@@ -123,22 +123,6 @@ CREATE TABLE `login_attempts` (
   `last_attempt` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Passenger ID pass
-CREATE TABLE `passenger_id_pass` (
-  `id` int(11) NOT NULL,
-  `passenger_id` int(11) NOT NULL,
-  `full_name` varchar(100) NOT NULL,
-  `birth_date` date NOT NULL,
-  `profile_image` varchar(255) DEFAULT NULL,
-  `email` varchar(100) NOT NULL,
-  `phone_number` varchar(20) NOT NULL,
-  `qr_code_data` varchar(255) NOT NULL,
-  `issued_at` datetime DEFAULT current_timestamp(),
-  `expires_at` datetime NOT NULL,
-  `is_active` tinyint(1) DEFAULT 1,
-  `last_used` datetime DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Staff users
 CREATE TABLE `staff_users` (
@@ -199,7 +183,7 @@ CREATE TABLE passengers (
   registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Users (ticket holders)-- 
+-- Users (ticket holders)--  
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   full_name VARCHAR(100) NOT NULL,
@@ -210,7 +194,7 @@ CREATE TABLE users (
   password VARCHAR(255) NOT NULL,
   qr_code_data VARCHAR(255) NOT NULL,
   issued_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  expires_at DATETIME NOT NULL,
+  expires_at DATETIME NOT NULL, 
   is_active TINYINT(1) DEFAULT 1,
   last_used DATETIME DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -246,20 +230,6 @@ CREATE TABLE `ferry_safety_equipment` (
   CONSTRAINT `fk_ferry_safety_equip` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Ferry assignments
-CREATE TABLE `ferry_assignments` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `ferry_id` INT(11) NOT NULL,
-  `route_id` INT(11) NOT NULL,
-  `assigned_date` DATE NOT NULL,
-  `is_active` TINYINT(1) DEFAULT 1,
-  `notes` TEXT DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `ferry_id` (`ferry_id`),
-  KEY `route_id` (`route_id`),
-  CONSTRAINT `fk_ferry_assignments_ferry` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_ferry_assignments_route` FOREIGN KEY (`route_id`) REFERENCES `ferry_routes` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Ferry crew
 CREATE TABLE `ferry_crew` (
@@ -297,3 +267,4 @@ CREATE TABLE `ferry_fuel_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
+use db_connect.php to connect 
