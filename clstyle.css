@@ -552,3 +552,345 @@ body.dark-mode .tab-btn.active { background-color: var(--primary-color-dark); bo
     width: 80%;
     left: 10%;
   }
+  /* Search functionality styles */
+.search-results {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1050;
+    overflow: hidden;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  /* Search results when active */
+  .search-results.active {
+    display: block;
+    opacity: 1;
+  }
+  
+  /* Search results header */
+  .search-results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .search-results-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .close-search-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #777;
+    transition: color 0.2s;
+  }
+  
+  .close-search-btn:hover {
+    color: #333;
+  }
+  
+  /* Search results content */
+  .search-results-content {
+    padding: 10px 0;
+    overflow-y: auto;
+    max-height: calc(80vh - 60px);
+  }
+  
+  /* Search result item */
+  .search-result-item {
+    padding: 10px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+  }
+  
+  .search-result-item:last-child {
+    border-bottom: none;
+  }
+  
+  .search-result-item:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .result-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  
+  .result-link h4 {
+    margin: 0 0 5px 0;
+    color: #0e4d92;
+    font-size: 16px;
+  }
+  
+  .result-link p {
+    margin: 0;
+    color: #555;
+    font-size: 14px;
+  }
+  
+  /* No results message */
+  .no-results-message {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+  }
+  
+  /* Dark mode styles */
+  .dark-mode .search-results {
+    background-color: #222;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .dark-mode .search-results-header {
+    border-bottom: 1px solid #333;
+  }
+  
+  .dark-mode .search-results-header h3 {
+    color: #fff;
+  }
+  
+  .dark-mode .close-search-btn {
+    color: #aaa;
+  }
+  
+  .dark-mode .close-search-btn:hover {
+    color: #fff;
+  }
+  
+  .dark-mode .search-result-item {
+    border-bottom: 1px solid #333;
+  }
+  
+  .dark-mode .search-result-item:hover {
+    background-color: #333;
+  }
+  
+  .dark-mode .result-link h4 {
+    color: #4e9df3;
+  }
+  
+  .dark-mode .result-link p {
+    color: #bbb;
+  }
+  
+  .dark-mode .no-results-message {
+    color: #aaa;
+  }
+  
+  /* Mobile styles */
+  @media (max-width: 768px) {
+    .search-results {
+      width: 95%;
+      top: 70px;
+    }
+    
+    .search-results-header h3 {
+      font-size: 16px;
+    }
+    
+    .result-link h4 {
+      font-size: 15px;
+    }
+    
+    .result-link p {
+      font-size: 13px;
+    }
+  }
+  
+  /* Make the existing search inputs more obviously clickable */
+  .search-container {
+    position: relative;
+  }
+  
+  .search-container input {
+    cursor: text;
+  }
+  
+  .search-container button {
+    cursor: pointer;
+  }
+  
+  /* Add focus styles for search input */
+  .search-container input:focus {
+    border-color: #0e4d92;
+    box-shadow: 0 0 0 2px rgba(14, 77, 146, 0.2);
+    outline: none;
+  }
+  
+  /* Better highlight for search button hover */
+  .search-container button:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .dark-mode .search-container button:hover {
+    background-color: #333;
+  }
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+  }
+  
+  .modal-content {
+    position: relative;
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 700px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  
+  .modal-close {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .profile-pic-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 8px;
+    margin-right: 10px;
+  }
+  
+  .profile-pic {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  .profile-pic:hover {
+    transform: scale(1.05);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Notification Styles */
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    max-width: 350px;
+    padding: 0;
+    z-index: 9999;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background-color: white;
+    overflow: hidden;
+    transform: translateX(400px);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  
+  .notification.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  
+  .notification-content {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+  }
+  
+  .notification p {
+    flex: 1;
+    margin: 0;
+    font-size: 14px;
+  }
+  
+  .notification-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 5px;
+    color: #555;
+  }
+  
+  .notification-success {
+    border-left: 4px solid #4CAF50;
+  }
+  
+  .notification-error {
+    border-left: 4px solid #F44336;
+  }
+  
+  .notification-info {
+    border-left: 4px solid #2196F3;
+  }
+  
+  /* Dark mode styles for notifications and profile */
+  .dark-mode .notification {
+    background-color: #333;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  .dark-mode .notification-close {
+    color: #ccc;
+  }
+  
+  .dark-mode .profile-pic {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  }
+  
+  /* Mobile responsive styles */
+  @media (max-width: 768px) {
+    .notification {
+      left: 20px;
+      right: 20px;
+      max-width: calc(100% - 40px);
+    }
+    
+    .profile-pic {
+      width: 32px;
+      height: 32px;
+      font-size: 12px;
+    }
+  }
+  
+  /* Ensure the modal has proper z-index */
+  #loginModal {
+    z-index: 1001;
+  }
+  
