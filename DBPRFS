@@ -199,7 +199,7 @@ CREATE TABLE passengers (
   registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Users (ticket holders)-- Users (ticket holders)
+-- Users (ticket holders)-- 
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   full_name VARCHAR(100) NOT NULL,
@@ -215,7 +215,10 @@ CREATE TABLE users (
   last_used DATETIME DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
+-- Add indexes for performance
+CREATE INDEX idx_email ON users(email);
+CREATE INDEX idx_phone ON users(phone_number);
+CREATE INDEX idx_qr_code ON users(qr_code_data);  
 
 -- Tickets
 CREATE TABLE tickets (

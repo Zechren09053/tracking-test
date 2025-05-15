@@ -1,5 +1,10 @@
 <?php
 session_start();
+if (!isset($_SESSION['staff_id'], $_SESSION['2fa_verified']) || $_SESSION['2fa_verified'] !== true) {
+    header("Location: login.php");
+    exit();
+}
+
 $servername = "localhost";
 $db_username = "PRFS";
 $db_password = "1111";
@@ -28,6 +33,28 @@ if ($result->num_rows > 0) {
     $profile_pic = 'uploads/default.png';
 }
 
+// Get user statistics
+$total_users = 0;
+$active_users = 0;
+$expired_users = 0;
+$today_users = 0;
+
+$stats_query = "SELECT 
+    COUNT(*) as total,
+    SUM(CASE WHEN is_active = 1 AND expires_at > NOW() THEN 1 ELSE 0 END) as active,
+    SUM(CASE WHEN is_active = 0 OR expires_at <= NOW() THEN 1 ELSE 0 END) as expired,
+    SUM(CASE WHEN DATE(created_at) = CURDATE() THEN 1 ELSE 0 END) as today
+FROM users";
+
+$stats_result = $conn->query($stats_query);
+if ($stats_result && $stats_result->num_rows > 0) {
+    $stats = $stats_result->fetch_assoc();
+    $total_users = $stats['total'];
+    $active_users = $stats['active'];
+    $expired_users = $stats['expired'];
+    $today_users = $stats['today'];
+}
+
 $stmt->close();
 $conn->close();
 ?>
@@ -37,36 +64,17 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ferry Admin Dashboard</title>
+    <title>User Management - Ferry Admin Dashboard</title>
     <link rel="stylesheet" href="Db.css">
+    <link rel="stylesheet" href="usertem.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { margin: 0; font-family: Arial, sans-serif; }
-.main-container { display: flex; flex-direction: column; }
-.container { display: flex; flex: 1; position: relative; }
-.sidebar-wrapper { position: relative; }
-.sidebar { width: 250px; transition: width 0.3s ease; overflow: hidden; }
-.sidebar-collapsed { width: 70px !important; }
-.sidebar-collapsed .logo-text, .sidebar-collapsed .nav-text, .sidebar-collapsed .profile-info, .sidebar-collapsed .settings-text { display: none; }
-.sidebar-collapsed .nav li, .sidebar-collapsed .settings-nav li { text-align: center; padding: 15px 15px; }
-.sidebar-toggle { position: absolute; top: 20px; left: 250px; background: #00b0ff; width: 15px; height: 40px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: left 0.3s ease; border-top-right-radius: 15px; border-bottom-right-radius: 15px; }
-.sidebar-collapsed ~ .sidebar-toggle { left: 70px; }
-.nav, .settings-nav { list-style: none; padding: 0; margin: 0; }
-.nav li, .settings-nav li { padding: 15px; cursor: pointer; }
-.nav li:hover, .settings-nav li:hover { background-color: #333; }
-.nav-item-content { display: flex; align-items: center; }
-.nav-text, .settings-text { margin-left: 10px; }
-.main { flex: 1; padding: 20px; transition: margin-left 0.3s ease; margin-left: 25px; }
-.content-expanded { margin-left: 70px !important; }
-.header h1 { margin: 0 0 10px; }
-.sidebar-top { display: flex; flex-direction: column; height: 100%; justify-content: space-between; }
-.main-nav-container { flex-grow: 0; }
-    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
     <div class="main-container">
         <div class="container">
-            <!-- Toggle button now outside sidebar wrapper -->
+            <!-- Sidebar -->
             <div class="sidebar" id="sidebar">
                 <div class="sidebar-top">
                     <div class="main-nav-container">
@@ -138,17 +146,334 @@ $conn->close();
             <!-- Main content -->
             <div class="main" id="main-content">
                 <div class="header">
-                    <h1>User Section</h1>
+                    <h1>User Management System</h1>
                 </div>
-                <div class="content">
-                    <p>Welcome to the User Section. Content will be added here.</p>
+                
+                <!-- User Stats -->
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Users</h3>
+                            <p><?php echo $total_users; ?></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon active">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Active Users</h3>
+                            <p><?php echo $active_users; ?></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon expired">
+                            <i class="fas fa-user-times"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Expired Users</h3>
+                            <p><?php echo $expired_users; ?></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon today">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>New Today</h3>
+                            <p><?php echo $today_users; ?></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tabs">
+                    <div class="tab active" onclick="openTab('view')">View Users</div>
+                    <div class="tab" onclick="openTab('add')">Add User</div>
+                </div>
+                
+                <!-- View Users Tab -->
+                <div id="view" class="tab-content active">
+                    <div class="search-container">
+                        <input type="text" id="search-input" placeholder="Search by name, email or phone..." onkeyup="searchUsers()">
+                        <button id="search-btn"><i class="fas fa-search"></i></button>
+                        
+                        <div class="filter-container">
+                            <select id="status-filter" onchange="filterUsers()">
+                                <option value="all">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="expired">Expired</option>
+                            </select>
+                            <button id="refresh-btn" onclick="refreshUsers()"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="users-table-container">
+                        <table id="users-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Issued</th>
+                                    <th>Expires</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <!-- User rows will be loaded here -->
+                                <tr>
+                                    <td colspan="7" class="table-loading">Loading users...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="pagination">
+                        <button id="prev-page" onclick="prevPage()" disabled>
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        <span id="page-info">Page 1 of 1</span>
+                        <button id="next-page" onclick="nextPage()" disabled>
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Add User Tab -->
+                <div id="add" class="tab-content">
+                    <div class="form-container">
+                        <form id="user-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="full_name">Full Name <span class="required">*</span></label>
+                                    <input type="text" id="full_name" name="full_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="birth_date">Date of Birth <span class="required">*</span></label>
+                                    <input type="date" id="birth_date" name="birth_date" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="email">Email Address <span class="required">*</span></label>
+                                    <input type="email" id="email" name="email" required>
+                                    <div id="email-error" class="error"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone_number">Phone Number <span class="required">*</span></label>
+                                    <input type="tel" id="phone_number" name="phone_number" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="password">Password <span class="required">*</span></label>
+                                    <input type="password" id="password" name="password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm_password">Confirm Password <span class="required">*</span></label>
+                                    <input type="password" id="confirm_password" name="confirm_password" required>
+                                    <div id="password-error" class="error"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expires_at">Expiry Date <span class="required">*</span></label>
+                                    <input type="date" id="expires_at" name="expires_at" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="is_active">Status</label>
+                                    <select id="is_active" name="is_active">
+                                        <option value="1">Active</option>
+                                        <option value="0">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="profile_image">Profile Image</label>
+                                <input type="file" id="profile_image" name="profile_image" accept="image/*">
+                                <div class="image-preview" id="image-preview">
+                                    <span>No image selected</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-buttons">
+                                <button type="button" onclick="resetForm()">Reset</button>
+                                <button type="button" id="submit-btn" onclick="submitForm()">Add User</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- User Details Modal -->
+    <div id="user-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>User Details</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="user-details">
+                    <div class="user-profile">
+                        <img id="modal-user-image" src="/api/placeholder/150/150" alt="User Profile">
+                        <div id="user-qrcode"></div>
+                    </div>
+                    <div class="user-info">
+                        <div class="info-row">
+                            <span class="info-label">Name:</span>
+                            <span id="modal-user-name"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span id="modal-user-email"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Phone:</span>
+                            <span id="modal-user-phone"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Birth Date:</span>
+                            <span id="modal-user-dob"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Issued:</span>
+                            <span id="modal-user-issued"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Expires:</span>
+                            <span id="modal-user-expires"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Last Used:</span>
+                            <span id="modal-user-last-used"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Status:</span>
+                            <span id="modal-user-status" class="status"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="print-card-btn" onclick="printUserCard()">
+                        <i class="fas fa-print"></i> Print ID Card
+                    </button>
+                    <button id="edit-user-btn" onclick="editUser()">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button id="toggle-status-btn">
+                        <i class="fas fa-exchange-alt"></i> <span id="toggle-status-text">Deactivate</span>
+                    </button>
+                    <button id="delete-user-btn" class="delete-btn">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit User Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit User</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="edit-user-form">
+                    <input type="hidden" id="edit-user-id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-full-name">Full Name <span class="required">*</span></label>
+                            <input type="text" id="edit-full-name" name="edit-full-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-birth-date">Date of Birth <span class="required">*</span></label>
+                            <input type="date" id="edit-birth-date" name="edit-birth-date" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-email">Email Address <span class="required">*</span></label>
+                            <input type="email" id="edit-email" name="edit-email" required>
+                            <div id="edit-email-error" class="error"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-phone">Phone Number <span class="required">*</span></label>
+                            <input type="tel" id="edit-phone" name="edit-phone" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-password">New Password</label>
+                            <input type="password" id="edit-password" name="edit-password" placeholder="Leave blank to keep current password">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-confirm-password">Confirm Password</label>
+                            <input type="password" id="edit-confirm-password" name="edit-confirm-password">
+                            <div id="edit-password-error" class="error"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-expires">Expiry Date <span class="required">*</span></label>
+                            <input type="date" id="edit-expires" name="edit-expires" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-status">Status</label>
+                            <select id="edit-status" name="edit-status">
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-profile-image">Profile Image</label>
+                        <input type="file" id="edit-profile-image" name="edit-profile-image" accept="image/*">
+                        <div class="image-preview" id="edit-image-preview">
+                        </div>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="button" id="update-btn" onclick="updateUser()">Update User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete User Confirmation Modal -->
+    <div id="delete-modal" class="modal">
+        <div class="modal-content delete-confirm">
+            <div class="modal-header">
+                <h2>Confirm Deletion</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the user <strong id="delete-user-name"></strong>?</p>
+                <p class="warning">This action cannot be undone.</p>
+                <div class="form-buttons">
+                    <button type="button" id="cancel-delete-btn">Cancel</button>
+                    <button type="button" id="confirm-delete-btn" class="delete-btn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="user-section.js"></script>
     <script>
         $(document).ready(function() {
             $("#sidebar-toggle").click(function() {
@@ -173,9 +498,12 @@ $conn->close();
                     else if (page === 'tracking') window.location.href = 'Tracking.php';
                     else if (page === 'ferrymngt') window.location.href = 'ferrymngt.php';
                     else if (page === 'routeschedules') window.location.href = 'routeschedules.php';
-                    else if (page === 'Usersection') window.location.href = 'template.php';
+                    else if (page === 'Usersection') window.location.href = 'Usersection.php';
                 });
             });
+            
+            // Initial load of user data
+            loadUsers();
         });
     </script>
 </body>

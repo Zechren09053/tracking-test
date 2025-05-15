@@ -73,3 +73,8 @@ This will:
 Download the libraries to the vendor/ directory
 
 Automatically update composer.json and composer.lock
+
+
+
+
+composer require endroid/qr-code
