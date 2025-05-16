@@ -114,8 +114,40 @@ function getActiveFerries() {
         ];
     }
 }
-//this part of the code was changed to use the ferry_stations table to get 
-// Fixed version with proper SQL syntax
+
+// Get all ferry stations
+function getAllFerryStations() {
+    global $conn;
+    
+    try {
+        $stmt = $conn->prepare("
+            SELECT id, station_name
+            FROM ferry_stations
+            ORDER BY station_name ASC
+        ");
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $stations = [];
+        while ($row = $result->fetch_assoc()) {
+            $stations[] = $row;
+        }
+        
+        return [
+            'success' => true,
+            'stations' => $stations
+        ];
+        
+    } catch (Exception $e) {
+        return [
+            'success' => false,
+            'message' => 'Database error: ' . $e->getMessage()
+        ];
+    }
+}
+
+// Get ferry routes
 function getFerryRoutes() {
     global $conn;
     
@@ -186,25 +218,9 @@ function getFerryRoutes() {
             ];
         }
         
-        // Get all stations
-        $stationsStmt = $conn->prepare("
-            SELECT id, station_name
-            FROM ferry_stations
-            ORDER BY station_name ASC
-        ");
-        
-        $stationsStmt->execute();
-        $stationsResult = $stationsStmt->get_result();
-        
-        $stations = [];
-        while ($row = $stationsResult->fetch_assoc()) {
-            $stations[] = $row;
-        }
-        
         return [
             'success' => true,
-            'routes' => $routes,
-            'stations' => $stations
+            'routes' => $routes
         ];
         
     } catch (Exception $e) {
@@ -215,7 +231,6 @@ function getFerryRoutes() {
     }
 }
 
-//adjust this part of the code to match the new ferry_stations table
 // Save ticket
 function saveTicket($ticketData) {
     global $conn;
@@ -223,6 +238,25 @@ function saveTicket($ticketData) {
     try {
         // Begin transaction
         $conn->begin_transaction();
+        
+        // Debug log
+        error_log("Starting ticket save process with data: " . json_encode($ticketData));
+        
+        // Validate required fields
+        if (!isset($ticketData['user_id']) || !isset($ticketData['ferry_id']) || 
+            !isset($ticketData['ticket_type']) || !isset($ticketData['amount']) || 
+            !isset($ticketData['valid_until'])) {
+            throw new Exception("Missing required ticket data fields");
+        }
+        
+        // Convert to proper types
+        $userId = (int)$ticketData['user_id'];
+        $ferryId = (int)$ticketData['ferry_id'];
+        $ticketType = $ticketData['ticket_type'];
+        $amount = (float)$ticketData['amount'];
+        $validUntil = $ticketData['valid_until'];
+        $originId = (int)$ticketData['origin_id'];
+        $destinationId = (int)$ticketData['destination_id'];
         
         // Insert ticket record
         $stmt = $conn->prepare("
@@ -238,24 +272,29 @@ function saveTicket($ticketData) {
             ) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?)
         ");
         
+        error_log("Prepared statement for ticket insert");
+        
         $stmt->bind_param(
-            "iisdssii", 
-            $ticketData['user_id'],
-            $ticketData['ferry_id'],
-            $ticketData['ticket_type'],
-            $ticketData['amount'],
-            $ticketData['valid_until'],
-            $ticketData['origin_id'],
-            $ticketData['destination_id']
+            "iisdsis", 
+            $userId,
+            $ferryId,
+            $ticketType,
+            $amount,
+            $validUntil,
+            $originId,
+            $destinationId
         );
         
-        $stmt->execute();
+        $result = $stmt->execute();
+        
+        if (!$result) {
+            throw new Exception("Failed to execute ticket insert: " . $stmt->error);
+        }
         
         // Get the inserted ticket ID
         $ticketId = $conn->insert_id;
         
-        // If a ferry is full, you might check capacity here
-        // And update the current_capacity of the ferry
+        error_log("Ticket inserted with ID: " . $ticketId);
         
         // Commit transaction
         $conn->commit();
@@ -273,6 +312,8 @@ function saveTicket($ticketData) {
         // Roll back transaction on error
         $conn->rollback();
         
+        error_log("Error in saveTicket: " . $e->getMessage());
+        
         return [
             'success' => false,
             'message' => 'Database error: ' . $e->getMessage()
@@ -280,11 +321,13 @@ function saveTicket($ticketData) {
     }
 }
 
-// Get ticket details for receipt
+// Updated getTicketDetails function with more robust error handling
 function getTicketDetails($ticketId, $routeId) {
     global $conn;
     
     try {
+        error_log("Getting ticket details for ticket ID: $ticketId and route ID: $routeId");
+        
         $stmt = $conn->prepare("
             SELECT 
                 t.id, 
@@ -310,21 +353,29 @@ function getTicketDetails($ticketId, $routeId) {
         ");
         
         $stmt->bind_param("ii", $routeId, $ticketId);
-        $stmt->execute();
+        $result = $stmt->execute();
+        
+        if (!$result) {
+            throw new Exception("Failed to execute query: " . $stmt->error);
+        }
+        
         $result = $stmt->get_result();
         
         if ($result->num_rows === 0) {
+            error_log("No ticket details found for ID: $ticketId");
             return null;
         }
         
-        return $result->fetch_assoc();
+        $details = $result->fetch_assoc();
+        error_log("Retrieved ticket details: " . json_encode($details));
+        
+        return $details;
         
     } catch (Exception $e) {
+        error_log("Error in getTicketDetails: " . $e->getMessage());
         return null;
     }
 }
-
-
 // Main request handler
 header('Content-Type: application/json');
 
@@ -346,6 +397,11 @@ switch ($action) {
         
         echo json_encode($response);
         break;
+
+    case 'get_stations':
+        $response = getAllFerryStations();
+        echo json_encode($response);
+        break;
         
     case 'get_ferries':
         $response = getActiveFerries();
@@ -357,39 +413,49 @@ switch ($action) {
         echo json_encode($response);
         break;
         
-        case 'save_ticket':
-            // Validate inputs
-            if (
-                !isset($_POST['userId']) || 
-                !isset($_POST['ferryId']) ||
-                !isset($_POST['ticketType']) ||
-                !isset($_POST['amount']) ||
-                !isset($_POST['validUntil']) ||
-                !isset($_POST['route_id']) ||
-                !isset($_POST['origin_id']) ||
-                !isset($_POST['destination_id'])
-            ) {
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Missing required fields'
-                ]);
-                break;
-            }
-            
-            $ticketData = [
-                'user_id' => (int)$_POST['userId'],
-                'ferry_id' => (int)$_POST['ferryId'],
-                'ticket_type' => $_POST['ticketType'],
-                'amount' => (float)$_POST['amount'],
-                'valid_until' => $_POST['validUntil'],
-                'route_id' => (int)$_POST['route_id'],
-                'origin_id' => (int)$_POST['origin_id'],
-                'destination_id' => (int)$_POST['destination_id']
-            ];
-            
-            $response = saveTicket($ticketData);
-            echo json_encode($response);
-            break;
+   case 'save_ticket':
+    // Enable detailed error reporting for debugging
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+    
+    // Log the incoming data
+    error_log("Received save_ticket request: " . json_encode($_POST));
+    
+    // Validate inputs with detailed error messages
+    $missingFields = [];
+    if (!isset($_POST['userId'])) $missingFields[] = 'userId';
+    if (!isset($_POST['ferryId'])) $missingFields[] = 'ferryId';
+    if (!isset($_POST['ticketType'])) $missingFields[] = 'ticketType';
+    if (!isset($_POST['amount'])) $missingFields[] = 'amount';
+    if (!isset($_POST['validUntil'])) $missingFields[] = 'validUntil';
+    if (!isset($_POST['route_id'])) $missingFields[] = 'route_id';
+    if (!isset($_POST['origin_id'])) $missingFields[] = 'origin_id';
+    if (!isset($_POST['destination_id'])) $missingFields[] = 'destination_id';
+    
+    if (!empty($missingFields)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Missing required fields: ' . implode(', ', $missingFields)
+        ]);
+        break;
+    }
+    
+    $ticketData = [
+        'user_id' => (int)$_POST['userId'],
+        'ferry_id' => (int)$_POST['ferryId'],
+        'ticket_type' => $_POST['ticketType'],
+        'amount' => (float)$_POST['amount'],
+        'valid_until' => $_POST['validUntil'],
+        'route_id' => (int)$_POST['route_id'],
+        'origin_id' => (int)$_POST['origin_id'],
+        'destination_id' => (int)$_POST['destination_id']
+    ];
+    
+    error_log("Ticket data prepared: " . json_encode($ticketData));
+    
+    $response = saveTicket($ticketData);
+    echo json_encode($response);
+    break;
     default:
         echo json_encode([
             'success' => false,

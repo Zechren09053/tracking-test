@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 15, 2025 at 05:06 PM
+-- Generation Time: May 15, 2025 at 07:48 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -665,6 +665,34 @@ INSERT INTO `ferry_safety_equipment` (`id`, `ferry_id`, `equipment_type`, `quant
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `ferry_stations`
+--
+
+CREATE TABLE `ferry_stations` (
+  `id` int(11) NOT NULL,
+  `station_name` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ferry_stations`
+--
+
+INSERT INTO `ferry_stations` (`id`, `station_name`) VALUES
+(11, 'Escolta'),
+(3, 'Guadalupe'),
+(4, 'Hulo'),
+(1, 'Kalawaan'),
+(6, 'Lambingan'),
+(10, 'Lawton'),
+(8, 'PUP'),
+(9, 'Quinta'),
+(2, 'San Joaquin'),
+(7, 'Sta. Ana'),
+(5, 'Valenzuela');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `ferry_stops`
 --
 
@@ -1063,6 +1091,13 @@ ALTER TABLE `ferry_safety_equipment`
   ADD KEY `ferry_id` (`ferry_id`);
 
 --
+-- Indexes for table `ferry_stations`
+--
+ALTER TABLE `ferry_stations`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `station_name` (`station_name`);
+
+--
 -- Indexes for table `ferry_stops`
 --
 ALTER TABLE `ferry_stops`
@@ -1180,6 +1215,12 @@ ALTER TABLE `ferry_routes`
 --
 ALTER TABLE `ferry_safety_equipment`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `ferry_stations`
+--
+ALTER TABLE `ferry_stations`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `ferry_stops`

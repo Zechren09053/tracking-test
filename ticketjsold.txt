@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Elements
+    // Elements - Adding null checks
     const startButton = document.getElementById('startButton');
     const stopButton = document.getElementById('stopButton');
     const switchCameraButton = document.getElementById('switchCameraButton');
@@ -15,19 +15,32 @@ document.addEventListener('DOMContentLoaded', function() {
     const scannerStatus = document.getElementById('scannerStatus');
     const originSelect = document.getElementById('originSelect');
     const destinationSelect = document.getElementById('destinationSelect');
+    const routeSelect = document.getElementById('routeSelect');
+    const ticketTypeSelect = document.getElementById('ticketType');
+    const passengerTypeSelect = document.getElementById('passengerType');
+    const amountInput = document.getElementById('amount');
+    const baseAmountInput = document.getElementById('baseAmount');
     
     // QR Scanner instance
     let html5QrCode = null;
     let currentCamera = 'environment'; // Start with back camera
     
-    // Check for camera support
-    Html5Qrcode.getCameras().then(devices => {
-        if (devices && devices.length > 1) {
-            switchCameraButton.style.display = 'inline-block';
+    // Check if HTML5QrCode is available
+    if (typeof Html5Qrcode !== 'undefined') {
+        // Check for camera support
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length > 1 && switchCameraButton) {
+                switchCameraButton.style.display = 'inline-block';
+            }
+        }).catch(err => {
+            console.warn("Error getting cameras", err);
+        });
+    } else {
+        console.warn("Html5Qrcode library not found. QR scanning will not work.");
+        if (scannerStatus) {
+            showStatusMessage('QR scanner library not loaded. Please check your internet connection.', 'error');
         }
-    }).catch(err => {
-        console.warn("Error getting cameras", err);
-    });
+    }
     
     // Ferry and Route data
     let ferries = [];
@@ -42,50 +55,73 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set default valid until date (24 hours from now)
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    document.getElementById('validUntilDate').value = formatDatetimeLocal(tomorrow);
+    const validUntilDateInput = document.getElementById('validUntilDate');
+    if (validUntilDateInput) {
+        validUntilDateInput.value = formatDatetimeLocal(tomorrow);
+    }
     
-    // Initialize QR Scanner
-    startButton.addEventListener('click', function() {
-        initializeScanner();
-    });
+    // Initialize event listeners (with null checks)
+    if (startButton) {
+        startButton.addEventListener('click', function() {
+            initializeScanner();
+        });
+    }
     
-    stopButton.addEventListener('click', function() {
-        stopScanner();
-    });
+    if (stopButton) {
+        stopButton.addEventListener('click', function() {
+            stopScanner();
+        });
+    }
     
-    switchCameraButton.addEventListener('click', function() {
-        toggleCamera();
-    });
+    if (switchCameraButton) {
+        switchCameraButton.addEventListener('click', function() {
+            toggleCamera();
+        });
+    }
     
     // Handle form submission
-    createTicketForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveTicket();
-    });
+    if (createTicketForm) {
+        createTicketForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveTicket();
+        });
+    }
     
     // Print receipt
-    printReceiptButton.addEventListener('click', function() {
-        window.print();
-    });
+    if (printReceiptButton) {
+        printReceiptButton.addEventListener('click', function() {
+            window.print();
+        });
+    }
     
     // New ticket button
-    newTicketButton.addEventListener('click', function() {
-        resetForm();
-    });
+    if (newTicketButton) {
+        newTicketButton.addEventListener('click', function() {
+            resetForm();
+        });
+    }
     
     // Manual code entry
-    submitManualCodeButton.addEventListener('click', function() {
-        const manualCode = manualCodeInput.value.trim();
-        if (manualCode) {
-            processQRCode(manualCode);
-            manualCodeInput.value = '';
-        } else {
-            showStatusMessage('Please enter a QR code value', 'error');
-        }
-    });
+    if (submitManualCodeButton && manualCodeInput) {
+        submitManualCodeButton.addEventListener('click', function() {
+            const manualCode = manualCodeInput.value.trim();
+            if (manualCode) {
+                processQRCode(manualCode);
+                manualCodeInput.value = '';
+            } else {
+                showStatusMessage('Please enter a QR code value', 'error');
+            }
+        });
+    }
     
     // Initialize QR Scanner function
     function initializeScanner() {
+        // Check if the HTML5QrCode library is available
+        if (typeof Html5Qrcode === 'undefined') {
+            showStatusMessage('QR scanner library not loaded. Please check your internet connection.', 'error');
+            return;
+        }
+        
         // Clear any previous instances
         if (html5QrCode && html5QrCode.isScanning) {
             stopScanner();
@@ -94,6 +130,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Create new instance if needed
         if (!html5QrCode) {
+            const readerElement = document.getElementById('reader');
+            if (!readerElement) {
+                showStatusMessage('QR scanner container not found. Please check your HTML.', 'error');
+                return;
+            }
             html5QrCode = new Html5Qrcode("reader");
         }
         
@@ -122,8 +163,8 @@ document.addEventListener('DOMContentLoaded', function() {
             onScanFailure
         ).then(() => {
             // Scanner started successfully
-            startButton.style.display = 'none';
-            stopButton.style.display = 'inline-block';
+            if (startButton) startButton.style.display = 'none';
+            if (stopButton) stopButton.style.display = 'inline-block';
             showStatusMessage('Scanner ready! Point at a QR code.', 'success');
         }).catch(err => {
             console.error("QR Scanner initialization failed", err);
@@ -131,8 +172,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Reset scanner state
             html5QrCode = null;
-            startButton.style.display = 'inline-block';
-            stopButton.style.display = 'none';
+            if (startButton) startButton.style.display = 'inline-block';
+            if (stopButton) stopButton.style.display = 'none';
         });
     }
     
@@ -140,8 +181,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function stopScanner() {
         if (html5QrCode && html5QrCode.isScanning) {
             html5QrCode.stop().then(() => {
-                startButton.style.display = 'inline-block';
-                stopButton.style.display = 'none';
+                if (startButton) startButton.style.display = 'inline-block';
+                if (stopButton) stopButton.style.display = 'none';
                 showStatusMessage('Scanner stopped', 'info');
             }).catch(err => {
                 console.error("Error stopping scanner:", err);
@@ -167,6 +208,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Display status message
     function showStatusMessage(message, type) {
+        if (!scannerStatus) return;
+        
         scannerStatus.textContent = message;
         scannerStatus.className = 'status-message';
         scannerStatus.classList.add(`status-${type}`);
@@ -210,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Process QR Code data
     function processQRCode(qrData) {
         // Show loading
-        loadingSection.style.display = 'block';
+        if (loadingSection) loadingSection.style.display = 'block';
         showStatusMessage('Processing QR code...', 'info');
         
         // Fetch user data based on QR code
@@ -218,20 +261,23 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(userData => {
                 if (userData) {
                     displayUserInfo(userData);
-                    document.getElementById('userId').value = userData.id;
+                    const userIdInput = document.getElementById('userId');
+                    if (userIdInput) {
+                        userIdInput.value = userData.id;
+                    }
                     
                     // Show ticket form
-                    ticketForm.style.display = 'block';
+                    if (ticketForm) ticketForm.style.display = 'block';
                     
                     // Hide loading
-                    loadingSection.style.display = 'none';
+                    if (loadingSection) loadingSection.style.display = 'none';
                     showStatusMessage('User found!', 'success');
                 }
             })
             .catch(error => {
                 console.error("Error processing QR code:", error);
                 showStatusMessage('Error processing QR code: ' + error.message, 'error');
-                loadingSection.style.display = 'none';
+                if (loadingSection) loadingSection.style.display = 'none';
             });
     }
     
@@ -266,34 +312,56 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Display user information
     function displayUserInfo(userData) {
-        document.getElementById('fullName').textContent = userData.full_name;
-        document.getElementById('userEmail').textContent = userData.email;
-        document.getElementById('userPhone').textContent = userData.phone_number;
-        document.getElementById('validUntil').textContent = formatDate(new Date(userData.expires_at));
+        const fullNameElement = document.getElementById('fullName');
+        const userEmailElement = document.getElementById('userEmail');
+        const userPhoneElement = document.getElementById('userPhone');
+        const validUntilElement = document.getElementById('validUntil');
         
-        userInfoSection.style.display = 'block';
+        if (fullNameElement) fullNameElement.textContent = userData.full_name;
+        if (userEmailElement) userEmailElement.textContent = userData.email;
+        if (userPhoneElement) userPhoneElement.textContent = userData.phone_number;
+        if (validUntilElement) validUntilElement.textContent = formatDate(new Date(userData.expires_at));
+        
+        if (userInfoSection) userInfoSection.style.display = 'block';
     }
     
     // Save ticket function - updated version to match API changes
     function saveTicket() {
         // Show loading
-        ticketForm.style.display = 'none';
-        loadingSection.style.display = 'block';
+        if (ticketForm) ticketForm.style.display = 'none';
+        if (loadingSection) loadingSection.style.display = 'block';
         
         // Get form data
         const formData = new FormData(createTicketForm);
         
         // Get passenger type data
-        const passengerType = document.getElementById('passengerType').value;
-        const baseAmount = document.getElementById('baseAmount').value;
+        const passengerTypeElement = document.getElementById('passengerType');
+        const baseAmountElement = document.getElementById('baseAmount');
+        
+        if (!passengerTypeElement || !baseAmountElement) {
+            showStatusMessage("Required form elements are missing", 'error');
+            if (loadingSection) loadingSection.style.display = 'none';
+            if (ticketForm) ticketForm.style.display = 'block';
+            return;
+        }
+        
+        const passengerType = passengerTypeElement.value;
+        const baseAmount = baseAmountElement.value;
         const discountRate = discountRates[passengerType] || 0;
         
         formData.append('passenger_type', passengerType);
         formData.append('base_amount', baseAmount);
         formData.append('discount_rate', discountRate);
         
+        // Check if routeSelect exists
+        if (!routeSelect) {
+            showStatusMessage("Route select element not found", 'error');
+            if (loadingSection) loadingSection.style.display = 'none';
+            if (ticketForm) ticketForm.style.display = 'block';
+            return;
+        }
+        
         // Get the route information
-        const routeSelect = document.getElementById('routeSelect');
         const selectedRouteId = parseInt(routeSelect.value);
         
         // Find the selected route object from our routes array
@@ -301,8 +369,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (!selectedRoute) {
             showStatusMessage("Please select a valid route", 'error');
-            loadingSection.style.display = 'none';
-            ticketForm.style.display = 'block';
+            if (loadingSection) loadingSection.style.display = 'none';
+            if (ticketForm) ticketForm.style.display = 'block';
+            return;
+        }
+        
+        // Check if origin and destination selects exist
+        if (!originSelect || !destinationSelect) {
+            showStatusMessage("Origin or destination select elements not found", 'error');
+            if (loadingSection) loadingSection.style.display = 'none';
+            if (ticketForm) ticketForm.style.display = 'block';
             return;
         }
         
@@ -312,8 +388,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (!originId || !destinationId) {
             showStatusMessage("Please select origin and destination stations", 'error');
-            loadingSection.style.display = 'none';
-            ticketForm.style.display = 'block';
+            if (loadingSection) loadingSection.style.display = 'none';
+            if (ticketForm) ticketForm.style.display = 'block';
             return;
         }
         
@@ -344,85 +420,113 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 const ticketDetails = data.ticket_details;
                 
-                // Update receipt information
-                document.getElementById('receiptTicketId').textContent = data.ticket_id;
-                document.getElementById('receiptName').textContent = ticketDetails.full_name;
+                // Update receipt information - with null checks
+                const receiptElements = {
+                    receiptTicketId: document.getElementById('receiptTicketId'),
+                    receiptName: document.getElementById('receiptName'),
+                    receiptPassengerType: document.getElementById('receiptPassengerType'),
+                    receiptFerry: document.getElementById('receiptFerry'),
+                    receiptRoute: document.getElementById('receiptRoute'),
+                    receiptOrigin: document.getElementById('receiptOrigin'),
+                    receiptDestination: document.getElementById('receiptDestination'),
+                    receiptTicketType: document.getElementById('receiptTicketType'),
+                    receiptAmount: document.getElementById('receiptAmount'),
+                    receiptDate: document.getElementById('receiptDate'),
+                    receiptValidUntil: document.getElementById('receiptValidUntil'),
+                    receiptDiscountRow: document.getElementById('receiptDiscountRow'),
+                    receiptDiscount: document.getElementById('receiptDiscount')
+                };
                 
-                // Add passenger type to receipt if the element exists
-                if (document.getElementById('receiptPassengerType')) {
-                    document.getElementById('receiptPassengerType').textContent = passengerType;
-                }
+                // Update receipt elements if they exist
+                if (receiptElements.receiptTicketId) 
+                    receiptElements.receiptTicketId.textContent = data.ticket_id;
                 
-                document.getElementById('receiptFerry').textContent = ticketDetails.ferry_name + ' (' + ticketDetails.ferry_code + ')';
-                document.getElementById('receiptRoute').textContent = ticketDetails.route_name;
+                if (receiptElements.receiptName) 
+                    receiptElements.receiptName.textContent = ticketDetails.full_name;
                 
-                // Add origin and destination stations if they exist in the receipt
-                if (document.getElementById('receiptOrigin') && ticketDetails.origin_name) {
-                    document.getElementById('receiptOrigin').textContent = ticketDetails.origin_name;
-                }
+                if (receiptElements.receiptPassengerType) 
+                    receiptElements.receiptPassengerType.textContent = passengerType;
                 
-                if (document.getElementById('receiptDestination') && ticketDetails.destination_name) {
-                    document.getElementById('receiptDestination').textContent = ticketDetails.destination_name;
-                }
+                if (receiptElements.receiptFerry) 
+                    receiptElements.receiptFerry.textContent = ticketDetails.ferry_name + ' (' + ticketDetails.ferry_code + ')';
                 
-                document.getElementById('receiptTicketType').textContent = ticketDetails.ticket_type;
-                document.getElementById('receiptAmount').textContent = 'PHP ' + parseFloat(ticketDetails.amount).toFixed(2);
-                document.getElementById('receiptDate').textContent = formatDate(new Date(ticketDetails.purchase_date));
-                document.getElementById('receiptValidUntil').textContent = formatDate(new Date(ticketDetails.valid_until));
+                if (receiptElements.receiptRoute) 
+                    receiptElements.receiptRoute.textContent = ticketDetails.route_name;
                 
-                // Show discount information if a discount was applied and elements exist
-                if (document.getElementById('receiptDiscountRow') && 
-                    document.getElementById('receiptDiscount') && 
+                if (receiptElements.receiptOrigin && ticketDetails.origin_name) 
+                    receiptElements.receiptOrigin.textContent = ticketDetails.origin_name;
+                
+                if (receiptElements.receiptDestination && ticketDetails.destination_name) 
+                    receiptElements.receiptDestination.textContent = ticketDetails.destination_name;
+                
+                if (receiptElements.receiptTicketType) 
+                    receiptElements.receiptTicketType.textContent = ticketDetails.ticket_type;
+                
+                if (receiptElements.receiptAmount) 
+                    receiptElements.receiptAmount.textContent = 'PHP ' + parseFloat(ticketDetails.amount).toFixed(2);
+                
+                if (receiptElements.receiptDate) 
+                    receiptElements.receiptDate.textContent = formatDate(new Date(ticketDetails.purchase_date));
+                
+                if (receiptElements.receiptValidUntil) 
+                    receiptElements.receiptValidUntil.textContent = formatDate(new Date(ticketDetails.valid_until));
+                
+                // Show discount information if a discount was applied
+                if (receiptElements.receiptDiscountRow && 
+                    receiptElements.receiptDiscount && 
                     discountRate > 0) {
-                    document.getElementById('receiptDiscount').textContent = `${(discountRate * 100).toFixed(0)}% off`;
-                    document.getElementById('receiptDiscountRow').style.display = 'flex';
-                } else if (document.getElementById('receiptDiscountRow')) {
-                    document.getElementById('receiptDiscountRow').style.display = 'none';
+                    receiptElements.receiptDiscount.textContent = `${(discountRate * 100).toFixed(0)}% off`;
+                    receiptElements.receiptDiscountRow.style.display = 'flex';
+                } else if (receiptElements.receiptDiscountRow) {
+                    receiptElements.receiptDiscountRow.style.display = 'none';
                 }
                 
                 // Hide loading and show receipt
-                loadingSection.style.display = 'none';
-                receiptSection.style.display = 'block';
+                if (loadingSection) loadingSection.style.display = 'none';
+                if (receiptSection) receiptSection.style.display = 'block';
                 showStatusMessage('Ticket issued successfully!', 'success');
             } else {
                 // Show error
                 showStatusMessage(data.message || "Error saving ticket", 'error');
-                loadingSection.style.display = 'none';
-                ticketForm.style.display = 'block';
+                if (loadingSection) loadingSection.style.display = 'none';
+                if (ticketForm) ticketForm.style.display = 'block';
             }
         })
         .catch(error => {
             console.error("Error saving ticket:", error);
             showStatusMessage("Error saving ticket. Please try again.", 'error');
-            loadingSection.style.display = 'none';
-            ticketForm.style.display = 'block';
+            if (loadingSection) loadingSection.style.display = 'none';
+            if (ticketForm) ticketForm.style.display = 'block';
         });
     }
     
     // Reset form for new ticket
     function resetForm() {
         // Reset form fields
-        createTicketForm.reset();
+        if (createTicketForm) createTicketForm.reset();
         
         // Set default valid until date
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        document.getElementById('validUntilDate').value = formatDatetimeLocal(tomorrow);
+        const validUntilDateInput = document.getElementById('validUntilDate');
+        if (validUntilDateInput) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            validUntilDateInput.value = formatDatetimeLocal(tomorrow);
+        }
         
         // Hide receipt and show starting sections
-        receiptSection.style.display = 'none';
-        userInfoSection.style.display = 'none';
-        ticketForm.style.display = 'none';
+        if (receiptSection) receiptSection.style.display = 'none';
+        if (userInfoSection) userInfoSection.style.display = 'none';
+        if (ticketForm) ticketForm.style.display = 'none';
         
         // Show start scanner button
-        startButton.style.display = 'inline-block';
-        stopButton.style.display = 'none';
+        if (startButton) startButton.style.display = 'inline-block';
+        if (stopButton) stopButton.style.display = 'none';
         
         // Clear manual code input
-        manualCodeInput.value = '';
+        if (manualCodeInput) manualCodeInput.value = '';
         
         // Clear status message
-        scannerStatus.style.display = 'none';
+        if (scannerStatus) scannerStatus.style.display = 'none';
     }
     
     // Fetch ferry data
@@ -441,6 +545,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Populate ferry select
                     const ferrySelect = document.getElementById('ferrySelect');
+                    if (!ferrySelect) {
+                        console.error("Element with ID 'ferrySelect' not found");
+                        return;
+                    }
+                    
                     ferrySelect.innerHTML = '<option value="">-- Select Ferry --</option>';
                     
                     ferries.forEach(ferry => {
@@ -492,6 +601,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Populate station dropdowns (origin and destination)
     function populateStationDropdowns() {
+        // Check if select elements exist
+        if (!originSelect || !destinationSelect) {
+            console.error("Origin or destination select elements not found");
+            return;
+        }
+        
         // Clear existing options first
         originSelect.innerHTML = '<option value="">-- Select Origin --</option>';
         destinationSelect.innerHTML = '<option value="">-- Select Destination --</option>';
@@ -513,29 +628,40 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Route select change handler
-    document.getElementById('routeSelect').addEventListener('change', function() {
-        const routeId = parseInt(this.value);
-        const selectedRoute = routes.find(route => route.id == routeId);
-        
-        if (selectedRoute) {
-            // If the route has origin_id and destination_id, auto-select them in dropdowns
-            if (selectedRoute.origin_id && selectedRoute.destination_id) {
-                originSelect.value = selectedRoute.origin_id;
-                destinationSelect.value = selectedRoute.destination_id;
+    if (routeSelect) {
+        routeSelect.addEventListener('change', function() {
+            const routeId = parseInt(this.value);
+            const selectedRoute = routes.find(route => route.id == routeId);
+            
+            if (selectedRoute) {
+                // If the route has origin_id and destination_id, auto-select them in dropdowns
+                if (selectedRoute.origin_id && selectedRoute.destination_id) {
+                    if (originSelect) originSelect.value = selectedRoute.origin_id;
+                    if (destinationSelect) destinationSelect.value = selectedRoute.destination_id;
+                }
+                
+                // Update prices based on the selected route
+                updatePriceBasedOnRoute(selectedRoute);
             }
             
-            // Update prices based on the selected route
-            updatePriceBasedOnRoute(selectedRoute);
-        }
-        
-        // Trigger the ticket type change event to recalculate prices
-        const event = new Event('change');
-        document.getElementById('ticketType').dispatchEvent(event);
-    });
+            // Trigger the ticket type change event to recalculate prices
+            if (ticketTypeSelect) {
+                const event = new Event('change');
+                ticketTypeSelect.dispatchEvent(event);
+            }
+        });
+    } else {
+        console.warn("Route select element not found. Route selection will not work.");
+    }
     
     // Update price based on selected route
     function updatePriceBasedOnRoute(route) {
-        const ticketType = document.getElementById('ticketType').value;
+        if (!ticketTypeSelect) {
+            console.warn("Ticket type select element not found");
+            return;
+        }
+        
+        const ticketType = ticketTypeSelect.value;
         
         // Set default prices based on ticket type
         let defaultPrice = 0;
@@ -561,7 +687,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Update base amount field
-        document.getElementById('baseAmount').value = defaultPrice.toFixed(2);
+        if (baseAmountInput) {
+            baseAmountInput.value = defaultPrice.toFixed(2);
+        }
         
         // Calculate the discounted price
         calculateDiscountedPrice();
@@ -583,8 +711,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     routes = data.routes;
                     
-                    // Populate route select
-                    const routeSelect = document.getElementById('routeSelect');
+                    // Check if routeSelect exists
                     if (!routeSelect) {
                         console.error("Element with ID 'routeSelect' not found");
                         return;
@@ -617,24 +744,146 @@ document.addEventListener('DOMContentLoaded', function() {
                             option.textContent = `Route ${route.id}`;
                         }
                         
+                       // Completing from where the code cuts off
                         routeSelect.appendChild(option);
                     });
-                    
-                    console.log("Route select populated with options:", routeSelect.options.length - 1);
                 } else {
                     console.error("Error fetching routes:", data.message);
-                    showStatusMessage("Error loading route data: " + (data.message || "Unknown error"), 'error');
+                    showStatusMessage("Error loading route data", 'error');
                 }
             })
             .catch(error => {
                 console.error("Error fetching routes:", error);
-                showStatusMessage("Error loading route data: " + error.message, 'error');
+                showStatusMessage("Error loading route data", 'error');
             });
     }
     
-    // Format date for display
+    // Ferry select change handler
+    const ferrySelect = document.getElementById('ferrySelect');
+    if (ferrySelect) {
+        ferrySelect.addEventListener('change', function() {
+            const ferryId = parseInt(this.value);
+            
+            // Filter routes for this ferry
+            if (ferryId) {
+                // Check if routeSelect exists
+                if (routeSelect) {
+                    routeSelect.innerHTML = '<option value="">-- Select Route --</option>';
+                    
+                    // Add only routes for this ferry
+                    const ferryRoutes = routes.filter(route => route.ferry_id == ferryId);
+                    ferryRoutes.forEach(route => {
+                        const option = document.createElement('option');
+                        option.value = route.id;
+                        
+                        // Format the route display based on the API structure
+                        if (route.name && route.from && route.to) {
+                            option.textContent = `${route.name} (${route.from} - ${route.to})`;
+                        } else if (route.route_name && route.origin_name && route.destination_name) {
+                            option.textContent = `${route.route_name} (${route.origin_name} - ${route.destination_name})`;
+                        } else if (route.route_name) {
+                            option.textContent = route.route_name;
+                        } else {
+                            option.textContent = `Route ${route.id}`;
+                        }
+                        
+                        routeSelect.appendChild(option);
+                    });
+                }
+            }
+        });
+    }
+    
+    // Ticket type change handler
+    if (ticketTypeSelect) {
+        ticketTypeSelect.addEventListener('change', function() {
+            // Get selected route
+            if (routeSelect) {
+                const routeId = parseInt(routeSelect.value);
+                const selectedRoute = routes.find(route => route.id == routeId);
+                
+                // Update price based on ticket type and route
+                if (selectedRoute) {
+                    updatePriceBasedOnRoute(selectedRoute);
+                } else {
+                    // No route selected, use default prices
+                    const ticketType = this.value;
+                    let defaultPrice = 0;
+                    
+                    switch(ticketType) {
+                        case 'One-way':
+                            defaultPrice = 50.00;
+                            break;
+                        case 'Round-trip':
+                            defaultPrice = 90.00;
+                            break;
+                        case 'Multi-pass':
+                            defaultPrice = 200.00;
+                            break;
+                        case 'Special':
+                            defaultPrice = 75.00;
+                            break;
+                    }
+                    
+                    // Update base amount field
+                    if (baseAmountInput) {
+                        baseAmountInput.value = defaultPrice.toFixed(2);
+                    }
+                    
+                    // Calculate the discounted price
+                    calculateDiscountedPrice();
+                }
+            }
+        });
+    }
+    
+    // Discount rates by passenger type
+    const discountRates = {
+        'Regular': 0,
+        'Senior Citizen': 0.20,
+        'Student': 0.15,
+        'PWD': 0.20,
+        'Child': 0.25,
+        'Government Employee': 0.10
+    };
+    
+    // Passenger type change handler
+    if (passengerTypeSelect) {
+        passengerTypeSelect.addEventListener('change', function() {
+            calculateDiscountedPrice();
+        });
+    }
+    
+    // Base amount change handler
+    if (baseAmountInput) {
+        baseAmountInput.addEventListener('input', function() {
+            calculateDiscountedPrice();
+        });
+    }
+    
+    // Calculate discounted price
+    function calculateDiscountedPrice() {
+        if (!passengerTypeSelect || !baseAmountInput || !amountInput) {
+            console.warn("Required elements for price calculation not found");
+            return;
+        }
+        
+        const passengerType = passengerTypeSelect.value;
+        const baseAmount = parseFloat(baseAmountInput.value) || 0;
+        
+        // Get discount rate for passenger type
+        const discountRate = discountRates[passengerType] || 0;
+        
+        // Calculate discounted amount
+        const discountedAmount = baseAmount * (1 - discountRate);
+        
+        // Update amount field
+        amountInput.value = discountedAmount.toFixed(2);
+    }
+    
+    // Helper function to format date for display
     function formatDate(date) {
-        if (!(date instanceof Date) || isNaN(date)) {
+        if (!(date instanceof Date)) {
             return 'Invalid Date';
         }
         
@@ -649,12 +898,13 @@ document.addEventListener('DOMContentLoaded', function() {
         return date.toLocaleDateString('en-US', options);
     }
     
-    // Format date for datetime-local input
+    // Helper function to format date for datetime-local input
     function formatDatetimeLocal(date) {
-        if (!(date instanceof Date) || isNaN(date)) {
+        if (!(date instanceof Date)) {
             return '';
         }
         
+        // Format as YYYY-MM-DDThh:mm
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
@@ -663,97 +913,4 @@ document.addEventListener('DOMContentLoaded', function() {
         
         return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
-    
-    // Set up ticket type change handler to update price
-    document.getElementById('ticketType').addEventListener('change', function() {
-        const ticketType = this.value;
-        const routeId = document.getElementById('routeSelect').value;
-        
-        // Set default prices based on ticket type
-        let defaultPrice = 0;
-        
-        switch(ticketType) {
-            case 'One-way':
-                defaultPrice = 50.00;
-                break;
-            case 'Round-trip':
-                defaultPrice = 90.00;
-                break;
-            case 'Multi-pass':
-                defaultPrice = 200.00;
-                break;
-            case 'Special':
-                defaultPrice = 75.00;
-                break;
-        }
-        
-        // If route is selected, adjust price based on route
-        if (routeId) {
-            const selectedRoute = routes.find(route => route.id == routeId);
-            if (selectedRoute && selectedRoute.price_multiplier) {
-                defaultPrice *= parseFloat(selectedRoute.price_multiplier);
-            }
-        }
-        
-        // Update base amount field
-        document.getElementById('baseAmount').value = defaultPrice.toFixed(2);
-        
-        // Calculate the discounted price
-        calculateDiscountedPrice();
-    });
-    
-    // Show welcome message
-    showStatusMessage('Welcome! Press "Start Scanner" to begin scanning QR codes.', 'info');
 });
-
-// Define discount rates for different passenger types
-const discountRates = {
-    'Regular': 0,
-    'Student': 0.20,  // 20% discount
-    'Senior': 0.20,   // 20% discount
-    'PWD': 0.20,      // 20% discount for Persons with Disability
-    'Government': 0.10, // 10% discount
-    'Child': 1.00     // 100% discount (free)
-};
-
-// Add passenger type change handler
-document.getElementById('passengerType').addEventListener('change', function() {
-    calculateDiscountedPrice();
-});
-
-// Add event listener for amount changes
-document.getElementById('amount').addEventListener('input', function() {
-    // Store the direct input value as the base amount
-    document.getElementById('baseAmount').value = this.value;
-    calculateDiscountedPrice();
-});
-
-// Add event listener for base amount changes
-document.getElementById('baseAmount').addEventListener('input', function() {
-    calculateDiscountedPrice();
-});
-
-// Calculate discounted price based on passenger type and base amount
-function calculateDiscountedPrice() {
-    const passengerType = document.getElementById('passengerType').value;
-    const baseAmount = parseFloat(document.getElementById('baseAmount').value) || 0;
-    const discountRate = discountRates[passengerType] || 0;
-    
-    // Calculate the final amount
-    const finalAmount = baseAmount * (1 - discountRate);
-    
-    // Update the final amount input
-    document.getElementById('amount').value = finalAmount.toFixed(2);
-    
-    // Show discount info if a discount is applied
-    const discountInfoDiv = document.getElementById('discountInfo');
-    
-    if (discountRate > 0) {
-        document.getElementById('originalPrice').textContent = `₱${baseAmount.toFixed(2)}`;
-        document.getElementById('finalPrice').textContent = `₱${finalAmount.toFixed(2)}`;
-        document.getElementById('discountPercentage').textContent = `${(discountRate * 100).toFixed(0)}%`;
-        discountInfoDiv.style.display = 'block';
-    } else {
-        discountInfoDiv.style.display = 'none';
-    }
-}

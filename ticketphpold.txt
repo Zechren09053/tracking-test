@@ -114,7 +114,17 @@
     <label for="originSelect">Origin:</label>
     <select id="originSelect" name="origin" class="form-control" required>
         <option value="">-- Select Origin --</option>
-      
+        <option value="Kalawaan">Kalawaan</option>
+        <option value="San Joaquin">San Joaquin</option>
+        <option value="Guadalupe">Guadalupe</option>
+        <option value="Hulo">Hulo</option>
+        <option value="Valenzuela">Valenzuela</option>
+        <option value="Lambingan">Lambingan</option>
+        <option value="Sta. Ana">Sta. Ana</option>
+        <option value="PUP">PUP</option>
+        <option value="Quinta">Quinta</option>
+        <option value="Lawton">Lawton</option>
+        <option value="Escolta">Escolta</option>
     </select>
 </div>
 
@@ -122,12 +132,19 @@
     <label for="destinationSelect">Destination:</label>
     <select id="destinationSelect" name="destination" class="form-control" required>
         <option value="">-- Select Destination --</option>
-      
+        <option value="Kalawaan">Kalawaan</option>
+        <option value="San Joaquin">San Joaquin</option>
+        <option value="Guadalupe">Guadalupe</option>
+        <option value="Hulo">Hulo</option>
+        <option value="Valenzuela">Valenzuela</option>
+        <option value="Lambingan">Lambingan</option>
+        <option value="Sta. Ana">Sta. Ana</option>
+        <option value="PUP">PUP</option>
+        <option value="Quinta">Quinta</option>
+        <option value="Lawton">Lawton</option>
+        <option value="Escolta">Escolta</option>
     </select>
 </div>
-<select id="routeSelect" name="routeSelect">
-    <option value="">-- Select Route --</option>
-</select>
 
 
            

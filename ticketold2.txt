@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferry Ticket System - QR Scanner</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #e1f0ff;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 1rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+        
+        .col {
+            flex: 1;
+            padding: 0 10px;
+            min-width: 300px;
+        }
+        
+        .scanner-container {
+            position: relative;
+            overflow: hidden;
+            height: 300px;
+            border-radius: 8px;
+            background-color: #f0f0f0;
+            margin-bottom: 20px;
+        }
+        
+        #reader {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 500;
+            color: white;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0,102,204,0.25);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .alert {
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border-left: 4px solid;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            border-left-color: var(--success-color);
+            color: #155724;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            border-left-color: var(--danger-color);
+            color: #721c24;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            border-left-color: #17a2b8;
+            color: #0c5460;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        table th, table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table th {
+            background-color: var(--secondary-color);
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+        
+        .user-info {
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .receipt {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+        }
+        
+        .receipt-header {
+            text-align: center;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .receipt-body {
+            margin-bottom: 20px;
+        }
+        
+        .receipt-footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary-color);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .status-message {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+        }
+        
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        @media (max-width: 768px) {
+            .col {
+                flex: 100%;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-ship"></i> Ferry Ticket System</h1>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <h2><i class="fas fa-qrcode"></i> Scan QR Code</h2>
+                    <div class="scanner-container">
+                        <div id="reader"></div>
+                    </div>
+                    <div id="scannerStatus" class="status-message"></div>
+                    <div style="margin-top: 10px;">
+                        <button id="startButton" class="btn"><i class="fas fa-play"></i> Start Scanner</button>
+                        <button id="stopButton" class="btn btn-danger" style="display: none;"><i class="fas fa-stop"></i> Stop Scanner</button>
+                        <button id="switchCameraButton" class="btn" style="display: none;"><i class="fas fa-sync"></i> Switch Camera</button>
+                    </div>
+                </div>
+                
+                <div id="userInfo" class="card user-info">
+                    <h2><i class="fas fa-user"></i> User Information</h2>
+                    <table>
+                        <tr>
+                            <th>Full Name:</th>
+                            <td id="fullName"></td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td id="userEmail"></td>
+                        </tr>
+                        <tr>
+                            <th>Phone:</th>
+                            <td id="userPhone"></td>
+                        </tr>
+                        <tr>
+                            <th>ID Valid Until:</th>
+                            <td id="validUntil"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="col">
+                <div id="ticketForm" class="card" style="display: none;">
+                    <h2><i class="fas fa-ticket-alt"></i> Issue Ticket</h2>
+                    <form id="createTicketForm">
+                        <input type="hidden" id="userId" name="userId">
+                        
+                        <div class="form-group">
+                            <label for="ferrySelect">Select Ferry:</label>
+                            <select id="ferrySelect" name="ferryId" class="form-control" required>
+                                <option value="">-- Select Ferry --</option>
+                                <!-- This will be populated dynamically -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ticketType">Ticket Type:</label>
+                            <select id="ticketType" name="ticketType" class="form-control" required>
+                                <option value="">-- Select Ticket Type --</option>
+                                <option value="One-way">One-way</option>
+                                <option value="Round-trip">Round-trip</option>
+                                <option value="Multi-pass">Multi-pass</option>
+                                <option value="Special">Special Event</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="routeSelect">Select Route:</label>
+                            <select id="routeSelect" name="routeId" class="form-control" required>
+                                <option value="">-- Select Route --</option>
+                                <!-- This will be populated dynamically -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="amount">Amount (PHP):</label>
+                            <input type="number" id="amount" name="amount" class="form-control" step="0.01" min="0" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="validUntilDate">Valid Until:</label>
+                            <input type="datetime-local" id="validUntilDate" name="validUntil" class="form-control" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save Ticket</button>
+                    </form>
+                </div>
+                
+                <div id="loading" class="card loading">
+                    <div class="spinner"></div>
+                    <p>Processing your request...</p>
+                </div>
+                
+                <div id="receipt" class="card receipt">
+                    <div class="receipt-header">
+                        <h2>Ferry Ticket Receipt</h2>
+                        <p>PASIG RIVER FERRY SERVICE</p>
+                    </div>
+                    
+                    <div class="receipt-body">
+                        <div class="receipt-item">
+                            <span>Ticket ID:</span>
+                            <span id="receiptTicketId"></span>
+                        </div>
+                        <div class="receipt-item">
+                            <span>Passenger:</span>
+                            <span id="receiptName"></span>
+                        </div>
+                        <div class="receipt-item">
+                            <span>Ferry:</span>
+                            <span id="receiptFerry"></span>
+                        </div>
+                        <div class="receipt-item">
+                            <span>Route:</span>
+                            <span id="receiptRoute"></span>
+                        </div>
+                        <div class="receipt-item">
+                            <span>Ticket Type:</span>
+                            <span id="receiptTicketType"></span>
+                        </div>
+                        <div class="receipt-item">
+                            <span>Amount:</span>
+                            <span id="receiptAmount"></span>
+                        </div>
+                        <div class="receipt-item">
+                            <span>Purchase Date:</span>
+                            <span id="receiptDate"></span>
+                        </div>
+                        <div class="receipt-item">
+                            <span>Valid Until:</span>
+                            <span id="receiptValidUntil"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="receipt-footer">
+                        <p>Thank you for choosing Pasig River Ferry Service!</p>
+                    </div>
+                    
+                    <button id="printReceipt" class="btn"><i class="fas fa-print"></i> Print Receipt</button>
+                    <button id="newTicket" class="btn btn-success"><i class="fas fa-plus"></i> New Ticket</button>
+                </div>
+                
+                <!-- Manual code entry as fallback -->
+                <div class="card">
+                    <h2><i class="fas fa-keyboard"></i> Manual Code Entry</h2>
+                    <div class="form-group">
+                        <label for="manualCode">QR Code Value:</label>
+                        <input type="text" id="manualCode" class="form-control" placeholder="Enter QR code value manually">
+                    </div>
+                    <button id="submitManualCode" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const startButton = document.getElementById('startButton');
+            const stopButton = document.getElementById('stopButton');
+            const switchCameraButton = document.getElementById('switchCameraButton');
+            const userInfoSection = document.getElementById('userInfo');
+            const ticketForm = document.getElementById('ticketForm');
+            const createTicketForm = document.getElementById('createTicketForm');
+            const loadingSection = document.getElementById('loading');
+            const receiptSection = document.getElementById('receipt');
+            const printReceiptButton = document.getElementById('printReceipt');
+            const newTicketButton = document.getElementById('newTicket');
+            const manualCodeInput = document.getElementById('manualCode');
+            const submitManualCodeButton = document.getElementById('submitManualCode');
+            const scannerStatus = document.getElementById('scannerStatus');
+            
+            // QR Scanner instance
+            let html5QrCode = null;
+            let currentCamera = 'environment'; // Start with back camera
+            
+            // Check for camera support
+            Html5Qrcode.getCameras().then(devices => {
+                if (devices && devices.length > 1) {
+                    switchCameraButton.style.display = 'inline-block';
+                }
+            }).catch(err => {
+                console.warn("Error getting cameras", err);
+            });
+            
+            // Ferry and Route data
+            let ferries = [];
+            let routes = [];
+            
+            // Load ferry and route data when page loads
+            fetchFerryData();
+            fetchRouteData();
+            
+            // Set default valid until date (24 hours from now)
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('validUntilDate').value = formatDatetimeLocal(tomorrow);
+            
+            // Initialize QR Scanner
+            startButton.addEventListener('click', function() {
+                initializeScanner();
+            });
+            
+            stopButton.addEventListener('click', function() {
+                stopScanner();
+            });
+            
+            switchCameraButton.addEventListener('click', function() {
+                toggleCamera();
+            });
+            
+            // Handle form submission
+            createTicketForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveTicket();
+            });
+            
+            // Print receipt
+            printReceiptButton.addEventListener('click', function() {
+                window.print();
+            });
+            
+            // New ticket button
+            newTicketButton.addEventListener('click', function() {
+                resetForm();
+            });
+            
+            // Manual code entry
+            submitManualCodeButton.addEventListener('click', function() {
+                const manualCode = manualCodeInput.value.trim();
+                if (manualCode) {
+                    processQRCode(manualCode);
+                    manualCodeInput.value = '';
+                } else {
+                    showStatusMessage('Please enter a QR code value', 'error');
+                }
+            });
+            
+            // Initialize QR Scanner function
+            function initializeScanner() {
+                // Clear any previous instances
+                if (html5QrCode && html5QrCode.isScanning) {
+                    stopScanner();
+                    return;
+                }
+                
+                // Create new instance if needed
+                if (!html5QrCode) {
+                    html5QrCode = new Html5Qrcode("reader");
+                }
+                
+                showStatusMessage('Starting camera...', 'info');
+                
+                // Improved scanner configuration
+                const config = {
+                    fps: 10,
+                    qrbox: {
+                        width: 240,
+                        height: 240
+                    },
+                    experimentalFeatures: {
+                        useBarCodeDetectorIfSupported: true
+                    },
+                    formatsToSupport: [
+                        Html5QrcodeSupportedFormats.QR_CODE,
+                        Html5QrcodeSupportedFormats.DATA_MATRIX
+                    ]
+                };
+                
+                html5QrCode.start(
+                    { facingMode: currentCamera },
+                    config,
+                    onScanSuccess,
+                    onScanFailure
+                ).then(() => {
+                    // Scanner started successfully
+                    startButton.style.display = 'none';
+                    stopButton.style.display = 'inline-block';
+                    showStatusMessage('Scanner ready! Point at a QR code.', 'success');
+                }).catch(err => {
+                    console.error("QR Scanner initialization failed", err);
+                    showStatusMessage('Camera access failed. Please check permissions.', 'error');
+                    
+                    // Reset scanner state
+                    html5QrCode = null;
+                    startButton.style.display = 'inline-block';
+                    stopButton.style.display = 'none';
+                });
+            }
+            
+            // Stop scanner
+            function stopScanner() {
+                if (html5QrCode && html5QrCode.isScanning) {
+                    html5QrCode.stop().then(() => {
+                        startButton.style.display = 'inline-block';
+                        stopButton.style.display = 'none';
+                        showStatusMessage('Scanner stopped', 'info');
+                    }).catch(err => {
+                        console.error("Error stopping scanner:", err);
+                    });
+                }
+            }
+            
+            // Toggle between front and back camera
+            function toggleCamera() {
+                if (html5QrCode && html5QrCode.isScanning) {
+                    html5QrCode.stop().then(() => {
+                        currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
+                        showStatusMessage(`Switching to ${currentCamera === 'environment' ? 'back' : 'front'} camera...`, 'info');
+                        initializeScanner();
+                    }).catch(err => {
+                        console.error("Error stopping scanner:", err);
+                    });
+                } else {
+                    currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
+                    initializeScanner();
+                }
+            }
+            
+            // Display status message
+            function showStatusMessage(message, type) {
+                scannerStatus.textContent = message;
+                scannerStatus.className = 'status-message';
+                scannerStatus.classList.add(`status-${type}`);
+                scannerStatus.style.display = 'block';
+                
+                // Hide message after 5 seconds if it's just informational
+                if (type === 'info' || type === 'success') {
+                    setTimeout(() => {
+                        scannerStatus.style.display = 'none';
+                    }, 5000);
+                }
+            }
+            
+            // QR Code success callback
+            function onScanSuccess(qrCodeMessage) {
+                // Play success sound
+                const successSound = new Audio('data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAAwAAAbAAuLi4uLi4uLi4uLi4uLi4uLjV1dXV1dXV1dXV1dXV1dXV1fLy8vLy8vLy8vLy8vLy8vLy////////////////////////////////////////AAAAAExhdmM1OC4xMwAAAAAAAAAAAAAAACQDgAAAAAAAAAGwsqjgzAAAAAAAAAAAAAAAAAAAAP/jOMQAA+gBAASgAAAAQQjKCC3EAQBAEAwMDFYYNCw0NTi6pKS9ywsLDX//////9xcXFzMzMz09PUhIT2tra4SEhI+QkJ+fn6Ojo7Ozs8zMzMzMzMzMzMzMzAAAAAAAAAAAAAD/4zjOABOkgQAAhAAAAEGIihgxxAEAQBAMDFYYNCw0NTi6pKS9ywsDa4sLC31//////9xcXFzMzMz09PUhIT2tra4SEhI+QkJ+fn6Ojo7Ozs8zMzMzMzMzMzMzMzAAAAAAAAAAAAD/4zjMAAr0AQABgAAAAEFQyogtxAEAQBAMDFYYNCw0NTi6urq3jgItkywxLDQvjgItkywxLDQv');
+                successSound.play().catch(err => {
+                    // Ignore error - some browsers block autoplay
+                });
+                
+                // Stop scanning once we get a result
+                stopScanner();
+                
+                showStatusMessage('QR code detected!', 'success');
+                
+                // Process the QR code data
+                processQRCode(qrCodeMessage);
+            }
+            
+            // QR Code failure callback
+            function onScanFailure(error) {
+                // We don't need to show errors for each frame
+                // Only show serious errors
+                if (error && error.toString().includes('NotAllowedError')) {
+                    showStatusMessage('Camera permission denied. Please allow camera access.', 'error');
+                    stopScanner();
+                }
+            }
+            
+            // Process QR Code data
+            function processQRCode(qrData) {
+                // Show loading
+                loadingSection.style.display = 'block';
+                showStatusMessage('Processing QR code...', 'info');
+                
+                // Fetch user data based on QR code
+                fetchUserData(qrData)
+                    .then(userData => {
+                        if (userData) {
+                            displayUserInfo(userData);
+                            document.getElementById('userId').value = userData.id;
+                            
+                            // Show ticket form
+                            ticketForm.style.display = 'block';
+                            
+                            // Hide loading
+                            loadingSection.style.display = 'none';
+                            showStatusMessage('User found!', 'success');
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error processing QR code:", error);
+                        showStatusMessage('Error processing QR code: ' + error.message, 'error');
+                        loadingSection.style.display = 'none';
+                    });
+            }
+            
+            // Fetch user data using QR code
+            function fetchUserData(qrData) {
+                return new Promise((resolve, reject) => {
+                    // We'll simulate a successful response for the example
+                    // In a real application, you'd make an actual API request
+                    setTimeout(() => {
+                        try {
+                            fetch('get_user_by_qr.php?action=get_user&qr_code=' + encodeURIComponent(qrData))
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Server error: ' + response.status);
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    if (data.success) {
+                                        resolve(data.user);
+                                    } else {
+                                        showStatusMessage(data.message || "Error retrieving user data", 'error');
+                                        reject(new Error(data.message || "Error retrieving user data"));
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error("API call failed:", error);
+                                    reject(error);
+                                });
+                        } catch (error) {
+                            reject(error);
+                        }
+                    }, 1000);
+                });
+            }
+            
+            // Display user information
+            function displayUserInfo(userData) {
+                document.getElementById('fullName').textContent = userData.full_name;
+                document.getElementById('userEmail').textContent = userData.email;
+                document.getElementById('userPhone').textContent = userData.phone_number;
+                document.getElementById('validUntil').textContent = formatDate(new Date(userData.expires_at));
+                
+                userInfoSection.style.display = 'block';
+            }
+            
+            // Save ticket
+            function saveTicket() {
+                // Show loading
+                ticketForm.style.display = 'none';
+                loadingSection.style.display = 'block';
+                
+                // Get form data
+                const formData = new FormData(createTicketForm);
+                
+                // Add route ID to form data
+                formData.append('route_id', document.getElementById('routeSelect').value);
+                
+                // Send ticket data to server
+                fetch('get_user_by_qr.php?action=save_ticket', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server error: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        const ticketDetails = data.ticket_details;
+                        
+                        // Update receipt information
+                        document.getElementById('receiptTicketId').textContent = data.ticket_id;
+                        document.getElementById('receiptName').textContent = ticketDetails.full_name;
+                        document.getElementById('receiptFerry').textContent = ticketDetails.ferry_name + ' (' + ticketDetails.ferry_code + ')';
+                        document.getElementById('receiptRoute').textContent = ticketDetails.route_name;
+                        document.getElementById('receiptTicketType').textContent = ticketDetails.ticket_type;
+                        document.getElementById('receiptAmount').textContent = 'PHP ' + parseFloat(ticketDetails.amount).toFixed(2);
+                        document.getElementById('receiptDate').textContent = formatDate(new Date(ticketDetails.purchase_date));
+                        document.getElementById('receiptValidUntil').textContent = formatDate(new Date(ticketDetails.valid_until));
+                        
+                        // Hide loading and show receipt
+                        loadingSection.style.display = 'none';
+                        receiptSection.style.display = 'block';
+                        showStatusMessage('Ticket issued successfully!', 'success');
+                    } else {
+                        // Show error
+                        showStatusMessage(data.message || "Error saving ticket", 'error');
+                        loadingSection.style.display = 'none';
+                        ticketForm.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error("Error saving ticket:", error);
+                    showStatusMessage("Error saving ticket. Please try again.", 'error');
+                    loadingSection.style.display = 'none';
+                    ticketForm.style.display = 'block';
+                });
+            }
+            
+            // Reset form for new ticket
+            function resetForm() {
+                // Reset form fields
+                createTicketForm.reset();
+                
+                // Set default valid until date
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                document.getElementById('validUntilDate').value = formatDatetimeLocal(tomorrow);
+                
+                // Hide receipt and show starting sections
+                receiptSection.style.display = 'none';
+                userInfoSection.style.display = 'none';
+                ticketForm.style.display = 'none';
+                
+                // Show start scanner button
+                startButton.style.display = 'inline-block';
+                stopButton.style.display = 'none';
+                
+                // Clear manual code input
+                manualCodeInput.value = '';
+                
+                // Clear status message
+                scannerStatus.style.display = 'none';
+            }
+            
+            // Fetch ferry data
+            function fetchFerryData() {
+                // Fetch ferries from API
+                fetch('get_user_by_qr.php?action=get_ferries')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Server error: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            ferries = data.ferries;
+                            
+                            // Populate ferry select
+                            const ferrySelect = document.getElementById('ferrySelect');
+                            ferrySelect.innerHTML = '<option value="">-- Select Ferry --</option>';
+                            
+                            ferries.forEach(ferry => {
+                                const option = document.createElement('option');
+                                option.value = ferry.id;
+                                option.textContent = `${ferry.name} (${ferry.code})`;
+                                ferrySelect.appendChild(option);
+                            });
+                        } else {
+                            console.error("Error fetching ferries:", data.message);
+                            showStatusMessage("Error loading ferry data", 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error fetching ferries:", error);
+                        showStatusMessage("Error loading ferry data", 'error');
+                    });
+            }
+            
+            // Fetch route data
+            function fetchRouteData() {
+                // Fetch routes from API
+                fetch('get_user_by_qr.php?action=get_routes')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Server error: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            routes = data.routes;
+                            
+                            // Populate route select
+                            const routeSelect = document.getElementById('routeSelect');
+                            routeSelect.innerHTML = '<option value="">-- Select Route --</option>';
+                            
+                            routes.forEach(route => {
+                                const option = document.createElement('option');
+                                option.value = route.id;
+                                option.textContent = `${route.name} (${route.from} - ${route.to})`;
+                                routeSelect.appendChild(option);
+                            });
+                        } else {
+                            console.error("Error fetching routes:", data.message);
+                            showStatusMessage("Error loading route data", 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error fetching routes:", error);
+                        showStatusMessage("Error loading route data", 'error');
+                    });
+            }
+            
+            // Format date for display
+            function formatDate(date) {
+                if (!(date instanceof Date) || isNaN(date)) {
+                    return 'Invalid Date';
+                }
+                
+                const options = { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                };
+                
+                return date.toLocaleDateString('en-US', options);
+            }
+            
+            // Format date for datetime-local input
+            function formatDatetimeLocal(date) {
+                if (!(date instanceof Date) || isNaN(date)) {
+                    return '';
+                }
+                
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                
+                return `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+            
+            // Set up ticket type change handler to update price
+            document.getElementById('ticketType').addEventListener('change', function() {
+                const ticketType = this.value;
+                const routeId = document.getElementById('routeSelect').value;
+                
+                // Set default prices based on ticket type
+                let defaultPrice = 0;
+                
+                switch(ticketType) {
+                    case 'One-way':
+                        defaultPrice = 50.00;
+                        break;
+                    case 'Round-trip':
+                        defaultPrice = 90.00;
+                        break;
+                    case 'Multi-pass':
+                        defaultPrice = 200.00;
+                        break;
+                    case 'Special':
+                        defaultPrice = 75.00;
+                        break;
+                }
+                
+                // If route is selected, adjust price based on route
+                if (routeId) {
+                    const selectedRoute = routes.find(route => route.id === routeId);
+                    if (selectedRoute && selectedRoute.price_multiplier) {
+                        defaultPrice *= parseFloat(selectedRoute.price_multiplier);
+                    }
+                }
+                
+                // Update amount field
+                document.getElementById('amount').value = defaultPrice.toFixed(2);
+            });
+            
+            // Set up route change handler to update price
+            document.getElementById('routeSelect').addEventListener('change', function() {
+                // Trigger ticket type change to recalculate price
+                const event = new Event('change');
+                document.getElementById('ticketType').dispatchEvent(event);
+            });
+            
+            // Show welcome message
+            showStatusMessage('Welcome! Press "Start Scanner" to begin scanning QR codes.', 'info');
+        });
+    </script>
+</body>
+</html>
