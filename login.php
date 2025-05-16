@@ -174,5 +174,38 @@ $conn->close();
         }, 1000);
     </script>
     <?php endif; ?>
+
+    <!-- Konami Code Script -->
+    <script>
+        // Initialize Konami Code sequence
+        const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        let konamiPosition = 0;
+        
+        document.addEventListener('keydown', function(e) {
+            // Get the key name
+            const key = e.key;
+            
+            // Get the expected key at the current position
+            const expectedKey = konamiCode[konamiPosition];
+            
+            // Check if the key matches what we expect (case insensitive for letters)
+            if (key.toLowerCase() === expectedKey.toLowerCase()) {
+                // Move to the next position in the sequence
+                konamiPosition++;
+                
+                // If the konami code is complete
+                if (konamiPosition === konamiCode.length) {
+                    // Reset position
+                    konamiPosition = 0;
+                    
+                    // Secret action - redirect to register.php
+                    window.location.href = 'register.php';
+                }
+            } else {
+                // Reset position if wrong key is pressed
+                konamiPosition = 0;
+            }
+        });
+    </script>
 </body>
 </html>

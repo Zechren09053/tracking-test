@@ -1,3 +1,12 @@
+<?php
+session_start();
+if (!isset($_SESSION['staff_id'], $_SESSION['2fa_verified']) || $_SESSION['2fa_verified'] !== true) {
+    header("Location: login.php");
+    exit();
+}
+
+require 'db_connect.php'; // Centralized DB connection
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,11 +36,74 @@
             color: #6c757d;
             margin-right: 8px;
         }
+
+        /* Logout button styling */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logout-container {
+            margin-left: auto;
+        }
+
+        .btn-logout {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-logout:hover {
+            background-color: #c82333;
+        }
+
+        /* User welcome message */
+        .user-welcome {
+            margin-right: 15px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                padding: 10px;
+            }
+            
+            .logout-container {
+                margin-top: 10px;
+                margin-left: 0;
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1><i class="fas fa-ship"></i> Ferry Ticket System</h1>
+        <div class="header-container">
+            <h1><i class="fas fa-ship"></i> Ferry Ticket System</h1>
+            <div class="logout-container">
+                <?php if(isset($_SESSION['staff_name'])): ?>
+                <span class="user-welcome">Welcome, <?php echo htmlspecialchars($_SESSION['staff_name']); ?></span>
+                <?php endif; ?>
+                <a href="logout.php" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
     </header>
 
     <div class="container">
@@ -111,31 +183,24 @@
                         </div>
                         
                         <div class="form-group">
-    <label for="originSelect">Origin:</label>
-    <select id="originSelect" name="origin" class="form-control" required>
-        <option value="">-- Select Origin --</option>
-      
-    </select>
-</div>
+                            <label for="originSelect">Origin:</label>
+                            <select id="originSelect" name="origin" class="form-control" required>
+                                <option value="">-- Select Origin --</option>
+                            </select>
+                        </div>
 
-<div class="form-group">
-    <label for="destinationSelect">Destination:</label>
-    <select id="destinationSelect" name="destination" class="form-control" required>
-        <option value="">-- Select Destination --</option>
-      
-    </select>
+                        <div class="form-group">
+                            <label for="destinationSelect">Destination:</label>
+                            <select id="destinationSelect" name="destination" class="form-control" required>
+                                <option value="">-- Select Destination --</option>
+                            </select>
 
-    <label for="destinationSelect">Confirm Route</label>
-    <select id="routeSelect" name="routeSelect" class="form-control" required>
-    <option value="">-- Select Route --</option>
-
-    </select>
-
-</div>
-
-
-
-           
+                            <label for="destinationSelect">Confirm Route</label>
+                            <select id="routeSelect" name="routeSelect" class="form-control" required>
+                                <option value="">-- Select Route --</option>
+                            </select>
+                        </div>
+                       
                         <div class="form-group">
                             <label for="baseAmount">Base Amount (PHP):</label>
                             <input type="number" id="baseAmount" name="baseAmount" class="form-control" step="0.01" min="0" required>
