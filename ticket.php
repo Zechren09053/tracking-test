@@ -124,10 +124,15 @@
         <option value="">-- Select Destination --</option>
       
     </select>
-</div>
-<select id="routeSelect" name="routeSelect">
+
+    <label for="destinationSelect">Confirm Route</label>
+    <select id="routeSelect" name="routeSelect" class="form-control" required>
     <option value="">-- Select Route --</option>
-</select>
+
+    </select>
+
+</div>
+
 
 
            

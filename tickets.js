@@ -63,11 +63,155 @@ document.addEventListener('DOMContentLoaded', function() {
         saveTicket();
     });
     
-    // Print receipt
-    printReceiptButton.addEventListener('click', function() {
-        window.print();
-    });
+   // Print receipt - with enhanced styling
+printReceiptButton.addEventListener('click', function() {
+    // Create a new window for printing just the receipt
+    const printWindow = window.open('', '_blank');
     
+    // Get the receipt content
+    const receiptSection = document.getElementById('receipt');
+    
+    // Create a deep clone of the receipt content to modify
+    const receiptClone = receiptSection.cloneNode(true);
+    
+    // Remove any buttons or non-receipt elements from the clone
+    const buttonsToRemove = receiptClone.querySelectorAll('button, .no-print, .print-button, .action-button');
+    buttonsToRemove.forEach(button => button.remove());
+    
+    // Create a complete HTML document with enhanced styling
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Ferry Ticket Receipt</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+                
+                body {
+                    font-family: 'Roboto', Arial, sans-serif;
+                    padding: 30px;
+                    max-width: 800px;
+                    margin: 0 auto;
+                    color: #333;
+                    background-color: #f9f9f9;
+                }
+                
+                .receipt-container {
+                    border: 1px solid #ddd;
+                    padding: 25px;
+                    border-radius: 8px;
+                    background-color: #fff;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                }
+                
+                .receipt-header {
+                    text-align: center;
+                    margin-bottom: 25px;
+                    padding-bottom: 15px;
+                    border-bottom: 2px solid #eaeaea;
+                }
+                
+                .receipt-header h2 {
+                    color: #1a73e8;
+                    margin-bottom: 5px;
+                    font-weight: 500;
+                }
+                
+                .receipt-header p {
+                    color: #666;
+                    font-size: 0.9em;
+                }
+                
+                .receipt-row {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 12px;
+                    padding-bottom: 8px;
+                    border-bottom: 1px dotted #eaeaea;
+                }
+                
+                .receipt-label {
+                    font-weight: 500;
+                    color: #555;
+                    width: 40%;
+                }
+                
+                .receipt-value {
+                    text-align: right;
+                    width: 60%;
+                }
+                
+                .receipt-total {
+                    margin-top: 20px;
+                    padding-top: 15px;
+                    border-top: 2px solid #eaeaea;
+                    font-weight: 700;
+                    font-size: 1.1em;
+                }
+                
+                .receipt-footer {
+                    margin-top: 30px;
+                    text-align: center;
+                    font-size: 0.85em;
+                    color: #777;
+                    padding-top: 20px;
+                    border-top: 1px solid #eaeaea;
+                }
+                
+                .receipt-barcode {
+                    text-align: center;
+                    margin: 20px 0;
+                }
+                
+                .receipt-logo {
+                    max-height: 60px;
+                    margin-bottom: 15px;
+                }
+                
+                .thank-you {
+                    text-align: center;
+                    font-weight: 500;
+                    margin-top: 20px;
+                    color: #1a73e8;
+                }
+                
+                /* Hide any remaining buttons or controls */
+                button, .print-button, .action-button, .no-print {
+                    display: none !important;
+                }
+                
+                @media print {
+                    body {
+                        width: 100%;
+                        margin: 0;
+                        padding: 15px;
+                        background-color: white;
+                    }
+                    
+                    .receipt-container {
+                        box-shadow: none;
+                        border: none;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            ${receiptClone.outerHTML}
+        </body>
+        </html>
+    `);
+    
+    // Wait for content to load then print
+    printWindow.document.close();
+    printWindow.focus();
+    
+    // Print after a short delay to ensure content is fully loaded
+    setTimeout(function() {
+        printWindow.print();
+        // Close the window after printing (optional)
+        printWindow.close();
+    }, 500); // Increased delay for better reliability
+});
     // New ticket button
     newTicketButton.addEventListener('click', function() {
         resetForm();
@@ -542,13 +686,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         switch(ticketType) {
             case 'One-way':
-                defaultPrice = 50.00;
+                defaultPrice = 5.00;
                 break;
             case 'Round-trip':
-                defaultPrice = 90.00;
+                defaultPrice = 30.00;
                 break;
             case 'Multi-pass':
-                defaultPrice = 200.00;
+                defaultPrice = 30.00;
                 break;
             case 'Special':
                 defaultPrice = 75.00;
