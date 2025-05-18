@@ -38,7 +38,21 @@ CREATE TABLE `ferry_stations` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `station_name` VARCHAR(100) NOT NULL UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+CREATE TABLE passenger_id_pass (
+  id int(11) NOT NULL,
+  passenger_id int(11) NOT NULL,
+  full_name varchar(100) NOT NULL,
+  birth_date date NOT NULL,
+  profile_image varchar(255) DEFAULT NULL,
+  email varchar(100) NOT NULL,
+  phone_number varchar(20) NOT NULL,
+  qr_code_data varchar(255) NOT NULL,
+  issued_at datetime DEFAULT current_timestamp(),
+  expires_at datetime NOT NULL,
+  is_active tinyint(1) DEFAULT 1,
+  last_used datetime DEFAULT NULL,
+  created_at timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 -- Ferries table
 CREATE TABLE `ferries` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -210,7 +224,6 @@ CREATE INDEX idx_email ON users(email);
 CREATE INDEX idx_phone ON users(phone_number);
 CREATE INDEX idx_qr_code ON users(qr_code_data);  
 
--- Tickets
 CREATE TABLE tickets (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
@@ -219,10 +232,13 @@ CREATE TABLE tickets (
   amount DECIMAL(10,2) NOT NULL,
   purchase_date DATETIME DEFAULT CURRENT_TIMESTAMP,
   valid_until DATETIME,
+  origin_station_id INT,
+  destination_station_id INT,
   FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (ferry_id) REFERENCES ferries(id)
+  FOREIGN KEY (ferry_id) REFERENCES ferries(id),
+  FOREIGN KEY (origin_station_id) REFERENCES ferry_stations(id),
+  FOREIGN KEY (destination_station_id) REFERENCES ferry_stations(id)
 );
-
 
 -- Ferry safety equipment
 CREATE TABLE `ferry_safety_equipment` (

@@ -93,6 +93,7 @@ function handleStorageChange(event) {
         } else {
             // Another tab logged out, update this tab's UI
             currentUserId = null;
+            clearInputFields();  // Add this line to clear inputs
             updateUIForLogout();
         }
     }
@@ -683,6 +684,9 @@ function logout() {
                     timestamp: Date.now()
                 }));
                 
+                // Clear all input fields
+                clearInputFields();
+                
                 // Update current tab's UI
                 currentUserId = null;
                 updateUIForLogout();
@@ -734,10 +738,13 @@ function resetInactivityTimer() {
 function handleInactivity() {
     // Only proceed if user is still logged in
     if (currentUserId !== null) {
-        console.log('User inactive for 5 minutes, logging out...');
+        console.log('User inactive for 3 minutes, logging out...');
         
         // Show a warning message before logout
         showInactivityWarning();
+        
+        // Clear input fields before logout
+        clearInputFields();
         
         // Perform logout after a brief delay to allow user to see the message
         setTimeout(function() {
@@ -800,3 +807,526 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Rest of your existing code...
 });
+// CAPTCHA Implementation
+// This will add a custom CAPTCHA to the login and registration forms
+
+// Global variables for CAPTCHA
+let captchaValue = null;
+let loginCaptchaRequired = true;      // Set to true to always require CAPTCHA on login
+let registerCaptchaRequired = true;   // Set to true to always require CAPTCHA on registration
+let loginFailCount = 0;               // Count failed login attempts
+
+// Add this to your document ready function
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize CAPTCHA
+    initCaptcha();
+    
+    // Generate initial CAPTCHAs
+    generateCaptcha('login-captcha');
+    generateCaptcha('register-captcha');
+    
+    // Add refresh CAPTCHA event listeners
+    document.getElementById('refresh-login-captcha').addEventListener('click', function(e) {
+        e.preventDefault();
+        generateCaptcha('login-captcha');
+    });
+    
+    document.getElementById('refresh-register-captcha').addEventListener('click', function(e) {
+        e.preventDefault();
+        generateCaptcha('register-captcha');
+    });
+});
+
+// Initialize CAPTCHA elements in the forms
+function initCaptcha() {
+    // Create login form CAPTCHA
+    const loginCaptchaHTML = `
+        <div class="form-group captcha-container">
+            <label for="login-captcha-input">Verify you're human</label>
+            <div class="captcha-box">
+                <canvas id="login-captcha" width="200" height="50"></canvas>
+                <button id="refresh-login-captcha" class="captcha-refresh" title="Refresh CAPTCHA">↻</button>
+            </div>
+            <input type="text" id="login-captcha-input" name="captcha" required placeholder="Enter the code above">
+            <div id="login-captcha-error" class="error"></div>
+        </div>
+    `;
+    
+    // Create registration form CAPTCHA
+    const registerCaptchaHTML = `
+        <div class="form-group captcha-container">
+            <label for="register-captcha-input">Verify you're human</label>
+            <div class="captcha-box">
+                <canvas id="register-captcha" width="200" height="50"></canvas>
+                <button id="refresh-register-captcha" class="captcha-refresh" title="Refresh CAPTCHA">↻</button>
+            </div>
+            <input type="text" id="register-captcha-input" name="captcha" required placeholder="Enter the code above">
+            <div id="register-captcha-error" class="error"></div>
+        </div>
+    `;
+    
+    // Insert login CAPTCHA before the login button
+    const loginForm = document.getElementById('login-form');
+    const loginButton = loginForm.querySelector('button[type="submit"]');
+    loginForm.insertBefore(createElementFromHTML(loginCaptchaHTML), loginButton);
+    
+    // Insert registration CAPTCHA before the register button
+    const registerForm = document.getElementById('registration-form');
+    const registerButton = registerForm.querySelector('button[type="submit"]');
+    registerForm.insertBefore(createElementFromHTML(registerCaptchaHTML), registerButton);
+    
+    // Add styles for CAPTCHA
+    addCaptchaStyles();
+}
+
+// Helper function to create element from HTML string
+function createElementFromHTML(htmlString) {
+    const div = document.createElement('div');
+    div.innerHTML = htmlString.trim();
+    return div.firstChild;
+}
+
+// Generate a new CAPTCHA and display it on the canvas
+function generateCaptcha(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    const ctx = canvas.getContext('2d');
+    
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Set background
+    ctx.fillStyle = '#f0f0f0';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Generate random alphanumeric string (exclude confusing characters like 0, O, 1, I, etc.)
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+    let captchaText = '';
+    for (let i = 0; i < 6; i++) {
+        captchaText += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    
+    // Store the CAPTCHA value in a way that's accessible for validation
+    // Using a data attribute on the canvas
+    canvas.dataset.captchaValue = captchaText;
+    
+    // Draw the text with distortion
+    ctx.font = 'bold 28px Arial';
+    
+    // Add noise (dots)
+    for (let i = 0; i < 100; i++) {
+        ctx.fillStyle = getRandomColor(0.6);
+        ctx.beginPath();
+        ctx.arc(
+            Math.random() * canvas.width,
+            Math.random() * canvas.height,
+            Math.random() * 2,
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
+    }
+    
+    // Add lines
+    for (let i = 0; i < 5; i++) {
+        ctx.strokeStyle = getRandomColor(0.5);
+        ctx.beginPath();
+        ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+        ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+        ctx.stroke();
+    }
+    
+    // Draw each character with slight rotation and position variation
+    for (let i = 0; i < captchaText.length; i++) {
+        ctx.save();
+        ctx.translate(30 + i * 25, 35);
+        ctx.rotate((Math.random() - 0.5) * 0.3);
+        ctx.fillStyle = getRandomColor(0.8);
+        ctx.fillText(captchaText[i], 0, 0);
+        ctx.restore();
+    }
+}
+
+// Get a random color with specified opacity
+function getRandomColor(opacity) {
+    const r = Math.floor(Math.random() * 100);
+    const g = Math.floor(Math.random() * 100);
+    const b = Math.floor(Math.random() * 100);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+
+// Add styles for CAPTCHA elements
+function addCaptchaStyles() {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+        .captcha-container {
+            margin-bottom: 20px;
+        }
+        
+        .captcha-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .captcha-refresh {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.7);
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .captcha-refresh:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        #login-captcha, #register-captcha {
+            width: 100%;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+    `;
+    document.head.appendChild(styleElement);
+}
+
+// Validate CAPTCHA
+function validateCaptcha(formType) {
+    const canvasId = `${formType}-captcha`;
+    const inputId = `${formType}-captcha-input`;
+    const errorId = `${formType}-captcha-error`;
+    
+    const canvas = document.getElementById(canvasId);
+    const input = document.getElementById(inputId);
+    const errorElement = document.getElementById(errorId);
+    
+    // Get the expected value from the canvas data attribute
+    const expectedValue = canvas.dataset.captchaValue;
+    const inputValue = input.value.trim();
+    
+    // Clear previous error
+    errorElement.textContent = '';
+    
+    // Check if CAPTCHA is required based on form type
+    const isRequired = formType === 'login' ? loginCaptchaRequired : registerCaptchaRequired;
+    
+    // For login, also check failed attempts
+    const requireDueToFailures = formType === 'login' && loginFailCount >= 3;
+    
+    if ((isRequired || requireDueToFailures) && !inputValue) {
+        errorElement.textContent = 'Please enter the CAPTCHA code';
+        return false;
+    }
+    
+    if ((isRequired || requireDueToFailures) && inputValue !== expectedValue) {
+        errorElement.textContent = 'CAPTCHA code is incorrect';
+        // Generate a new CAPTCHA
+        generateCaptcha(canvasId);
+        input.value = '';
+        return false;
+    }
+    
+    return true;
+}
+
+// Update the handleLogin function
+// Modify your existing handleLogin function by adding CAPTCHA validation
+function handleLogin(event) {
+    event.preventDefault();
+    
+    // Clear previous errors
+    document.getElementById('login-username-error').textContent = '';
+    document.getElementById('login-password-error').textContent = '';
+    document.getElementById('login-general-error').textContent = '';
+    document.getElementById('login-captcha-error').textContent = '';
+    
+    // Get form data
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+    
+    // Basic validation
+    if (!username) {
+        document.getElementById('login-username-error').textContent = 'Email or phone number is required';
+        return;
+    }
+    
+    if (!password) {
+        document.getElementById('login-password-error').textContent = 'Password is required';
+        return;
+    }
+    
+    // Validate CAPTCHA
+    if (!validateCaptcha('login')) {
+        return;
+    }
+    
+    // Send login request
+    fetch('cllogin.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            username: username,
+            password: password
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Login successful
+            currentUserId = data.user_id;
+            loginFailCount = 0; // Reset fail counter on success
+            
+            // Update localStorage to notify other tabs
+            localStorage.setItem('userLoginState', JSON.stringify({
+                loggedIn: true,
+                userId: data.user_id,
+                timestamp: Date.now()
+            }));
+            
+            // Update UI
+            updateUIForLogin(data.user_id);
+        } else {
+            // Login failed
+            loginFailCount++; // Increment fail counter
+            
+            // Show CAPTCHA after 3 failed attempts if not already shown
+            if (loginFailCount >= 3) {
+                document.querySelector('.form-group.captcha-container').style.display = 'block';
+                // Generate a new CAPTCHA
+                generateCaptcha('login-captcha');
+            }
+            
+            document.getElementById('login-general-error').textContent = data.message || 'Invalid credentials';
+        }
+    })
+    .catch(error => {
+        console.error('Login error:', error);
+        document.getElementById('login-general-error').textContent = 'An error occurred. Please try again.';
+    });
+}
+
+// Update the handleRegistration function
+// Modify your existing handleRegistration function by adding CAPTCHA validation
+function handleRegistration(event) {
+    event.preventDefault();
+    
+    // Clear previous errors
+    const errorFields = ['name', 'birth-date', 'email', 'phone', 'password', 'confirm-password', 'image', 'register-general', 'register-captcha'];
+    errorFields.forEach(field => {
+        const element = document.getElementById(`${field}-error`);
+        if (element) element.textContent = '';
+    });
+    
+    // Get form data
+    const fullName = document.getElementById('full_name').value;
+    const birthDate = document.getElementById('birth_date').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone_number').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    const profileImage = document.getElementById('profile_image').files[0];
+    
+    // Basic validation
+    let hasErrors = false;
+    
+    if (!fullName) {
+        document.getElementById('name-error').textContent = 'Full name is required';
+        hasErrors = true;
+    }
+    
+    if (!birthDate) {
+        document.getElementById('birth-date-error').textContent = 'Date of birth is required';
+        hasErrors = true;
+    } else {
+        // Check if user is at least 13 years old
+        const today = new Date();
+        const birthDateObj = new Date(birthDate);
+        const age = today.getFullYear() - birthDateObj.getFullYear();
+        const monthDiff = today.getMonth() - birthDateObj.getMonth();
+        
+        // If birth month is after current month or same month but birth day is after current day, subtract one year
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+            if (age - 1 < 13) {
+                document.getElementById('birth-date-error').textContent = 'You must be at least 13 years old';
+                hasErrors = true;
+            }
+        } else if (age < 13) {
+            document.getElementById('birth-date-error').textContent = 'You must be at least 13 years old';
+            hasErrors = true;
+        }
+    }
+    
+    if (!email) {
+        document.getElementById('email-error').textContent = 'Email is required';
+        hasErrors = true;
+    } else if (!isValidEmail(email)) {
+        document.getElementById('email-error').textContent = 'Please enter a valid email address';
+        hasErrors = true;
+    }
+    
+    if (!phone) {
+        document.getElementById('phone-error').textContent = 'Phone number is required';
+        hasErrors = true;
+    } else if (!isValidPhoneNumber(phone)) {
+        document.getElementById('phone-error').textContent = 'Please enter a valid phone number';
+        hasErrors = true;
+    }
+    
+    if (!password) {
+        document.getElementById('password-error').textContent = 'Password is required';
+        hasErrors = true;
+    } else if (password.length < 8) {
+        document.getElementById('password-error').textContent = 'Password must be at least 8 characters';
+        hasErrors = true;
+    }
+    
+    if (password !== confirmPassword) {
+        document.getElementById('confirm-password-error').textContent = 'Passwords do not match';
+        hasErrors = true;
+    }
+    
+    // Validate CAPTCHA
+    if (!validateCaptcha('register')) {
+        hasErrors = true;
+    }
+    
+    if (hasErrors) {
+        return;
+    }
+    
+    // Generate a random QR code data (normally this would be done server-side)
+    const qrCodeData = generateQRCodeData();
+    
+    // Calculate expiration date (1 year from now by default)
+    const expiryDate = new Date();
+    expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+    
+    // Create form data object
+    const formData = new FormData();
+    formData.append('full_name', fullName);
+    formData.append('birth_date', birthDate);
+    formData.append('email', email);
+    formData.append('phone_number', phone);
+    formData.append('password', password);
+    formData.append('qr_code_data', qrCodeData);
+    formData.append('expires_at', expiryDate.toISOString().split('T')[0]);
+    
+    if (profileImage) {
+        formData.append('profile_image', profileImage);
+    }
+    
+    // Send registration request
+    fetch('user_register.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Registration successful
+            document.getElementById('registration-form').style.display = 'none';
+            document.getElementById('registration-result').style.display = 'block';
+        } else {
+            // Registration failed
+            if (data.errors) {
+                // Display specific errors
+                for (const [field, message] of Object.entries(data.errors)) {
+                    const errorElement = document.getElementById(`${field}-error`);
+                    if (errorElement) {
+                        errorElement.textContent = message;
+                    }
+                }
+            } else {
+                // Display general error
+                document.getElementById('register-general-error').textContent = data.message || 'Registration failed';
+            }
+            
+            // Generate a new CAPTCHA
+            generateCaptcha('register-captcha');
+            document.getElementById('register-captcha-input').value = '';
+        }
+    })
+    .catch(error => {
+        console.error('Registration error:', error);
+        document.getElementById('register-general-error').textContent = 'An error occurred. Please try again.';
+        
+        // Generate a new CAPTCHA
+        generateCaptcha('register-captcha');
+        document.getElementById('register-captcha-input').value = '';
+    });
+}
+// Function to clear all input fields after logout
+function clearInputFields() {
+    // Clear login form inputs
+    if (document.getElementById('login-username')) {
+        document.getElementById('login-username').value = '';
+    }
+    if (document.getElementById('login-password')) {
+        document.getElementById('login-password').value = '';
+    }
+    
+    // Clear CAPTCHA input if it exists
+    const loginCaptchaInput = document.getElementById('login-captcha-input');
+    if (loginCaptchaInput) {
+        loginCaptchaInput.value = '';
+    }
+    
+    // Clear registration form inputs
+    const registrationInputs = [
+        'full_name',
+        'birth_date',
+        'email',
+        'phone_number',
+        'password',
+        'confirm_password'
+    ];
+    
+    registrationInputs.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.value = '';
+        }
+    });
+    
+    // Clear registration CAPTCHA input if it exists
+    const registerCaptchaInput = document.getElementById('register-captcha-input');
+    if (registerCaptchaInput) {
+        registerCaptchaInput.value = '';
+    }
+    
+    // Reset image preview
+    const imagePreview = document.getElementById('image-preview');
+    if (imagePreview) {
+        imagePreview.innerHTML = '<span>No image selected</span>';
+    }
+    
+    // Reset the file input for profile image
+    const profileImage = document.getElementById('profile_image');
+    if (profileImage) {
+        profileImage.value = '';
+    }
+    
+    // Clear all error messages
+    const errorElements = document.querySelectorAll('.error');
+    errorElements.forEach(element => {
+        element.textContent = '';
+    });
+    
+    // Generate new CAPTCHAs
+    if (typeof generateCaptcha === 'function') {
+        generateCaptcha('login-captcha');
+        generateCaptcha('register-captcha');
+    }
+}

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 15, 2025 at 07:48 PM
+-- Generation Time: May 17, 2025 at 12:47 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -634,8 +634,138 @@ CREATE TABLE `ferry_routes` (
 INSERT INTO `ferry_routes` (`id`, `route_name`, `origin`, `destination`, `created_at`) VALUES
 (1, 'Pinagbuhatan → Escolta', 'Pinagbuhatan', 'Escolta', '2025-05-05 12:45:37'),
 (2, 'Escolta → Kalawaan', 'Escolta', 'Kalawaan', '2025-05-05 12:45:37'),
-(3, 'Guadalupe → PUP', 'Guadalupe', 'PUP', '2025-05-15 10:48:27'),
-(4, 'PUP → Guadalupe', 'PUP', 'Guadalupe', '2025-05-15 10:48:27');
+(11, 'Guadalupe to Escolta', '3', '1', '2025-05-16 12:13:05'),
+(12, 'Hulo to Escolta', '4', '1', '2025-05-16 12:13:05'),
+(13, 'Kalawaan to Escolta', '11', '1', '2025-05-16 12:13:05'),
+(14, 'Lambingan to Escolta', '6', '1', '2025-05-16 12:13:05'),
+(15, 'Lawton to Escolta', '10', '1', '2025-05-16 12:13:05'),
+(16, 'PUP to Escolta', '8', '1', '2025-05-16 12:13:05'),
+(17, 'Quinta to Escolta', '9', '1', '2025-05-16 12:13:05'),
+(18, 'San Joaquin to Escolta', '2', '1', '2025-05-16 12:13:05'),
+(19, 'Sta. Ana to Escolta', '7', '1', '2025-05-16 12:13:05'),
+(20, 'Valenzuela to Escolta', '5', '1', '2025-05-16 12:13:05'),
+(21, 'Escolta to Guadalupe', '1', '3', '2025-05-16 12:13:05'),
+(22, 'Hulo to Guadalupe', '4', '3', '2025-05-16 12:13:05'),
+(23, 'Kalawaan to Guadalupe', '11', '3', '2025-05-16 12:13:05'),
+(24, 'Lambingan to Guadalupe', '6', '3', '2025-05-16 12:13:05'),
+(25, 'Lawton to Guadalupe', '10', '3', '2025-05-16 12:13:05'),
+(26, 'PUP to Guadalupe', '8', '3', '2025-05-16 12:13:05'),
+(27, 'Quinta to Guadalupe', '9', '3', '2025-05-16 12:13:05'),
+(28, 'San Joaquin to Guadalupe', '2', '3', '2025-05-16 12:13:05'),
+(29, 'Sta. Ana to Guadalupe', '7', '3', '2025-05-16 12:13:05'),
+(30, 'Valenzuela to Guadalupe', '5', '3', '2025-05-16 12:13:05'),
+(31, 'Escolta to Hulo', '1', '4', '2025-05-16 12:13:05'),
+(32, 'Guadalupe to Hulo', '3', '4', '2025-05-16 12:13:05'),
+(33, 'Kalawaan to Hulo', '11', '4', '2025-05-16 12:13:05'),
+(34, 'Lambingan to Hulo', '6', '4', '2025-05-16 12:13:05'),
+(35, 'Lawton to Hulo', '10', '4', '2025-05-16 12:13:05'),
+(36, 'PUP to Hulo', '8', '4', '2025-05-16 12:13:05'),
+(37, 'Quinta to Hulo', '9', '4', '2025-05-16 12:13:05'),
+(38, 'San Joaquin to Hulo', '2', '4', '2025-05-16 12:13:05'),
+(39, 'Sta. Ana to Hulo', '7', '4', '2025-05-16 12:13:05'),
+(40, 'Valenzuela to Hulo', '5', '4', '2025-05-16 12:13:05'),
+(41, 'Escolta to Kalawaan', '1', '11', '2025-05-16 12:13:05'),
+(42, 'Guadalupe to Kalawaan', '3', '11', '2025-05-16 12:13:05'),
+(43, 'Hulo to Kalawaan', '4', '11', '2025-05-16 12:13:05'),
+(44, 'Lambingan to Kalawaan', '6', '11', '2025-05-16 12:13:05'),
+(45, 'Lawton to Kalawaan', '10', '11', '2025-05-16 12:13:05'),
+(46, 'PUP to Kalawaan', '8', '11', '2025-05-16 12:13:05'),
+(47, 'Quinta to Kalawaan', '9', '11', '2025-05-16 12:13:05'),
+(48, 'San Joaquin to Kalawaan', '2', '11', '2025-05-16 12:13:05'),
+(49, 'Sta. Ana to Kalawaan', '7', '11', '2025-05-16 12:13:05'),
+(50, 'Valenzuela to Kalawaan', '5', '11', '2025-05-16 12:13:05'),
+(51, 'Escolta to Lambingan', '1', '6', '2025-05-16 12:13:05'),
+(52, 'Guadalupe to Lambingan', '3', '6', '2025-05-16 12:13:05'),
+(53, 'Hulo to Lambingan', '4', '6', '2025-05-16 12:13:05'),
+(54, 'Kalawaan to Lambingan', '11', '6', '2025-05-16 12:13:05'),
+(55, 'Lawton to Lambingan', '10', '6', '2025-05-16 12:13:05'),
+(56, 'PUP to Lambingan', '8', '6', '2025-05-16 12:13:05'),
+(57, 'Quinta to Lambingan', '9', '6', '2025-05-16 12:13:05'),
+(58, 'San Joaquin to Lambingan', '2', '6', '2025-05-16 12:13:05'),
+(59, 'Sta. Ana to Lambingan', '7', '6', '2025-05-16 12:13:05'),
+(60, 'Valenzuela to Lambingan', '5', '6', '2025-05-16 12:13:05'),
+(61, 'Escolta to Lawton', '1', '10', '2025-05-16 12:13:05'),
+(62, 'Guadalupe to Lawton', '3', '10', '2025-05-16 12:13:05'),
+(63, 'Hulo to Lawton', '4', '10', '2025-05-16 12:13:05'),
+(64, 'Kalawaan to Lawton', '11', '10', '2025-05-16 12:13:05'),
+(65, 'Lambingan to Lawton', '6', '10', '2025-05-16 12:13:05'),
+(66, 'PUP to Lawton', '8', '10', '2025-05-16 12:13:05'),
+(67, 'Quinta to Lawton', '9', '10', '2025-05-16 12:13:05'),
+(68, 'San Joaquin to Lawton', '2', '10', '2025-05-16 12:13:05'),
+(69, 'Sta. Ana to Lawton', '7', '10', '2025-05-16 12:13:05'),
+(70, 'Valenzuela to Lawton', '5', '10', '2025-05-16 12:13:05'),
+(71, 'Escolta to PUP', '1', '8', '2025-05-16 12:13:05'),
+(72, 'Guadalupe to PUP', '3', '8', '2025-05-16 12:13:05'),
+(73, 'Hulo to PUP', '4', '8', '2025-05-16 12:13:05'),
+(74, 'Kalawaan to PUP', '11', '8', '2025-05-16 12:13:05'),
+(75, 'Lambingan to PUP', '6', '8', '2025-05-16 12:13:05'),
+(76, 'Lawton to PUP', '10', '8', '2025-05-16 12:13:05'),
+(77, 'Quinta to PUP', '9', '8', '2025-05-16 12:13:05'),
+(78, 'San Joaquin to PUP', '2', '8', '2025-05-16 12:13:05'),
+(79, 'Sta. Ana to PUP', '7', '8', '2025-05-16 12:13:05'),
+(80, 'Valenzuela to PUP', '5', '8', '2025-05-16 12:13:05'),
+(81, 'Escolta to Quinta', '1', '9', '2025-05-16 12:13:05'),
+(82, 'Guadalupe to Quinta', '3', '9', '2025-05-16 12:13:05'),
+(83, 'Hulo to Quinta', '4', '9', '2025-05-16 12:13:05'),
+(84, 'Kalawaan to Quinta', '11', '9', '2025-05-16 12:13:05'),
+(85, 'Lambingan to Quinta', '6', '9', '2025-05-16 12:13:05'),
+(86, 'Lawton to Quinta', '10', '9', '2025-05-16 12:13:05'),
+(87, 'PUP to Quinta', '8', '9', '2025-05-16 12:13:05'),
+(88, 'San Joaquin to Quinta', '2', '9', '2025-05-16 12:13:05'),
+(89, 'Sta. Ana to Quinta', '7', '9', '2025-05-16 12:13:05'),
+(90, 'Valenzuela to Quinta', '5', '9', '2025-05-16 12:13:05'),
+(91, 'Escolta to San Joaquin', '1', '2', '2025-05-16 12:13:05'),
+(92, 'Guadalupe to San Joaquin', '3', '2', '2025-05-16 12:13:05'),
+(93, 'Hulo to San Joaquin', '4', '2', '2025-05-16 12:13:05'),
+(94, 'Kalawaan to San Joaquin', '11', '2', '2025-05-16 12:13:05'),
+(95, 'Lambingan to San Joaquin', '6', '2', '2025-05-16 12:13:05'),
+(96, 'Lawton to San Joaquin', '10', '2', '2025-05-16 12:13:05'),
+(97, 'PUP to San Joaquin', '8', '2', '2025-05-16 12:13:05'),
+(98, 'Quinta to San Joaquin', '9', '2', '2025-05-16 12:13:05'),
+(99, 'Sta. Ana to San Joaquin', '7', '2', '2025-05-16 12:13:05'),
+(100, 'Valenzuela to San Joaquin', '5', '2', '2025-05-16 12:13:05'),
+(101, 'Escolta to Sta. Ana', '1', '7', '2025-05-16 12:13:05'),
+(102, 'Guadalupe to Sta. Ana', '3', '7', '2025-05-16 12:13:05'),
+(103, 'Hulo to Sta. Ana', '4', '7', '2025-05-16 12:13:05'),
+(104, 'Kalawaan to Sta. Ana', '11', '7', '2025-05-16 12:13:05'),
+(105, 'Lambingan to Sta. Ana', '6', '7', '2025-05-16 12:13:05'),
+(106, 'Lawton to Sta. Ana', '10', '7', '2025-05-16 12:13:05'),
+(107, 'PUP to Sta. Ana', '8', '7', '2025-05-16 12:13:05'),
+(108, 'Quinta to Sta. Ana', '9', '7', '2025-05-16 12:13:05'),
+(109, 'San Joaquin to Sta. Ana', '2', '7', '2025-05-16 12:13:05'),
+(110, 'Valenzuela to Sta. Ana', '5', '7', '2025-05-16 12:13:05'),
+(111, 'Escolta to Valenzuela', '1', '5', '2025-05-16 12:13:05'),
+(112, 'Guadalupe to Valenzuela', '3', '5', '2025-05-16 12:13:05'),
+(113, 'Hulo to Valenzuela', '4', '5', '2025-05-16 12:13:05'),
+(114, 'Kalawaan to Valenzuela', '11', '5', '2025-05-16 12:13:05'),
+(115, 'Lambingan to Valenzuela', '6', '5', '2025-05-16 12:13:05'),
+(116, 'Lawton to Valenzuela', '10', '5', '2025-05-16 12:13:05'),
+(117, 'PUP to Valenzuela', '8', '5', '2025-05-16 12:13:05'),
+(118, 'Quinta to Valenzuela', '9', '5', '2025-05-16 12:13:05'),
+(119, 'San Joaquin to Valenzuela', '2', '5', '2025-05-16 12:13:05'),
+(120, 'Sta. Ana to Valenzuela', '7', '5', '2025-05-16 12:13:05');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ferry_routes_backup`
+--
+
+CREATE TABLE `ferry_routes_backup` (
+  `id` int(11) NOT NULL DEFAULT 0,
+  `route_name` varchar(100) DEFAULT NULL,
+  `origin` varchar(50) DEFAULT NULL,
+  `destination` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ferry_routes_backup`
+--
+
+INSERT INTO `ferry_routes_backup` (`id`, `route_name`, `origin`, `destination`, `created_at`) VALUES
+(1, 'Pinagbuhatan → Escolta', 'Pinagbuhatan', 'Escolta', '2025-05-05 12:45:37'),
+(2, 'Escolta → Kalawaan', 'Escolta', 'Kalawaan', '2025-05-05 12:45:37');
 
 -- --------------------------------------------------------
 
@@ -678,10 +808,10 @@ CREATE TABLE `ferry_stations` (
 --
 
 INSERT INTO `ferry_stations` (`id`, `station_name`) VALUES
-(11, 'Escolta'),
+(1, 'Escolta'),
 (3, 'Guadalupe'),
 (4, 'Hulo'),
-(1, 'Kalawaan'),
+(11, 'Kalawaan'),
 (6, 'Lambingan'),
 (10, 'Lawton'),
 (8, 'PUP'),
@@ -818,11 +948,11 @@ INSERT INTO `staff_users` (`staff_id`, `username`, `email`, `password`, `role`, 
 (5, 'test1', '', '$2y$10$fSDE2lj0C1ec5QSw87fCN.ZPgmCYp2kskqWr/ts5/jJie3TGvIbZe', '', 'howie', NULL, 'severino', NULL, 1, '2025-05-09 21:10:55', '2025-05-09 21:10:55', 'default.png'),
 (7, 'test2', '12312ADAW@HOTMAIL.com', '$2y$10$JzsU67ADlm86qbkt6qLtmu8ER9zxbl//a3hlwvajoD6seN1hXzFd2', '', 'WOIHO', NULL, '13', NULL, 1, '2025-05-09 21:23:15', '2025-05-09 21:23:15', 'default.png'),
 (8, '@test1234567', 'severinokenji@gmail.com', '$2y$10$/Dxvo3zsE/HdvyjHrvVlpe8GaXnIfIk3OPfv/y68cHorstuXN/poi', '', 'Howie', NULL, 'sevr', NULL, 1, '2025-05-10 10:27:40', '2025-05-13 12:38:28', 'uploads/profile_6823345f5e555.jpg'),
-(9, 'superadmin2', '1severinokenji@gmail.com', '$2y$10$nu/D5duFuoAFh6Jm4DlpJuP9dsTY3kYZL/YLPbKOIBylCUaJHZsq2', '', 'howie2', NULL, 'severino', NULL, 1, '2025-05-10 11:04:36', '2025-05-11 04:06:03', 'Pic1.png'),
 (101, 'jdoe', 'jdoe@example.com', 'hashed_password_here', '', 'John', NULL, 'Doe', NULL, 1, '2025-05-11 22:44:38', '2025-05-11 22:44:38', 'default.png'),
 (104, 'Operator2', 'hseverino.k12043257@umak.edu.ph', '$2y$10$IRpFGMQ4NJ1UW.druI7Ii.cJilT6uA2163e/aVnR4JrTgOm8mGx5m', 'operator', 'Sailor', NULL, 'Moon', NULL, 1, '2025-05-12 09:49:31', '2025-05-13 10:47:26', 'default.png'),
 (105, 'Auditor', 'test@gmail.com', '$2y$10$LG0/r/J7bNPbN.fcJ/vh4OYRbPouaEyG/bMwmzFKewXI8Tauk.a5C', 'Auditor', 'AUDITOR1', NULL, 'TEST1', NULL, 1, '2025-05-12 15:37:50', '2025-05-12 15:37:50', 'default.png'),
-(206, 'OplanA', 'OPLANA@email.com', '$2y$10$mJ/w7yj3vSmcusNMdYRapewIFLUZ29pYGsn6ohHz212ihQ38SV966', 'operator', 'Oplan', NULL, 'A', NULL, 1, '2025-05-13 03:18:43', '2025-05-13 03:18:43', 'default.png');
+(206, 'OplanA', 'OPLANA@email.com', '$2y$10$mJ/w7yj3vSmcusNMdYRapewIFLUZ29pYGsn6ohHz212ihQ38SV966', 'operator', 'Oplan', NULL, 'A', NULL, 1, '2025-05-13 03:18:43', '2025-05-13 03:18:43', 'default.png'),
+(207, '@Auditor2468', '1severinokenji@gmail.com', '$2y$10$6JpHgU9GBDzGn51Bu.EpSuwXSS.l6WDoDw2v/yQqE25RbggPyERcC', 'Auditor', 'Silence', NULL, 'Plitvice', NULL, 1, '2025-05-16 12:40:53', '2025-05-16 12:40:53', 'default.png');
 
 -- --------------------------------------------------------
 
@@ -837,48 +967,23 @@ CREATE TABLE `tickets` (
   `ticket_type` varchar(50) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   `purchase_date` datetime DEFAULT current_timestamp(),
-  `valid_until` datetime DEFAULT NULL
+  `valid_until` datetime DEFAULT NULL,
+  `origin_station_id` int(11) DEFAULT NULL,
+  `destination_station_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tickets`
 --
 
-INSERT INTO `tickets` (`id`, `user_id`, `ferry_id`, `ticket_type`, `amount`, `purchase_date`, `valid_until`) VALUES
-(1, 1, 1, 'Regular', 25.00, '2025-05-11 17:41:14', '2025-05-11 23:59:00'),
-(2, 2, 2, 'Student', 15.00, '2025-05-11 17:41:14', '2025-05-11 23:59:00'),
-(3, 3, 3, 'Senior', 10.00, '2025-05-11 17:41:14', '2025-05-11 23:59:00'),
-(4, 1, 1, 'Regular', 25.00, '2025-05-11 17:54:14', '2025-06-01 23:59:00'),
-(5, 2, 2, 'Student', 15.00, '2025-05-11 17:54:14', '2025-06-05 23:59:00'),
-(6, 3, 3, 'Senior', 10.00, '2025-05-11 17:54:14', '2025-06-10 23:59:00'),
-(7, 1, 2, 'Regular', 25.00, '2025-05-11 17:54:14', '2025-04-15 23:59:00'),
-(8, 2, 3, 'Student', 15.00, '2025-05-11 17:54:14', '2025-03-30 23:59:00'),
-(9, 3, 1, 'Senior', 10.00, '2025-05-11 17:54:14', '2025-02-28 23:59:00'),
-(10, 1, 3, 'Regular', 30.00, '2025-05-11 17:54:14', '2025-12-25 23:59:00'),
-(11, 2, 1, 'Student', 12.50, '2025-05-11 17:54:14', '2025-12-31 23:59:00'),
-(12, 3, 2, 'Senior', 8.00, '2025-05-11 17:54:14', '2026-01-10 23:59:00'),
-(20, 3, 8, 'Student', 66.77, '2025-02-16 01:11:51', '2025-05-18 01:11:51'),
-(21, 3, 15, 'Senior', 69.11, '2025-05-02 01:11:51', '2025-05-16 01:11:51'),
-(22, 3, 18, 'Senior', 96.72, '2025-05-02 01:11:51', '2025-05-18 01:11:51'),
-(23, 1, 8, 'Student', 77.59, '2025-05-12 01:11:51', '2025-05-15 01:11:51'),
-(24, 1, 15, 'Senior', 77.44, '2025-02-20 01:11:51', '2025-05-19 01:11:51'),
-(25, 1, 18, 'Student', 75.93, '2025-03-08 01:11:51', '2025-05-13 01:11:51'),
-(26, 4, 8, 'Regular', 70.25, '2025-03-12 01:11:51', '2025-05-14 01:11:51'),
-(27, 4, 15, 'Senior', 96.85, '2025-02-13 01:11:51', '2025-05-13 01:11:51'),
-(28, 4, 18, 'Student', 80.64, '2025-04-15 01:11:51', '2025-05-17 01:11:51'),
-(29, 5, 8, 'Student', 63.08, '2025-02-17 01:11:51', '2025-05-19 01:11:51'),
-(30, 5, 15, 'Senior', 55.36, '2025-04-23 01:11:51', '2025-05-18 01:11:51'),
-(31, 5, 18, 'Regular', 77.92, '2025-04-17 01:11:51', '2025-05-18 01:11:51'),
-(32, 2, 8, 'Senior', 91.04, '2025-03-11 01:11:51', '2025-05-13 01:11:51'),
-(33, 2, 15, 'Regular', 64.32, '2025-04-25 01:11:51', '2025-05-13 01:11:51'),
-(34, 2, 18, 'Regular', 87.80, '2025-03-10 01:11:51', '2025-05-14 01:11:51'),
-(35, 6, 8, 'Regular', 56.15, '2025-05-06 01:11:51', '2025-05-13 01:11:51'),
-(36, 6, 15, 'Senior', 98.01, '2025-04-05 01:11:51', '2025-05-14 01:11:51'),
-(37, 6, 18, 'Senior', 69.85, '2025-03-23 01:11:51', '2025-05-17 01:11:51'),
-(38, 8, 8, 'One-way', 50.00, '2025-05-15 19:13:00', '2025-05-16 19:10:00'),
-(39, 8, 8, 'One-way', 50.00, '2025-05-15 19:13:55', '2025-05-16 19:13:00'),
-(40, 10, 2, 'One-way', 50.00, '2025-05-15 20:48:02', '2025-05-16 20:47:00'),
-(41, 10, 1, 'One-way', 50.00, '2025-05-15 21:17:55', '2025-05-16 21:17:00');
+INSERT INTO `tickets` (`id`, `user_id`, `ferry_id`, `ticket_type`, `amount`, `purchase_date`, `valid_until`, `origin_station_id`, `destination_station_id`) VALUES
+(2, 2, 2, 'Student', 15.00, '2025-05-11 17:41:14', '2025-05-11 23:59:00', NULL, NULL),
+(3, 3, 3, 'Senior', 10.00, '2025-05-11 17:41:14', '2025-05-11 23:59:00', NULL, NULL),
+(4, 1, 1, 'Regular', 25.00, '2025-05-11 17:54:14', '2025-06-01 23:59:00', NULL, NULL),
+(5, 2, 2, 'Student', 15.00, '2025-05-11 17:54:14', '2025-06-05 23:59:00', NULL, NULL),
+(46, 8, 18, 'One-way', 40.00, '2025-05-16 20:21:23', '2025-05-17 20:21:00', 3, 1),
+(47, 8, 2, 'Special', 60.00, '2025-05-16 20:25:17', '2025-05-17 20:24:00', 1, 3),
+(48, 8, 1, 'One-way', 40.00, '2025-05-16 20:28:31', '2025-05-17 20:28:00', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -1011,7 +1116,7 @@ INSERT INTO `users` (`id`, `full_name`, `birth_date`, `profile_image`, `email`, 
 (4, 'Juan Dela Cruz', '1990-05-10', NULL, 'juan1@example.com', '09171234567', '', 'QRJUAN001', '2025-05-12 01:11:30', '2025-12-31 00:00:00', 1, NULL, '2025-05-11 17:11:30'),
 (5, 'Maria Clara', '1985-08-15', NULL, 'maria@example.com', '09181234567', '', 'QRMARIA002', '2025-05-12 01:11:30', '2025-12-31 00:00:00', 1, NULL, '2025-05-11 17:11:30'),
 (6, 'Pedro Penduko', '2000-01-01', NULL, 'pedro@example.com', '09191234567', '', 'QRPEDRO003', '2025-05-12 01:11:30', '2025-12-31 00:00:00', 1, NULL, '2025-05-11 17:11:30'),
-(8, 'Exusiai', '2000-03-02', 'uploads/6824717346d65_exu.jpg', 'exu@arknights.com', '12323541235', '$2y$10$ZylCVpCm.TqzXlNGfxAkVO.jyMEroKmfDRw8WDP46nXc4d8abrqLi', 'TIX-imj8bkdx3akfgdnu7pp1', '2025-05-14 12:33:23', '2026-05-14 00:00:00', 1, '2025-05-15 20:26:17', '2025-05-14 10:33:23'),
+(8, 'Exusiai', '2000-03-02', 'uploads/6824717346d65_exu.jpg', 'exu@arknights.com', '12323541235', '$2y$10$ZylCVpCm.TqzXlNGfxAkVO.jyMEroKmfDRw8WDP46nXc4d8abrqLi', 'TIX-imj8bkdx3akfgdnu7pp1', '2025-05-14 12:33:23', '2026-05-14 00:00:00', 1, '2025-05-16 23:08:41', '2025-05-14 10:33:23'),
 (10, 'Nearl', '2000-03-12', 'uploads/6825cd82129bb_nearl.jpg', 'nearl@ark.com', '1234567890', '$2y$10$/lyx1VQ5.XMSdoaJos0TaOqbUxNaOFHd.Q421vQAUhyuB3ZyZ95t6', 'TIX-sf6yvr4v46skbg063k2tyc', '2025-05-15 13:18:26', '2026-05-15 00:00:00', 1, '2025-05-15 20:28:21', '2025-05-15 11:18:26');
 
 --
@@ -1139,7 +1244,9 @@ ALTER TABLE `tickets`
   ADD KEY `idx_tickets_user` (`user_id`),
   ADD KEY `idx_tickets_ferry` (`ferry_id`),
   ADD KEY `idx_tickets_purchase` (`purchase_date`),
-  ADD KEY `idx_tickets_valid` (`valid_until`);
+  ADD KEY `idx_tickets_valid` (`valid_until`),
+  ADD KEY `fk_origin_station` (`origin_station_id`),
+  ADD KEY `fk_destination_station` (`destination_station_id`);
 
 --
 -- Indexes for table `upstream_schedules`
@@ -1208,7 +1315,7 @@ ALTER TABLE `ferry_logs`
 -- AUTO_INCREMENT for table `ferry_routes`
 --
 ALTER TABLE `ferry_routes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=121;
 
 --
 -- AUTO_INCREMENT for table `ferry_safety_equipment`
@@ -1220,7 +1327,7 @@ ALTER TABLE `ferry_safety_equipment`
 -- AUTO_INCREMENT for table `ferry_stations`
 --
 ALTER TABLE `ferry_stations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `ferry_stops`
@@ -1244,13 +1351,13 @@ ALTER TABLE `repair_logs`
 -- AUTO_INCREMENT for table `staff_users`
 --
 ALTER TABLE `staff_users`
-  MODIFY `staff_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=207;
+  MODIFY `staff_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=208;
 
 --
 -- AUTO_INCREMENT for table `tickets`
 --
 ALTER TABLE `tickets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT for table `upstream_schedules`
@@ -1316,8 +1423,14 @@ ALTER TABLE `repair_logs`
 -- Constraints for table `tickets`
 --
 ALTER TABLE `tickets`
+  ADD CONSTRAINT `fk_destination_station` FOREIGN KEY (`destination_station_id`) REFERENCES `ferry_stations` (`id`),
+  ADD CONSTRAINT `fk_ferry` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`),
+  ADD CONSTRAINT `fk_origin_station` FOREIGN KEY (`origin_station_id`) REFERENCES `ferry_stations` (`id`),
+  ADD CONSTRAINT `fk_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `tickets_ibfk_2` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`);
+  ADD CONSTRAINT `tickets_ibfk_2` FOREIGN KEY (`ferry_id`) REFERENCES `ferries` (`id`),
+  ADD CONSTRAINT `tickets_ibfk_3` FOREIGN KEY (`origin_station_id`) REFERENCES `ferry_stations` (`id`),
+  ADD CONSTRAINT `tickets_ibfk_4` FOREIGN KEY (`destination_station_id`) REFERENCES `ferry_stations` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
