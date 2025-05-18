@@ -714,9 +714,18 @@ $conn->close();
         
         function updateClock() {
             const now = new Date();
+            const options = { 
+                weekday: 'long',
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            };
             const timeString = now.toLocaleTimeString();
-            const dateString = now.toLocaleDateString();
-            document.getElementById("clock").textContent = `${dateString} | ${timeString}`;
+            const dateString = now.toLocaleDateString('en-US', options);
+            document.getElementById("clock").innerHTML = `<i class="far fa-clock"></i> ${dateString}`;
         }
 
         setInterval(updateClock, 1000);

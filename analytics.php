@@ -605,7 +605,7 @@ $conn->close();
             };
             const timeString = now.toLocaleTimeString();
             const dateString = now.toLocaleDateString('en-US', options);
-            document.getElementById("clock").innerHTML = `<i class="far fa-clock"></i> ${dateString} | ${timeString}`;
+            document.getElementById("clock").innerHTML = `<i class="far fa-clock"></i> ${dateString}`;
         }
         function exportPDF() {
             const reportType = document.getElementById('reportType').value;

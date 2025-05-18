@@ -47,7 +47,8 @@ $passenger_sql = "SELECT SUM(current_capacity) AS total_passengers FROM ferries"
 $passenger_result = $conn->query($passenger_sql);
 $total_passengers = $passenger_result->fetch_assoc()['total_passengers'] ?? 0;
 
-$passes_sql = "SELECT COUNT(*) AS active_passes FROM passenger_id_pass WHERE is_active = 1 AND expires_at > NOW()";
+// Change here: Using users table instead of passenger_id_pass
+$passes_sql = "SELECT COUNT(*) AS active_passes FROM users WHERE is_active = 1 AND expires_at > NOW()";
 $passes_result = $conn->query($passes_sql);
 $active_passes = $passes_result->fetch_assoc()['active_passes'] ?? 0;
 
@@ -154,31 +155,27 @@ $conn->close();
                     <div id="clock" style="margin-bottom: 20px; font-size: 16px; color: #00b0ff;"></div>
                 </div>
 <div class="stats">
-<div class="stat-box">
-    <h2>Total Passengers</h2>
-    <p><?= $total_passengers ?></p>
-    <div class="stat-change">↑ based on records</div>
-</div>
-
-<div class="stat-box">
-    <h2>Active Passes</h2>
-    <p><?= $active_passes ?></p>
-    <div class="stat-change">Currently Valid</div>
-</div>
-
-<div class="stat-box">
-    <h2>Active Ferries</h2>
-    <p><?= $active_ferries ?></p>
-    <div class="stat-change">In Operation Now</div>
-</div>
-
-<div class="stat-box">
-    <h2>Average Occupancy</h2>
-    <p><?= $occupancy_percentage ?>%</p>
-    <div class="stat-change">Capacity Utilization</div>
-</div>
-</div>
-
+                    <div class="stat-box">
+                        <h2><i class="fas fa-users"></i> Total Passengers</h2>
+                        <p><?= $total_passengers ?></p>
+                        <div class="stat-change">↑ based on records</div>
+                    </div>
+                    <div class="stat-box">
+                        <h2><i class="fas fa-id-card"></i> Active Passes</h2>
+                        <p><?= $active_passes ?></p>
+                        <div class="stat-change">Currently Valid</div>
+                    </div>
+                    <div class="stat-box">
+                        <h2><i class="fas fa-ship"></i> Active Ferries</h2>
+                        <p><?= $active_ferries ?></p>
+                        <div class="stat-change">In Operation Now</div>
+                    </div>
+                    <div class="stat-box">
+                        <h2><i class="fas fa-percentage"></i> Average Occupancy</h2>
+                        <p><?= $occupancy_percentage ?>%</p>
+                        <div class="stat-change">Capacity Utilization</div>
+                    </div>
+                </div>
 
 <!-- Tracking section with ferry list and map side by side -->
 <div class="tracking">
@@ -439,11 +436,20 @@ ferryStations.forEach(station => {
 setInterval(fetchStatsData, 1000); // every 5 seconds
 fetchStatsData(); // also run immediately
 function updateClock() {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString();
-    const dateString = now.toLocaleDateString();
-    document.getElementById("clock").textContent = `${dateString} | ${timeString}`;
-  }
+            const now = new Date();
+            const options = { 
+                weekday: 'long',
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            };
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString('en-US', options);
+            document.getElementById("clock").innerHTML = `<i class="far fa-clock"></i> ${dateString}`;
+        }
 
   setInterval(updateClock, 1000);
   updateClock(); // run once on load

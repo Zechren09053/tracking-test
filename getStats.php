@@ -17,7 +17,8 @@ $passenger_sql = "SELECT SUM(current_capacity) AS total_passengers FROM ferries"
 $passenger_result = $conn->query($passenger_sql);
 $response['total_passengers'] = $passenger_result->fetch_assoc()['total_passengers'] ?? 0;
 
-$passes_sql = "SELECT COUNT(*) AS active_passes FROM passenger_id_pass WHERE is_active = 1 AND expires_at > NOW()";
+// Changed from passenger_id_pass to users table
+$passes_sql = "SELECT COUNT(*) AS active_passes FROM users WHERE is_active = 1 AND expires_at > NOW()";
 $passes_result = $conn->query($passes_sql);
 $response['active_passes'] = $passes_result->fetch_assoc()['active_passes'] ?? 0;
 
