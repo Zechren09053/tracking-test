@@ -1,0 +1,37 @@
+  <!-- User sidebar -->
+  <div class="sidebar" id="userSidebar">
+    <div class="sidebar-header">
+      <h2>User Profile</h2>
+      <button class="close-btn" onclick="toggleSidebar('userSidebar')">×</button>
+    </div>
+    <div class="user-info">
+      <div class="user-avatar">JP</div>
+      
+      <div class="user-details">
+        <div class="user-detail">
+          <div class="detail-label">Name</div>
+          <div class="detail-value">John Peterson</div>
+        </div>
+        
+        <div class="user-detail">
+          <div class="detail-label">Username</div>
+          <div class="detail-value">john_p</div>
+        </div>
+        
+        <div class="user-detail">
+          <div class="detail-label">Account Number</div>
+          <div class="detail-value">ACC-12345678</div>
+        </div>
+        
+        <div class="user-detail">
+          <div class="detail-label">Email</div>
+          <div class="detail-value">john.peterson@example.com</div>
+        </div>
+        
+        <div class="user-detail">
+          <div class="detail-label">Contact Number</div>
+          <div class="detail-value">+1 (555) 123-4567</div>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,21 @@
+{
+    "name": "onyx/trackingtest",
+    "description": "PRFS 2fa",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Onyx\\Trackingtest\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "HOWIE",
+            "email": "severinokenji@gmail.com"
+        }
+    ],
+    "require": {
+        "spomky-labs/otphp": "^11.3",
+        "endroid/qr-code": "^6.0",
+        "phpmailer/phpmailer": "^6.10"
+    }
+}

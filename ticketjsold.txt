@@ -1,0 +1,916 @@
+document.addEventListener('DOMContentLoaded', function() {
+    // Elements - Adding null checks
+    const startButton = document.getElementById('startButton');
+    const stopButton = document.getElementById('stopButton');
+    const switchCameraButton = document.getElementById('switchCameraButton');
+    const userInfoSection = document.getElementById('userInfo');
+    const ticketForm = document.getElementById('ticketForm');
+    const createTicketForm = document.getElementById('createTicketForm');
+    const loadingSection = document.getElementById('loading');
+    const receiptSection = document.getElementById('receipt');
+    const printReceiptButton = document.getElementById('printReceipt');
+    const newTicketButton = document.getElementById('newTicket');
+    const manualCodeInput = document.getElementById('manualCode');
+    const submitManualCodeButton = document.getElementById('submitManualCode');
+    const scannerStatus = document.getElementById('scannerStatus');
+    const originSelect = document.getElementById('originSelect');
+    const destinationSelect = document.getElementById('destinationSelect');
+    const routeSelect = document.getElementById('routeSelect');
+    const ticketTypeSelect = document.getElementById('ticketType');
+    const passengerTypeSelect = document.getElementById('passengerType');
+    const amountInput = document.getElementById('amount');
+    const baseAmountInput = document.getElementById('baseAmount');
+    
+    // QR Scanner instance
+    let html5QrCode = null;
+    let currentCamera = 'environment'; // Start with back camera
+    
+    // Check if HTML5QrCode is available
+    if (typeof Html5Qrcode !== 'undefined') {
+        // Check for camera support
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length > 1 && switchCameraButton) {
+                switchCameraButton.style.display = 'inline-block';
+            }
+        }).catch(err => {
+            console.warn("Error getting cameras", err);
+        });
+    } else {
+        console.warn("Html5Qrcode library not found. QR scanning will not work.");
+        if (scannerStatus) {
+            showStatusMessage('QR scanner library not loaded. Please check your internet connection.', 'error');
+        }
+    }
+    
+    // Ferry and Route data
+    let ferries = [];
+    let routes = [];
+    let stations = [];
+    
+    // Load ferry and route data when page loads
+    fetchFerryData();
+    fetchRouteData();
+    fetchStationData();
+    
+    // Set default valid until date (24 hours from now)
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const validUntilDateInput = document.getElementById('validUntilDate');
+    if (validUntilDateInput) {
+        validUntilDateInput.value = formatDatetimeLocal(tomorrow);
+    }
+    
+    // Initialize event listeners (with null checks)
+    if (startButton) {
+        startButton.addEventListener('click', function() {
+            initializeScanner();
+        });
+    }
+    
+    if (stopButton) {
+        stopButton.addEventListener('click', function() {
+            stopScanner();
+        });
+    }
+    
+    if (switchCameraButton) {
+        switchCameraButton.addEventListener('click', function() {
+            toggleCamera();
+        });
+    }
+    
+    // Handle form submission
+    if (createTicketForm) {
+        createTicketForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveTicket();
+        });
+    }
+    
+    // Print receipt
+    if (printReceiptButton) {
+        printReceiptButton.addEventListener('click', function() {
+            window.print();
+        });
+    }
+    
+    // New ticket button
+    if (newTicketButton) {
+        newTicketButton.addEventListener('click', function() {
+            resetForm();
+        });
+    }
+    
+    // Manual code entry
+    if (submitManualCodeButton && manualCodeInput) {
+        submitManualCodeButton.addEventListener('click', function() {
+            const manualCode = manualCodeInput.value.trim();
+            if (manualCode) {
+                processQRCode(manualCode);
+                manualCodeInput.value = '';
+            } else {
+                showStatusMessage('Please enter a QR code value', 'error');
+            }
+        });
+    }
+    
+    // Initialize QR Scanner function
+    function initializeScanner() {
+        // Check if the HTML5QrCode library is available
+        if (typeof Html5Qrcode === 'undefined') {
+            showStatusMessage('QR scanner library not loaded. Please check your internet connection.', 'error');
+            return;
+        }
+        
+        // Clear any previous instances
+        if (html5QrCode && html5QrCode.isScanning) {
+            stopScanner();
+            return;
+        }
+        
+        // Create new instance if needed
+        if (!html5QrCode) {
+            const readerElement = document.getElementById('reader');
+            if (!readerElement) {
+                showStatusMessage('QR scanner container not found. Please check your HTML.', 'error');
+                return;
+            }
+            html5QrCode = new Html5Qrcode("reader");
+        }
+        
+        showStatusMessage('Starting camera...', 'info');
+        
+        // Improved scanner configuration
+        const config = {
+            fps: 10,
+            qrbox: {
+                width: 240,
+                height: 240
+            },
+            experimentalFeatures: {
+                useBarCodeDetectorIfSupported: true
+            },
+            formatsToSupport: [
+                Html5QrcodeSupportedFormats.QR_CODE,
+                Html5QrcodeSupportedFormats.DATA_MATRIX
+            ]
+        };
+        
+        html5QrCode.start(
+            { facingMode: currentCamera },
+            config,
+            onScanSuccess,
+            onScanFailure
+        ).then(() => {
+            // Scanner started successfully
+            if (startButton) startButton.style.display = 'none';
+            if (stopButton) stopButton.style.display = 'inline-block';
+            showStatusMessage('Scanner ready! Point at a QR code.', 'success');
+        }).catch(err => {
+            console.error("QR Scanner initialization failed", err);
+            showStatusMessage('Camera access failed. Please check permissions.', 'error');
+            
+            // Reset scanner state
+            html5QrCode = null;
+            if (startButton) startButton.style.display = 'inline-block';
+            if (stopButton) stopButton.style.display = 'none';
+        });
+    }
+    
+    // Stop scanner
+    function stopScanner() {
+        if (html5QrCode && html5QrCode.isScanning) {
+            html5QrCode.stop().then(() => {
+                if (startButton) startButton.style.display = 'inline-block';
+                if (stopButton) stopButton.style.display = 'none';
+                showStatusMessage('Scanner stopped', 'info');
+            }).catch(err => {
+                console.error("Error stopping scanner:", err);
+            });
+        }
+    }
+    
+    // Toggle between front and back camera
+    function toggleCamera() {
+        if (html5QrCode && html5QrCode.isScanning) {
+            html5QrCode.stop().then(() => {
+                currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
+                showStatusMessage(`Switching to ${currentCamera === 'environment' ? 'back' : 'front'} camera...`, 'info');
+                initializeScanner();
+            }).catch(err => {
+                console.error("Error stopping scanner:", err);
+            });
+        } else {
+            currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
+            initializeScanner();
+        }
+    }
+    
+    // Display status message
+    function showStatusMessage(message, type) {
+        if (!scannerStatus) return;
+        
+        scannerStatus.textContent = message;
+        scannerStatus.className = 'status-message';
+        scannerStatus.classList.add(`status-${type}`);
+        scannerStatus.style.display = 'block';
+        
+        // Hide message after 5 seconds if it's just informational
+        if (type === 'info' || type === 'success') {
+            setTimeout(() => {
+                scannerStatus.style.display = 'none';
+            }, 5000);
+        }
+    }
+    
+    // QR Code success callback
+    function onScanSuccess(qrCodeMessage) {
+        // Play success sound
+        const successSound = new Audio('data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAAwAAAbAAuLi4uLi4uLi4uLi4uLi4uLjV1dXV1dXV1dXV1dXV1dXV1fLy8vLy8vLy8vLy8vLy8vLy////////////////////////////////////////AAAAAExhdmM1OC4xMwAAAAAAAAAAAAAAACQDgAAAAAAAAAGwsqjgzAAAAAAAAAAAAAAAAAAAAP/jOMQAA+gBAASgAAAAQQjKCC3EAQBAEAwMDFYYNCw0NTi6pKS9ywsLDX//////9xcXFzMzMz09PUhIT2tra4SEhI+QkJ+fn6Ojo7Ozs8zMzMzMzMzMzMzMzAAAAAAAAAAAAAD/4zjOABOkgQAAhAAAAEGIihgxxAEAQBAMDFYYNCw0NTi6pKS9ywsDa4sLC31//////9xcXFzMzMz09PUhIT2tra4SEhI+QkJ+fn6Ojo7Ozs8zMzMzMzMzMzMzMzAAAAAAAAAAAAD/4zjMAAr0AQABgAAAAEFQyogtxAEAQBAMDFYYNCw0NTi6urq3jgItkywxLDQvjgItkywxLDQv');
+        successSound.play().catch(err => {
+            // Ignore error - some browsers block autoplay
+        });
+        
+        // Stop scanning once we get a result
+        stopScanner();
+        
+        showStatusMessage('QR code detected!', 'success');
+        
+        // Process the QR code data
+        processQRCode(qrCodeMessage);
+    }
+    
+    // QR Code failure callback
+    function onScanFailure(error) {
+        // We don't need to show errors for each frame
+        // Only show serious errors
+        if (error && error.toString().includes('NotAllowedError')) {
+            showStatusMessage('Camera permission denied. Please allow camera access.', 'error');
+            stopScanner();
+        }
+    }
+    
+    // Process QR Code data
+    function processQRCode(qrData) {
+        // Show loading
+        if (loadingSection) loadingSection.style.display = 'block';
+        showStatusMessage('Processing QR code...', 'info');
+        
+        // Fetch user data based on QR code
+        fetchUserData(qrData)
+            .then(userData => {
+                if (userData) {
+                    displayUserInfo(userData);
+                    const userIdInput = document.getElementById('userId');
+                    if (userIdInput) {
+                        userIdInput.value = userData.id;
+                    }
+                    
+                    // Show ticket form
+                    if (ticketForm) ticketForm.style.display = 'block';
+                    
+                    // Hide loading
+                    if (loadingSection) loadingSection.style.display = 'none';
+                    showStatusMessage('User found!', 'success');
+                }
+            })
+            .catch(error => {
+                console.error("Error processing QR code:", error);
+                showStatusMessage('Error processing QR code: ' + error.message, 'error');
+                if (loadingSection) loadingSection.style.display = 'none';
+            });
+    }
+    
+    // Fetch user data using QR code
+    function fetchUserData(qrData) {
+        return new Promise((resolve, reject) => {
+            try {
+                fetch('get_user_by_qr.php?action=get_user&qr_code=' + encodeURIComponent(qrData))
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Server error: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            resolve(data.user);
+                        } else {
+                            showStatusMessage(data.message || "Error retrieving user data", 'error');
+                            reject(new Error(data.message || "Error retrieving user data"));
+                        }
+                    })
+                    .catch(error => {
+                        console.error("API call failed:", error);
+                        reject(error);
+                    });
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+    
+    // Display user information
+    function displayUserInfo(userData) {
+        const fullNameElement = document.getElementById('fullName');
+        const userEmailElement = document.getElementById('userEmail');
+        const userPhoneElement = document.getElementById('userPhone');
+        const validUntilElement = document.getElementById('validUntil');
+        
+        if (fullNameElement) fullNameElement.textContent = userData.full_name;
+        if (userEmailElement) userEmailElement.textContent = userData.email;
+        if (userPhoneElement) userPhoneElement.textContent = userData.phone_number;
+        if (validUntilElement) validUntilElement.textContent = formatDate(new Date(userData.expires_at));
+        
+        if (userInfoSection) userInfoSection.style.display = 'block';
+    }
+    
+    // Save ticket function - updated version to match API changes
+    function saveTicket() {
+        // Show loading
+        if (ticketForm) ticketForm.style.display = 'none';
+        if (loadingSection) loadingSection.style.display = 'block';
+        
+        // Get form data
+        const formData = new FormData(createTicketForm);
+        
+        // Get passenger type data
+        const passengerTypeElement = document.getElementById('passengerType');
+        const baseAmountElement = document.getElementById('baseAmount');
+        
+        if (!passengerTypeElement || !baseAmountElement) {
+            showStatusMessage("Required form elements are missing", 'error');
+            if (loadingSection) loadingSection.style.display = 'none';
+            if (ticketForm) ticketForm.style.display = 'block';
+            return;
+        }
+        
+        const passengerType = passengerTypeElement.value;
+        const baseAmount = baseAmountElement.value;
+        const discountRate = discountRates[passengerType] || 0;
+        
+        formData.append('passenger_type', passengerType);
+        formData.append('base_amount', baseAmount);
+        formData.append('discount_rate', discountRate);
+        
+        // Check if routeSelect exists
+        if (!routeSelect) {
+            showStatusMessage("Route select element not found", 'error');
+            if (loadingSection) loadingSection.style.display = 'none';
+            if (ticketForm) ticketForm.style.display = 'block';
+            return;
+        }
+        
+        // Get the route information
+        const selectedRouteId = parseInt(routeSelect.value);
+        
+        // Find the selected route object from our routes array
+        const selectedRoute = routes.find(route => route.id == selectedRouteId);
+        
+        if (!selectedRoute) {
+            showStatusMessage("Please select a valid route", 'error');
+            if (loadingSection) loadingSection.style.display = 'none';
+            if (ticketForm) ticketForm.style.display = 'block';
+            return;
+        }
+        
+        // Check if origin and destination selects exist
+        if (!originSelect || !destinationSelect) {
+            showStatusMessage("Origin or destination select elements not found", 'error');
+            if (loadingSection) loadingSection.style.display = 'none';
+            if (ticketForm) ticketForm.style.display = 'block';
+            return;
+        }
+        
+        // Get origin and destination station IDs
+        const originId = parseInt(originSelect.value);
+        const destinationId = parseInt(destinationSelect.value);
+        
+        if (!originId || !destinationId) {
+            showStatusMessage("Please select origin and destination stations", 'error');
+            if (loadingSection) loadingSection.style.display = 'none';
+            if (ticketForm) ticketForm.style.display = 'block';
+            return;
+        }
+        
+        console.log("Selected route:", selectedRoute);
+        
+        // Add route information to form data
+        formData.append('route_id', selectedRouteId);
+        formData.append('origin_id', originId);
+        formData.append('destination_id', destinationId);
+        
+        console.log("Form data prepared, sending to server...");
+        
+        // Send ticket data to server  
+        fetch('get_user_by_qr.php?action=save_ticket', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            console.log("Server response received");
+            if (!response.ok) {
+                throw new Error('Server error: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Response data:", data);
+            
+            if (data.success) {
+                const ticketDetails = data.ticket_details;
+                
+                // Update receipt information - with null checks
+                const receiptElements = {
+                    receiptTicketId: document.getElementById('receiptTicketId'),
+                    receiptName: document.getElementById('receiptName'),
+                    receiptPassengerType: document.getElementById('receiptPassengerType'),
+                    receiptFerry: document.getElementById('receiptFerry'),
+                    receiptRoute: document.getElementById('receiptRoute'),
+                    receiptOrigin: document.getElementById('receiptOrigin'),
+                    receiptDestination: document.getElementById('receiptDestination'),
+                    receiptTicketType: document.getElementById('receiptTicketType'),
+                    receiptAmount: document.getElementById('receiptAmount'),
+                    receiptDate: document.getElementById('receiptDate'),
+                    receiptValidUntil: document.getElementById('receiptValidUntil'),
+                    receiptDiscountRow: document.getElementById('receiptDiscountRow'),
+                    receiptDiscount: document.getElementById('receiptDiscount')
+                };
+                
+                // Update receipt elements if they exist
+                if (receiptElements.receiptTicketId) 
+                    receiptElements.receiptTicketId.textContent = data.ticket_id;
+                
+                if (receiptElements.receiptName) 
+                    receiptElements.receiptName.textContent = ticketDetails.full_name;
+                
+                if (receiptElements.receiptPassengerType) 
+                    receiptElements.receiptPassengerType.textContent = passengerType;
+                
+                if (receiptElements.receiptFerry) 
+                    receiptElements.receiptFerry.textContent = ticketDetails.ferry_name + ' (' + ticketDetails.ferry_code + ')';
+                
+                if (receiptElements.receiptRoute) 
+                    receiptElements.receiptRoute.textContent = ticketDetails.route_name;
+                
+                if (receiptElements.receiptOrigin && ticketDetails.origin_name) 
+                    receiptElements.receiptOrigin.textContent = ticketDetails.origin_name;
+                
+                if (receiptElements.receiptDestination && ticketDetails.destination_name) 
+                    receiptElements.receiptDestination.textContent = ticketDetails.destination_name;
+                
+                if (receiptElements.receiptTicketType) 
+                    receiptElements.receiptTicketType.textContent = ticketDetails.ticket_type;
+                
+                if (receiptElements.receiptAmount) 
+                    receiptElements.receiptAmount.textContent = 'PHP ' + parseFloat(ticketDetails.amount).toFixed(2);
+                
+                if (receiptElements.receiptDate) 
+                    receiptElements.receiptDate.textContent = formatDate(new Date(ticketDetails.purchase_date));
+                
+                if (receiptElements.receiptValidUntil) 
+                    receiptElements.receiptValidUntil.textContent = formatDate(new Date(ticketDetails.valid_until));
+                
+                // Show discount information if a discount was applied
+                if (receiptElements.receiptDiscountRow && 
+                    receiptElements.receiptDiscount && 
+                    discountRate > 0) {
+                    receiptElements.receiptDiscount.textContent = `${(discountRate * 100).toFixed(0)}% off`;
+                    receiptElements.receiptDiscountRow.style.display = 'flex';
+                } else if (receiptElements.receiptDiscountRow) {
+                    receiptElements.receiptDiscountRow.style.display = 'none';
+                }
+                
+                // Hide loading and show receipt
+                if (loadingSection) loadingSection.style.display = 'none';
+                if (receiptSection) receiptSection.style.display = 'block';
+                showStatusMessage('Ticket issued successfully!', 'success');
+            } else {
+                // Show error
+                showStatusMessage(data.message || "Error saving ticket", 'error');
+                if (loadingSection) loadingSection.style.display = 'none';
+                if (ticketForm) ticketForm.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error("Error saving ticket:", error);
+            showStatusMessage("Error saving ticket. Please try again.", 'error');
+            if (loadingSection) loadingSection.style.display = 'none';
+            if (ticketForm) ticketForm.style.display = 'block';
+        });
+    }
+    
+    // Reset form for new ticket
+    function resetForm() {
+        // Reset form fields
+        if (createTicketForm) createTicketForm.reset();
+        
+        // Set default valid until date
+        const validUntilDateInput = document.getElementById('validUntilDate');
+        if (validUntilDateInput) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            validUntilDateInput.value = formatDatetimeLocal(tomorrow);
+        }
+        
+        // Hide receipt and show starting sections
+        if (receiptSection) receiptSection.style.display = 'none';
+        if (userInfoSection) userInfoSection.style.display = 'none';
+        if (ticketForm) ticketForm.style.display = 'none';
+        
+        // Show start scanner button
+        if (startButton) startButton.style.display = 'inline-block';
+        if (stopButton) stopButton.style.display = 'none';
+        
+        // Clear manual code input
+        if (manualCodeInput) manualCodeInput.value = '';
+        
+        // Clear status message
+        if (scannerStatus) scannerStatus.style.display = 'none';
+    }
+    
+    // Fetch ferry data
+    function fetchFerryData() {
+        // Fetch ferries from API
+        fetch('get_user_by_qr.php?action=get_ferries')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server error: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    ferries = data.ferries;
+                    
+                    // Populate ferry select
+                    const ferrySelect = document.getElementById('ferrySelect');
+                    if (!ferrySelect) {
+                        console.error("Element with ID 'ferrySelect' not found");
+                        return;
+                    }
+                    
+                    ferrySelect.innerHTML = '<option value="">-- Select Ferry --</option>';
+                    
+                    ferries.forEach(ferry => {
+                        const option = document.createElement('option');
+                        option.value = ferry.id;
+                        // Use ferry_code instead of code for better compatibility with API
+                        const ferryName = ferry.name || 'Unknown';
+                        const ferryCode = ferry.ferry_code || '';
+                        option.textContent = ferryCode ? `${ferryName} (${ferryCode})` : ferryName;
+                        ferrySelect.appendChild(option);
+                    });
+                } else {
+                    console.error("Error fetching ferries:", data.message);
+                    showStatusMessage("Error loading ferry data", 'error');
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching ferries:", error);
+                showStatusMessage("Error loading ferry data", 'error');
+            });
+    }
+    
+    // Fetch station data
+    function fetchStationData() {
+        // Fetch stations from API
+        fetch('get_user_by_qr.php?action=get_stations')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server error: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    stations = data.stations;
+                    
+                    // Update both origin and destination dropdowns
+                    populateStationDropdowns();
+                } else {
+                    console.error("Error fetching stations:", data.message);
+                    showStatusMessage("Error loading station data", 'error');
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching stations:", error);
+                showStatusMessage("Error loading station data", 'error');
+            });
+    }
+    
+    // Populate station dropdowns (origin and destination)
+    function populateStationDropdowns() {
+        // Check if select elements exist
+        if (!originSelect || !destinationSelect) {
+            console.error("Origin or destination select elements not found");
+            return;
+        }
+        
+        // Clear existing options first
+        originSelect.innerHTML = '<option value="">-- Select Origin --</option>';
+        destinationSelect.innerHTML = '<option value="">-- Select Destination --</option>';
+        
+        // Add station options to both dropdowns
+        stations.forEach(station => {
+            // For origin dropdown
+            const originOption = document.createElement('option');
+            originOption.value = station.id;
+            originOption.textContent = station.station_name;
+            originSelect.appendChild(originOption);
+            
+            // For destination dropdown
+            const destOption = document.createElement('option');
+            destOption.value = station.id;
+            destOption.textContent = station.station_name;
+            destinationSelect.appendChild(destOption);
+        });
+    }
+    
+    // Route select change handler
+    if (routeSelect) {
+        routeSelect.addEventListener('change', function() {
+            const routeId = parseInt(this.value);
+            const selectedRoute = routes.find(route => route.id == routeId);
+            
+            if (selectedRoute) {
+                // If the route has origin_id and destination_id, auto-select them in dropdowns
+                if (selectedRoute.origin_id && selectedRoute.destination_id) {
+                    if (originSelect) originSelect.value = selectedRoute.origin_id;
+                    if (destinationSelect) destinationSelect.value = selectedRoute.destination_id;
+                }
+                
+                // Update prices based on the selected route
+                updatePriceBasedOnRoute(selectedRoute);
+            }
+            
+            // Trigger the ticket type change event to recalculate prices
+            if (ticketTypeSelect) {
+                const event = new Event('change');
+                ticketTypeSelect.dispatchEvent(event);
+            }
+        });
+    } else {
+        console.warn("Route select element not found. Route selection will not work.");
+    }
+    
+    // Update price based on selected route
+    function updatePriceBasedOnRoute(route) {
+        if (!ticketTypeSelect) {
+            console.warn("Ticket type select element not found");
+            return;
+        }
+        
+        const ticketType = ticketTypeSelect.value;
+        
+        // Set default prices based on ticket type
+        let defaultPrice = 0;
+        
+        switch(ticketType) {
+            case 'One-way':
+                defaultPrice = 50.00;
+                break;
+            case 'Round-trip':
+                defaultPrice = 90.00;
+                break;
+            case 'Multi-pass':
+                defaultPrice = 200.00;
+                break;
+            case 'Special':
+                defaultPrice = 75.00;
+                break;
+        }
+        
+        // Apply route price multiplier if available
+        if (route && route.price_multiplier) {
+            defaultPrice *= parseFloat(route.price_multiplier);
+        }
+        
+        // Update base amount field
+        if (baseAmountInput) {
+            baseAmountInput.value = defaultPrice.toFixed(2);
+        }
+        
+        // Calculate the discounted price
+        calculateDiscountedPrice();
+    }
+    
+    // Fetch route data with improved handling for the API changes
+    function fetchRouteData() {
+        // Fetch routes from API
+        fetch('get_user_by_qr.php?action=get_routes')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server error: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Route data received:", data);
+                
+                if (data.success) {
+                    routes = data.routes;
+                    
+                    // Check if routeSelect exists
+                    if (!routeSelect) {
+                        console.error("Element with ID 'routeSelect' not found");
+                        return;
+                    }
+                    
+                    routeSelect.innerHTML = '<option value="">-- Select Route --</option>';
+                    
+                    // Check if routes is an array
+                    if (!Array.isArray(routes)) {
+                        console.error("Routes data is not an array:", routes);
+                        showStatusMessage("Error: Invalid route data format", 'error');
+                        return;
+                    }
+                    
+                    routes.forEach(route => {
+                        const option = document.createElement('option');
+                        option.value = route.id;
+                        
+                        // Format the route display based on the API structure
+                        if (route.name && route.from && route.to) {
+                            // New format from API
+                            option.textContent = `${route.name} (${route.from} - ${route.to})`;
+                        } else if (route.route_name && route.origin_name && route.destination_name) {
+                            // Alternative new format from API
+                            option.textContent = `${route.route_name} (${route.origin_name} - ${route.destination_name})`;
+                        } else if (route.route_name) {
+                            // Fallback to just showing route name
+                            option.textContent = route.route_name;
+                        } else {
+                            option.textContent = `Route ${route.id}`;
+                        }
+                        
+                       // Completing from where the code cuts off
+                        routeSelect.appendChild(option);
+                    });
+                } else {
+                    console.error("Error fetching routes:", data.message);
+                    showStatusMessage("Error loading route data", 'error');
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching routes:", error);
+                showStatusMessage("Error loading route data", 'error');
+            });
+    }
+    
+    // Ferry select change handler
+    const ferrySelect = document.getElementById('ferrySelect');
+    if (ferrySelect) {
+        ferrySelect.addEventListener('change', function() {
+            const ferryId = parseInt(this.value);
+            
+            // Filter routes for this ferry
+            if (ferryId) {
+                // Check if routeSelect exists
+                if (routeSelect) {
+                    routeSelect.innerHTML = '<option value="">-- Select Route --</option>';
+                    
+                    // Add only routes for this ferry
+                    const ferryRoutes = routes.filter(route => route.ferry_id == ferryId);
+                    ferryRoutes.forEach(route => {
+                        const option = document.createElement('option');
+                        option.value = route.id;
+                        
+                        // Format the route display based on the API structure
+                        if (route.name && route.from && route.to) {
+                            option.textContent = `${route.name} (${route.from} - ${route.to})`;
+                        } else if (route.route_name && route.origin_name && route.destination_name) {
+                            option.textContent = `${route.route_name} (${route.origin_name} - ${route.destination_name})`;
+                        } else if (route.route_name) {
+                            option.textContent = route.route_name;
+                        } else {
+                            option.textContent = `Route ${route.id}`;
+                        }
+                        
+                        routeSelect.appendChild(option);
+                    });
+                }
+            }
+        });
+    }
+    
+    // Ticket type change handler
+    if (ticketTypeSelect) {
+        ticketTypeSelect.addEventListener('change', function() {
+            // Get selected route
+            if (routeSelect) {
+                const routeId = parseInt(routeSelect.value);
+                const selectedRoute = routes.find(route => route.id == routeId);
+                
+                // Update price based on ticket type and route
+                if (selectedRoute) {
+                    updatePriceBasedOnRoute(selectedRoute);
+                } else {
+                    // No route selected, use default prices
+                    const ticketType = this.value;
+                    let defaultPrice = 0;
+                    
+                    switch(ticketType) {
+                        case 'One-way':
+                            defaultPrice = 50.00;
+                            break;
+                        case 'Round-trip':
+                            defaultPrice = 90.00;
+                            break;
+                        case 'Multi-pass':
+                            defaultPrice = 200.00;
+                            break;
+                        case 'Special':
+                            defaultPrice = 75.00;
+                            break;
+                    }
+                    
+                    // Update base amount field
+                    if (baseAmountInput) {
+                        baseAmountInput.value = defaultPrice.toFixed(2);
+                    }
+                    
+                    // Calculate the discounted price
+                    calculateDiscountedPrice();
+                }
+            }
+        });
+    }
+    
+    // Discount rates by passenger type
+    const discountRates = {
+        'Regular': 0,
+        'Senior Citizen': 0.20,
+        'Student': 0.15,
+        'PWD': 0.20,
+        'Child': 0.25,
+        'Government Employee': 0.10
+    };
+    
+    // Passenger type change handler
+    if (passengerTypeSelect) {
+        passengerTypeSelect.addEventListener('change', function() {
+            calculateDiscountedPrice();
+        });
+    }
+    
+    // Base amount change handler
+    if (baseAmountInput) {
+        baseAmountInput.addEventListener('input', function() {
+            calculateDiscountedPrice();
+        });
+    }
+    
+    // Calculate discounted price
+    function calculateDiscountedPrice() {
+        if (!passengerTypeSelect || !baseAmountInput || !amountInput) {
+            console.warn("Required elements for price calculation not found");
+            return;
+        }
+        
+        const passengerType = passengerTypeSelect.value;
+        const baseAmount = parseFloat(baseAmountInput.value) || 0;
+        
+        // Get discount rate for passenger type
+        const discountRate = discountRates[passengerType] || 0;
+        
+        // Calculate discounted amount
+        const discountedAmount = baseAmount * (1 - discountRate);
+        
+        // Update amount field
+        amountInput.value = discountedAmount.toFixed(2);
+    }
+    
+    // Helper function to format date for display
+    function formatDate(date) {
+        if (!(date instanceof Date)) {
+            return 'Invalid Date';
+        }
+        
+        const options = { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        
+        return date.toLocaleDateString('en-US', options);
+    }
+    
+    // Helper function to format date for datetime-local input
+    function formatDatetimeLocal(date) {
+        if (!(date instanceof Date)) {
+            return '';
+        }
+        
+        // Format as YYYY-MM-DDThh:mm
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+});

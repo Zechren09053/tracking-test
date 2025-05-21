@@ -1,0 +1,81 @@
+// Implementation steps to add the search functionality to the website
+
+/**
+ * Step 1: Add the search styles to your CSS file
+ * 
+ * Copy all the styles from the "Search Functionality CSS Styles" artifact
+ * and add them to your existing clstyle.css file.
+ */
+
+/**
+ * Step 2: Add the search JavaScript to your page
+ * 
+ * You have two options:
+ * 
+ * Option A: Add directly in your existing script tag
+ * - Copy the entire code from the "Search Implementation" artifact
+ * - Paste it inside your existing <script> tags before the final closing </script>
+ * 
+ * Option B: Create a separate JS file (recommended)
+ * - Create a new file called search.js
+ * - Copy the entire code from the "Search Implementation" artifact into this file
+ * - Add the following line in your HTML before the closing </body> tag:
+ *   <script src="search.js"></script>
+ */
+
+/**
+ * Step 3: Update your existing search inputs
+ * 
+ * Your website already has search input fields in both the desktop navigation
+ * and mobile sidebar. These are already properly structured for our search
+ * function to work with them.
+ */
+
+/**
+ * Optional Step 4: Track search analytics
+ * 
+ * If you want to track search usage, you could add the following code to the 
+ * performSearch function in the search implementation:
+ * 
+ * // Add this inside the performSearch function
+ * // Track search queries (if you have analytics)
+ * if (typeof gtag === 'function') {
+ *   gtag('event', 'search', {
+ *     search_term: query,
+ *     results_count: results.length
+ *   });
+ * }
+ */
+
+/**
+ * Testing the search functionality:
+ * 
+ * 1. After implementing the changes, open the website in a browser
+ * 2. Click on the search box and type keywords like:
+ *    - "schedule"
+ *    - "fare"
+ *    - "escolta"
+ *    - "route"
+ * 3. Press Enter or click the search button
+ * 4. Verify that relevant search results appear
+ * 5. Click on a search result to navigate to that section
+ * 6. Try searching in both desktop and mobile views
+ */
+
+/**
+ * Known limitations:
+ * 
+ * 1. This is a client-side search implementation that searches only predefined content.
+ * 2. It doesn't search dynamically generated content from PHP (like announcements).
+ * 3. For a more comprehensive search, you'd need a server-side implementation.
+ */
+
+/**
+ * Further enhancements you could consider:
+ * 
+ * 1. Highlight matching text in search results
+ * 2. Add search filters (e.g., by category)
+ * 3. Implement fuzzy matching for typo tolerance
+ * 4. Add search history or recent searches
+ * 5. Implement server-side search for dynamic content
+ */

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferry Tracking</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="index_style.css"> <!-- Link to the external CSS file -->
+</head>
+<body>
+    <div class="container">
+        <h1>Real-Time Ferry Tracking</h1>
+        <div id="ferry-list" class="ferry-list">
+            <!-- Ferry data will be loaded here -->
+        </div>
+    </div>
+
+    
+    <script>
+        // Function to fetch ferry data from the backend (getFerries.php)
+        function fetchFerryData() {
+            $.ajax({
+                url: 'getFerries.php', // The PHP file we created
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $('#ferry-list').empty(); // Clear the list before adding new data
+                    if (data.length === 0) {
+                        $('#ferry-list').append('<p>No ferries are currently available.</p>');
+                    }
+                    data.forEach(function(ferry) {
+                        const ferryElement = `
+                            <div class="ferry">
+                                <h3>${ferry.name}</h3>
+                                <p class="location">Location: Latitude ${ferry.latitude}, Longitude ${ferry.longitude}</p>
+                                <p class="last-updated">Last Updated: ${ferry.last_updated}</p>
+                            </div>
+                        `;
+                        $('#ferry-list').append(ferryElement);
+                    });
+                },
+                error: function() {
+                    $('#ferry-list').html('<p>Sorry, there was an error loading the ferry data.</p>');
+                }
+            });
+        }
+
+        // Call the function every 5 seconds to update the ferry data in real-time
+        setInterval(fetchFerryData, 5000);
+
+        // Initial fetch
+        fetchFerryData();
+    </script>
+    <div id="map" style="width: 100%; height: 400px;"></div>  <!-- This is where the map will go -->
+
+    <!-- Your other HTML content here -->
+
+    <!-- Add your script tags for your custom JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>
+

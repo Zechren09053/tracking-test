@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/359fe47b-bc5a-420d-8417-2d585f3d4ca4/resourceGroups/PRFS_group-a9f8/providers/Microsoft.Web/sites/PRFS",
+    "appService.deploySubpath": "."
+}
