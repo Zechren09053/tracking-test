@@ -247,9 +247,7 @@
                 </tbody>
               </table>
             </div>
-            <div class="scroll-indicator">
-              <span>Scroll to see more stations →</span>
-            </div>
+           
           </div>
 
           <!-- Downstream Table -->
@@ -313,7 +311,7 @@
     </div>
     
     <!-- Insert the map here -->
-    <iframe src="ferry_map.html" width="100%" height="570px" style="border:none; margin-top:20px;"></iframe>
+    <iframe src="ferry_map.html" width="100%" height="800px" style="border:none; margin-top:20px;"></iframe>
     
     <div class="route-info-cards">
       <div class="info-card">
@@ -486,7 +484,7 @@
   <div id="loginModal" class="modal">
     <div class="modal-content">
       <span class="modal-close" onclick="closeLoginModal()">&times;</span>
-      <iframe id="loginFrame" src="clientlogin.php" width="100%" height="600px" frameborder="0"></iframe>
+      <iframe id="loginFrame" src="clientlogin.php" width="100%" height="700px" frameborder="0"></iframe>
     </div>
   </div>
     <!-- Footer -->

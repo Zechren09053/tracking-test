@@ -299,7 +299,7 @@ while($row = mysqli_fetch_assoc($userResult)) {
         <button id="refreshBtn" class="refresh-button" onclick="updateData()">Refresh Now</button>
         <span class="auto-refresh-toggle">
             <input type="checkbox" id="autoRefresh" checked>
-            <label for="autoRefresh">Auto-refresh (10s)</label>
+            <label for="autoRefresh">Auto-refresh (10   s)</label>
         </span>
         <div id="lastUpdate">Last updated: <?= date('M j, Y g:i:s a') ?></div>
     </div>

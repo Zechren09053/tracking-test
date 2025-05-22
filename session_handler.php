@@ -5,7 +5,7 @@
 require_once 'db_connect.php';
 
 
-
+ 
 // Function to update user activity timestamp
 function updateActivityTimestamp($conn) {
     // For regular users
