@@ -1,12 +1,8 @@
 <?php
 session_start();
-if (!isset($_SESSION['staff_id'], $_SESSION['2fa_verified']) || $_SESSION['2fa_verified'] !== true) {
-    header("Location: login.php");
-    exit();
-}
-
 require_once 'db_connect.php';
-
+require_once 'session_handler.php';
+requireLogin();
 // Define app version
 define('APP_VERSION', '1.2.5');
 
@@ -277,8 +273,8 @@ body { margin: 0; font-family: Arial, sans-serif; background-color: #222; color:
                     <div class="settings-profile-container">
                         <ul class="nav settings-nav">
                             <li class="active"><a href="settings.php"><div class="nav-item-content"><i class="fas fa-cog"></i><span class="settings-text">Settings</span></div></a></li>
-                             <li><a href="mail.php"><div class="nav-item-content"><i class="fa-solid fa-envelope"></i></i><span class="settings-text">Mail</div></a></li>
-                            <li><a href="login.php"><div class="nav-item-content"><i class="fas fa-sign-out-alt"></i><span class="settings-text">Logout</span></div></a></li>
+                            <li><a href="mail.php"><div class="nav-item-content"><i class="fas fa-question-circle"></i><span class="settings-text">Mail</span></div></a></li>
+                            <li><a href="logout.php"><div class="nav-item-content"><i class="fas fa-sign-out-alt"></i><span class="settings-text">Logout</span></div></a></li>
                         </ul>
                         <div class="profile">
                             <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" />

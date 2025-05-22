@@ -2,6 +2,7 @@
 session_start();
 require 'db_connect.php';
 
+
 define('DEVELOPMENT_MODE', true);
 
 if (!DEVELOPMENT_MODE && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off")) {
@@ -63,23 +64,38 @@ if ($_SESSION['login_attempts'] >= 3) {
         $_SESSION['name'] = $row['first_name'] . " " . $row['last_name'];
         $_SESSION['email'] = $row['email']; // for sending 2FA code
 
+        // Also add this for our online tracking (using the same naming convention as your other tracking)
+        $_SESSION['logged_in_staff_id'] = $row['staff_id'];
+        
         $_SESSION['login_attempts'] = 0;
+
+        // Update login count and activity timestamps
+        $update_query = "UPDATE staff_users SET 
+                        login_count = login_count + 1, 
+                        last_login = NOW(),
+                        last_activity = NOW() 
+                        WHERE staff_id = ?";
+        
+        $update_stmt = $conn->prepare($update_query);
+        $update_stmt->bind_param("i", $row['staff_id']);
+        $update_stmt->execute();
+        $update_stmt->close();
 
         switch ($_SESSION['role']) {
             case 'super_admin':
-                header("Location: 2fa.php");;
+                header("Location: 2fa.php");
                 break;
             case 'admin':
-                header("Location: 2fa.php");;
+                header("Location: 2fa.php");
                 break;
             case 'operator':
-                header("Location: 2fa.php");;
+                header("Location: 2fa.php");
                 break;
             case 'Auditor':
                 header("Location: 2fa.php"); // You can set this to the appropriate page for auditors
                 break;
             default:
-            header("Location: 2fa.php");
+                header("Location: 2fa.php");
         }
         exit();
         

@@ -48,16 +48,22 @@ try {
         
         // Verify password
         if (password_verify($password, $user['password'])) {
-            // Update last_used timestamp
-            $update_stmt = $conn->prepare("UPDATE users SET last_used = NOW() WHERE id = ?");
-            $update_stmt->bind_param("i", $user['id']);
-            $update_stmt->execute();
-            $update_stmt->close();
-            
-            // Set session variables
+            // Set session variables (including the one needed for online tracking)
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['full_name'] = $user['full_name'];
             $_SESSION['logged_in'] = true;
+            $_SESSION['logged_in_user_id'] = $user['id']; // Added for online tracking consistency
+            
+            // Update login tracking and activity timestamps
+            $update_stmt = $conn->prepare("UPDATE users SET 
+                                          last_used = NOW(), 
+                                          login_count = login_count + 1, 
+                                          last_login = NOW(),
+                                          last_activity = NOW() 
+                                          WHERE id = ?");
+            $update_stmt->bind_param("i", $user['id']);
+            $update_stmt->execute();
+            $update_stmt->close();
             
             // Return success response
             echo json_encode(['success' => true, 'message' => 'Login successful', 'user_id' => $user['id']]);

@@ -8,7 +8,7 @@ CREATE TABLE `announcements` (
   `display_duration` INT(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+ 
 -- Fetch active announcements
 SELECT * FROM `announcements`
 WHERE CURDATE() BETWEEN `display_from` AND DATE_ADD(`display_from`, INTERVAL `display_duration` DAY);
@@ -144,24 +144,46 @@ CREATE TABLE `login_attempts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
--- Staff users
 CREATE TABLE `staff_users` (
-  `staff_id` int(11) NOT NULL,
+  `staff_id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` enum('super_admin','admin','employee') NOT NULL,
+  `role` enum('superadmin','admin','employee','operator','Auditor') NOT NULL,
   `first_name` varchar(50) NOT NULL,
   `middle_name` varchar(50) DEFAULT NULL,
   `last_name` varchar(50) NOT NULL,
   `position` varchar(100) DEFAULT NULL,
   `is_active` tinyint(1) DEFAULT 1,
+  `login_count` int(11) DEFAULT 0,
+  `last_login` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `profile_pic` varchar(255) DEFAULT 'default.png'
+  `profile_pic` varchar(255) DEFAULT 'default.png',
+  PRIMARY KEY (`staff_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-ALTER TABLE `staff_users`
-MODIFY `role` ENUM('superadmin', 'admin', 'employee', 'operator','Auditor') NOT NULL;
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  full_name VARCHAR(100) NOT NULL,
+  birth_date DATE NOT NULL,
+  profile_image VARCHAR(255),
+  email VARCHAR(100) NOT NULL UNIQUE,
+  phone_number VARCHAR(20) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  qr_code_data VARCHAR(255) NOT NULL,
+  issued_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  expires_at DATETIME NOT NULL, 
+  is_active TINYINT(1) DEFAULT 1,
+  last_used DATETIME DEFAULT NULL,
+  login_count INT DEFAULT 0,
+  last_login DATETIME DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_email (email),
+  INDEX idx_phone (phone_number),
+  INDEX idx_qr_code (qr_code_data)
+);
+ALTER TABLE staff_users ADD COLUMN last_activity DATETIME NULL;
+ALTER TABLE users ADD COLUMN last_activity DATETIME NULL;
 
 -- Boat maintenance
 CREATE TABLE `boat_maintenance` (
@@ -202,27 +224,6 @@ CREATE TABLE passengers (
   phone_number VARCHAR(20),
   registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
--- Users (ticket holders)--  
-CREATE TABLE users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  full_name VARCHAR(100) NOT NULL,
-  birth_date DATE NOT NULL,
-  profile_image VARCHAR(255),
-  email VARCHAR(100) NOT NULL UNIQUE,
-  phone_number VARCHAR(20) NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  qr_code_data VARCHAR(255) NOT NULL,
-  issued_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  expires_at DATETIME NOT NULL, 
-  is_active TINYINT(1) DEFAULT 1,
-  last_used DATETIME DEFAULT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
--- Add indexes for performance
-CREATE INDEX idx_email ON users(email);
-CREATE INDEX idx_phone ON users(phone_number);
-CREATE INDEX idx_qr_code ON users(qr_code_data);  
 
 CREATE TABLE tickets (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -296,72 +297,3 @@ use db_connect.php to connect
 
 
 
-
-
-
--- Log table for regular users (ticket holders)
-CREATE TABLE user_login_logs (
-  log_id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  login_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  logout_time DATETIME DEFAULT NULL,
-  ip_address VARCHAR(45) NOT NULL,
-  device_info VARCHAR(255),
-  login_status ENUM('success', 'failed') NOT NULL,
-  failure_reason VARCHAR(255) DEFAULT NULL,
-  session_id VARCHAR(255),
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Log table for staff users
-CREATE TABLE staff_login_logs (
-  log_id INT AUTO_INCREMENT PRIMARY KEY,
-  staff_id INT NOT NULL,
-  login_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  logout_time DATETIME DEFAULT NULL,
-  ip_address VARCHAR(45) NOT NULL,
-  device_info VARCHAR(255),
-  login_status ENUM('success', 'failed') NOT NULL,
-  failure_reason VARCHAR(255) DEFAULT NULL,
-  session_id VARCHAR(255),
-  action_performed VARCHAR(255) DEFAULT NULL,
-  FOREIGN KEY (staff_id) REFERENCES staff_users(staff_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Indexes for better query performance
-CREATE INDEX idx_user_login_time ON user_login_logs(login_time);
-CREATE INDEX idx_user_login_status ON user_login_logs(login_status);
-CREATE INDEX idx_staff_login_time ON staff_login_logs(login_time);
-CREATE INDEX idx_staff_login_status ON staff_login_logs(login_status);
-
--- Optional: Create a view that combines both log tables for unified reporting
-CREATE VIEW all_login_logs AS
-  SELECT 
-    'user' AS user_type,
-    u.log_id,
-    u.user_id AS id,
-    us.full_name AS name,
-    u.login_time,
-    u.logout_time,
-    u.ip_address,
-    u.device_info,
-    u.login_status,
-    u.failure_reason
-  FROM 
-    user_login_logs u
-    JOIN users us ON u.user_id = us.id
-  UNION ALL
-  SELECT 
-    'staff' AS user_type,
-    s.log_id,
-    s.staff_id AS id,
-    CONCAT(st.first_name, ' ', st.last_name) AS name,
-    s.login_time,
-    s.logout_time,
-    s.ip_address,
-    s.device_info,
-    s.login_status,
-    s.failure_reason
-  FROM 
-    staff_login_logs s
-    JOIN staff_users st ON s.staff_id = st.staff_id;

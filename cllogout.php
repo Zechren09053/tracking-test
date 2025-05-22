@@ -4,8 +4,25 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Include database connection
+require 'db_connect.php';
+
 // Set proper content type for JSON response
 header('Content-Type: application/json');
+
+// Update user's offline status before destroying session
+if (isset($_SESSION['logged_in_user_id'])) {
+    try {
+        // Mark user as offline by setting last_activity to NULL
+        $query = "UPDATE users SET last_activity = NULL WHERE id = ?";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $_SESSION['logged_in_user_id']);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    } catch (Exception $e) {
+        error_log("Client logout update error: " . $e->getMessage());
+    }
+}
 
 // Clear all session variables
 $_SESSION = array();

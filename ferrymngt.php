@@ -1,13 +1,8 @@
 <?php
 session_start();
-if (!isset($_SESSION['staff_id'], $_SESSION['2fa_verified']) || $_SESSION['2fa_verified'] !== true) {
-    header("Location: login.php");
-    exit();
-}
-
-
-require 'db_connect.php'; // Include your DB connection here
-
+require_once 'db_connect.php';
+require_once 'session_handler.php';
+requireLogin();
 // Fetch user details from the database
 $username = $_SESSION['username'] ?? null;
 if ($username) {
@@ -116,7 +111,7 @@ $conn->close();
                     <ul class="nav settings-nav">
                             <li><a href="settings.php"><div class="nav-item-content"><i class="fas fa-cog"></i><span class="settings-text">Settings</span></div></a></li>
                             <li><a href="mail.php"><div class="nav-item-content"><i class="fa-solid fa-envelope"></i></i><span class="settings-text">Mail</div></a></li>
-                            <li><a href="login.php"><div class="nav-item-content"><i class="fas fa-sign-out-alt"></i><span class="settings-text">Logout</span></div></a></li>
+                            <li><a href="logout.php"><div class="nav-item-content"><i class="fas fa-sign-out-alt"></i><span class="settings-text">Logout</span></div></a></li>
                         </ul>
                         <div class="profile">
                             <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture" />
